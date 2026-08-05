@@ -1,0 +1,2 @@
+# SurfaceFlinger
+debug.renderengine.blur_algorithm=kawase2_fix_aliasing
