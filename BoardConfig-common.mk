@@ -48,7 +48,10 @@ CHRE_DAEMON_LPMA_ENABLED := true
 TARGET_FS_CONFIG_GEN := $(DEVICE_COMMON_PATH)/config.fs
 
 # HIDL
-DEVICE_MANIFEST_FILE := $(DEVICE_COMMON_PATH)/manifest.xml
+DEVICE_MANIFEST_FILE := \
+    $(DEVICE_COMMON_PATH)/manifest.xml \
+    vendor/lunaris/dolby/vintf/dolby_manifest.xml
+
 DEVICE_MATRIX_FILE := $(DEVICE_COMMON_PATH)/compatibility_matrix.xml
 DEVICE_PRODUCT_COMPATIBILITY_MATRIX_FILE := $(DEVICE_COMMON_PATH)/device_framework_matrix_product.xml
 
@@ -143,3 +146,6 @@ WIFI_HIDL_FEATURE_AWARE := true
 WIFI_HIDL_FEATURE_DUAL_INTERFACE := true
 WIFI_HIDL_UNIFIED_SUPPLICANT_SERVICE_RC_ENTRY := true
 WPA_SUPPLICANT_VERSION := VER_0_8_X
+
+# Ship Lunaris Dolby
+include vendor/lunaris/dolby/BoardConfigDolby.mk

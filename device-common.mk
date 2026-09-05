@@ -9,6 +9,9 @@ LOCAL_PATH := device/google/coral
 # Add common definitions for Qualcomm
 $(call inherit-product, hardware/qcom-caf/common/common.mk)
 
+# Ship Lunaris Dolby
+$(call inherit-product, vendor/lunaris/dolby/dolby.mk)
+
 # Inherit common Pixel configuration
 include hardware/google/pixel/common/pixel-common-device.mk
 
