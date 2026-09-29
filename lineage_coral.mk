@@ -1,7 +1,16 @@
 #
 # SPDX-FileCopyrightText: The LineageOS Project
 # SPDX-License-Identifier: Apache-2.0
-#
+# Infinity-X Build Flags
+INFINITY_MAINTAINER := "Hecker"
+TARGET_HAS_UDFPS := false
+WITH_GAPPS := true
+
+# Infinity-X About Phone Definitions
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.product.marketname=Google Pixel 4 XL \
+    ro.infinity.soc=Snapdragon 855 \
+    ro.infinity.camera=12.2MP + 16MP
 
 # Inherit some common Lineage stuff.
 $(call inherit-product, vendor/lineage/config/common_full_phone.mk)
