@@ -10,7 +10,7 @@ LOCAL_PATH := device/google/coral
 $(call inherit-product, hardware/qcom-caf/common/common.mk)
 
 # Ship Lunaris Dolby
-$(call inherit-product, vendor/lunaris/dolby/dolby.mk)
+$(call inherit-product-if-exists, vendor/lunaris/dolby/dolby.mk)
 
 # Inherit common Pixel configuration
 include hardware/google/pixel/common/pixel-common-device.mk
