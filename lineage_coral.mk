@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: The LineageOS Project
 # SPDX-License-Identifier: Apache-2.0
 # Infinity-X Build Flags
+INFINITY_BUILD := coral
 INFINITY_MAINTAINER := "Hecker"
 TARGET_HAS_UDFPS := false
 WITH_GAPPS := true

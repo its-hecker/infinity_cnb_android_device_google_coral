@@ -148,7 +148,7 @@ WIFI_HIDL_UNIFIED_SUPPLICANT_SERVICE_RC_ENTRY := true
 WPA_SUPPLICANT_VERSION := VER_0_8_X
 
 # Ship Lunaris Dolby
-include vendor/lunaris/dolby/BoardConfigDolby.mk
+-include vendor/lunaris/dolby/BoardConfigDolby.mk
 
 # Props
 DEVICE_PATH := device/google/coral
