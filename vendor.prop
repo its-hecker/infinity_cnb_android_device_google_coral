@@ -192,3 +192,6 @@ vendor.rild.libpath=/vendor/lib64/libril-qc-hal-qmi.so
 
 # VENC
 vendor.qc2.venc.avgqp.enable=1
+
+# Motion Sense (Oslo): radar hardware present
+ro.vendor.aware_available=true
