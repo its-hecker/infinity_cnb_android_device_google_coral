@@ -7,8 +7,9 @@ INFINITY_MAINTAINER := "Hecker"
 TARGET_HAS_UDFPS := false
 WITH_GAPPS := true
 
-# Fix Soong all_apex_contributions errors when GApps is enabled
+# Build mainline modules from source and ignore apex contributions
 PRODUCT_BUILD_IGNORE_APEX_CONTRIBUTION_CONTENTS := true
+PRODUCT_MODULE_BUILD_FROM_SOURCE := true
 
 # Infinity-X About Phone Definitions
 PRODUCT_PROPERTY_OVERRIDES += \
