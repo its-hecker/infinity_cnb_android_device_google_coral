@@ -1,3 +1,1 @@
 type hbmsvmanager_app, domain, coredomain;
-
-type oslo_app, domain, coredomain;

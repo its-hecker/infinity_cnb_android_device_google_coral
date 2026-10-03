@@ -1,1 +1,7 @@
-# oslo_app policy moved to system_ext/ to comply with Treble rules.
+# oslo_app is declared in system_ext/public (coredomain); these rules need
+# vendor-defined types, which system_ext policy cannot reference.
+
+# Soli calibration (oslo.cal, tx_power.cal)
+r_dir_file(oslo_app, persist_oslo_file)
+
+get_prop(oslo_app, vendor_aware_available_prop)
