@@ -12,10 +12,11 @@ PRODUCT_BUILD_IGNORE_APEX_CONTRIBUTION_CONTENTS := true
 PRODUCT_MODULE_BUILD_FROM_SOURCE := true
 
 # Infinity-X About Phone Definitions
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.product.marketname=Google Pixel 4 XL \
-    ro.infinity.soc=Snapdragon 855 \
-    ro.infinity.camera=12.2MP + 16MP
+# Product partition: vendor_init may not set these non-vendor props
+PRODUCT_PRODUCT_PROPERTIES += \
+    ro.product.marketname=Google Pixel 4 XL \
+    ro.infinity.soc=Snapdragon 855 \
+    ro.infinity.camera=12.2MP + 16MP
 
 # Inherit some common Lineage stuff.
 $(call inherit-product, vendor/infinity/config/common_full_phone.mk)

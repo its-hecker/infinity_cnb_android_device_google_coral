@@ -20,6 +20,9 @@ set_prop(vendor_init, camera_prop)
 set_prop(vendor_init, vendor_build_type_prop)
 set_prop(vendor_init, vendor_disable_spu_prop)
 
+# ro.vendor.aware_available (vendor.prop), read by Oslo and Settings
+set_prop(vendor_init, vendor_aware_available_prop)
+
 #IMS related
 set_prop(vendor_init, qcom_ims_prop)
 

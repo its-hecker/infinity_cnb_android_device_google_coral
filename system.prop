@@ -1,2 +1,5 @@
 # SurfaceFlinger
 debug.renderengine.blur_algorithm=kawase2_fix_aliasing
+
+# HWUI (framework prop: vendor_init may not set it from vendor.prop)
+ro.hwui.render_ahead=5

@@ -88,7 +88,6 @@ ro.hardware.vulkan=adreno
 debug.sf.enable_adpf_cpu_hint=true
 
 # HWUI
-ro.hwui.render_ahead=5
 debug.hwui.use_hint_manager=true
 debug.hwui.target_cpu_time_percent=30
 
