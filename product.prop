@@ -128,4 +128,3 @@ vidc.enc.disable.pq=1
 # Motion Sense (Oslo): bypass region gating
 pixel.oslo.allowed_override=1
 pixel.oslo.airplane_mode.allowed_override=1
-pixel.oslo.gating=0
