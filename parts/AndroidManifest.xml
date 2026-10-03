@@ -71,5 +71,16 @@
                 android:value="-255" />
         </activity>
 
+        <activity
+            android:name=".motionsense.GestureActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SubSettingsBase" />
+
+        <activity
+            android:name=".motionsense.MediaAppsActivity"
+            android:exported="false"
+            android:label="@string/motion_sense_media_apps_title"
+            android:theme="@style/Theme.SubSettingsBase" />
+
     </application>
 </manifest>

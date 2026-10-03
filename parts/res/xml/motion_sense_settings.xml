@@ -6,6 +6,10 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:title="@string/motion_sense_title">
 
+    <com.android.settingslib.widget.IllustrationPreference
+        android:key="motion_sense_illustration"
+        android:persistent="false" />
+
     <com.android.settingslib.widget.TopIntroPreference
         android:key="motion_sense_intro"
         android:title="@string/motion_sense_intro"
@@ -20,27 +24,18 @@
         android:key="category_gestures"
         android:title="@string/motion_sense_category_gestures">
 
-        <SwitchPreferenceCompat
+        <com.android.settingslib.PrimarySwitchPreference
             android:key="skip_gesture"
             android:title="@string/motion_sense_skip_title"
             android:summary="@string/motion_sense_skip_summary"
             android:persistent="false" />
-
-        <ListPreference
-            android:key="skip_gesture_direction"
-            android:title="@string/motion_sense_skip_direction_title"
-            android:dialogTitle="@string/motion_sense_skip_direction_title"
-            android:entries="@array/motion_sense_skip_direction_entries"
-            android:entryValues="@array/motion_sense_skip_direction_values"
-            android:persistent="false" />
-
-        <SwitchPreferenceCompat
+        <com.android.settingslib.PrimarySwitchPreference
             android:key="silence_gesture"
             android:title="@string/motion_sense_silence_title"
             android:summary="@string/motion_sense_silence_summary"
             android:persistent="false" />
 
-        <SwitchPreferenceCompat
+        <com.android.settingslib.PrimarySwitchPreference
             android:key="tap_gesture"
             android:title="@string/motion_sense_tap_title"
             android:summary="@string/motion_sense_tap_summary"
@@ -60,7 +55,7 @@
             android:entryValues="@array/motion_sense_idle_values"
             android:persistent="false" />
 
-        <SwitchPreferenceCompat
+        <com.android.settingslib.PrimarySwitchPreference
             android:key="doze_wake_screen_gesture"
             android:title="@string/motion_sense_reach_title"
             android:summary="@string/motion_sense_reach_summary"
@@ -88,6 +83,11 @@
             android:key="aware_any_media_app"
             android:title="@string/motion_sense_any_media_app_title"
             android:summary="@string/motion_sense_any_media_app_summary"
+            android:persistent="false" />
+
+        <Preference
+            android:key="aware_media_apps"
+            android:title="@string/motion_sense_media_apps_title"
             android:persistent="false" />
 
         <SwitchPreferenceCompat

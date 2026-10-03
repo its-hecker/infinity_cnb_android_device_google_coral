@@ -44,9 +44,23 @@
     <!-- Extras (read by OsloFeedback) -->
     <string name="motion_sense_category_extras">More options</string>
     <string name="motion_sense_any_media_app_title">Control any media app</string>
-    <string name="motion_sense_any_media_app_summary">Skip and pause work in every app that plays media, not only the apps Google supports</string>
+    <string name="motion_sense_any_media_app_summary">Skip and pause work in every app that plays media. When off, they work only in the apps on the media app list</string>
     <string name="motion_sense_ignore_videos_title">Ignore videos</string>
-    <string name="motion_sense_ignore_videos_summary">Don\'t skip or pause videos in apps Google doesn\'t support, like YouTube</string>
+    <string name="motion_sense_ignore_videos_summary">Don\'t skip or pause videos in apps that aren\'t on the media app list, like YouTube</string>
+
+    <!-- Media app list -->
+    <string name="motion_sense_media_apps_title">Media apps</string>
+    <plurals name="motion_sense_media_apps_summary">
+        <item quantity="one"><xliff:g id="count" example="1">%d</xliff:g> app on the list</item>
+        <item quantity="other"><xliff:g id="count" example="12">%d</xliff:g> apps on the list</item>
+    </plurals>
+    <string name="motion_sense_media_apps_intro">Quick Gestures always control the apps on this list, including their videos. Other apps are controlled only when Control any media app is on.</string>
+    <string name="motion_sense_media_apps_listed">On the list</string>
+    <string name="motion_sense_media_apps_other">Other apps</string>
+    <string name="motion_sense_media_apps_loading">Loading apps…</string>
+    <string name="motion_sense_media_apps_no_match">No apps match your search</string>
+    <string name="motion_sense_media_apps_search">Search apps</string>
+    <string name="motion_sense_media_apps_reset">Reset to Google\'s list</string>
     <string name="motion_sense_glow_custom_title">Custom glow color</string>
     <string name="motion_sense_glow_custom_summary">Change the color of the light at the top of the screen. A new color shows the next time the light appears</string>
     <string name="motion_sense_glow_color_title">Glow color</string>
@@ -66,5 +80,6 @@
     <string name="motion_sense_unavailable_airplane">Motion Sense is unavailable because airplane mode is on</string>
     <string name="motion_sense_unavailable_saver">Motion Sense is unavailable because Battery Saver is on</string>
     <string name="motion_sense_unavailable_airplane_saver">Motion Sense is unavailable because airplane mode and Battery Saver are on</string>
+    <string name="motion_sense_turn_on_first">To use this, turn on Motion Sense</string>
     <string name="motion_sense_not_allowed">Motion Sense is not supported in this country</string>
 </resources>
