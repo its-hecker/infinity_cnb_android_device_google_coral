@@ -16,6 +16,5 @@ allow oslo_app radio_service:service_manager find;
 # /mnt/vendor/persist/oslo
 typeattribute oslo_app system_writes_mnt_vendor_violators;
 allow oslo_app mnt_vendor_file:dir search;
-allow oslo_app persist_file:dir search;
 
 get_prop(oslo_app, pixel_oslo_debug_prop)

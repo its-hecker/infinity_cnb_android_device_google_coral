@@ -2,6 +2,7 @@
 # vendor-defined types, which system_ext policy cannot reference.
 
 # Soli calibration (oslo.cal, tx_power.cal)
+allow oslo_app persist_file:dir search;
 r_dir_file(oslo_app, persist_oslo_file)
 
 get_prop(oslo_app, vendor_aware_available_prop)
