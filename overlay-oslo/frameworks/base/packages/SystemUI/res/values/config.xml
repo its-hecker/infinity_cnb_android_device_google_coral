@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: The LineageOS Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <!-- SystemUI plugins that can be loaded on user builds.
+
+         vendor/infinity/overlay/common defines this array too, and product
+         overlays win over device overlays, so this directory is prepended to
+         PRODUCT_PACKAGE_OVERLAYS. Arrays are replaced, not merged: keep this
+         in sync with vendor/infinity (last synced at 29564a4) and append
+         com.google.oslo for Motion Sense. -->
+    <string-array name="config_pluginAllowlist" translatable="false">
+        <item>com.android.systemui</item>
+        <item>com.android.systemui.plugin.globalactions.wallet</item>
+        <item>org.lineageos.settings.device</item>
+        <item>com.android.systemui.clocks</item>
+        <item>com.android.systemui.clocks.debug</item>
+        <item>com.android.systemui.clocks.bignum</item>
+        <item>com.android.systemui.clocks.calligraphy</item>
+        <item>com.android.systemui.clocks.flex</item>
+        <item>com.android.systemui.clocks.growth</item>
+        <item>com.android.systemui.clocks.handwritten</item>
+        <item>com.android.systemui.clocks.inflate</item>
+        <item>com.android.systemui.clocks.metro</item>
+        <item>com.android.systemui.clocks.numoverlap</item>
+        <item>com.android.systemui.clocks.weather</item>
+        <item>com.google.oslo</item>
+    </string-array>
+</resources>

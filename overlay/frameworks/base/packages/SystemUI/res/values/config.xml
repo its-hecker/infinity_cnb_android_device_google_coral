@@ -9,10 +9,4 @@
 <resources>
     <!-- Preferred refresh rate at keyguard, if supported by the display -->
     <integer name="config_keyguardRefreshRate">60</integer>
-
-    <!-- Allow the Motion Sense (Oslo) SystemUI plugin to load on user builds -->
-    <string-array name="config_pluginAllowlist" translatable="false">
-        <item>com.android.systemui</item>
-        <item>com.google.oslo</item>
-    </string-array>
 </resources>

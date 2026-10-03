@@ -347,6 +347,10 @@ PRODUCT_COPY_FILES += \
 DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
 DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay-lineage
 
+# Must come before vendor/infinity/overlay/common, which also defines
+# SystemUI's config_pluginAllowlist (needed for the Oslo plugin).
+PRODUCT_PACKAGE_OVERLAYS := $(LOCAL_PATH)/overlay-oslo $(PRODUCT_PACKAGE_OVERLAYS)
+
 # Partitions
 PRODUCT_PACKAGES += \
     vendor_firmware_mnt_mountpoint
