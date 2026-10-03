@@ -50,5 +50,8 @@
         <item>device_personalization_services/Logging__enable_aiai_clearcut_logging=false</item>
         <item>device_personalization_services/NotificationAssistant__enable_service=false</item>
         <item>device_personalization_services/VisualCortex__enable=false</item>
+
+        <!-- Motion Sense (Oslo) -->
+        <item>oslo/media_app_whitelist=com.amazon.mp3,com.anghami,com.apple.android.music,com.aspiro.tidal,com.bsbportal.music,com.clearchannel.iheartradio.controller,com.ezpeer.ezpeerplus.v4,com.gaana,com.google.android.apps.youtube.music,com.google.android.music,com.hungama.myplay.activity,com.jio.media.jiobeats,com.ktmusic.geniemusic,com.neowiz.android.bugs,com.pandora.android,com.rhapsody,com.shazam.android,com.sirius,com.skysoft.kkbox.android,com.soundcloud.android,com.spotify.music,com.spotify.zerotap,deezer.android.app,fm.awa.liverpool,com.shadow.blackhole,app.revanced.android.apps.youtube.music,org.akanework.gramophone</item>
     </string-array>
 </resources>
