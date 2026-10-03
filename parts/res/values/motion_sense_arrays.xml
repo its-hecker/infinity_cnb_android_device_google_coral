@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2026 its-hecker
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <string-array name="motion_sense_skip_direction_entries">
+        <item>@string/motion_sense_skip_direction_rtl</item>
+        <item>@string/motion_sense_skip_direction_ltr</item>
+    </string-array>
+    <string-array name="motion_sense_skip_direction_values" translatable="false">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
+    <string-array name="motion_sense_idle_entries">
+        <item>@string/motion_sense_idle_nearby</item>
+        <item>@string/motion_sense_idle_always</item>
+        <item>@string/motion_sense_idle_off</item>
+    </string-array>
+    <string-array name="motion_sense_idle_values" translatable="false">
+        <item>nearby</item>
+        <item>always</item>
+        <item>off</item>
+    </string-array>
+
+    <string-array name="motion_sense_glow_entries">
+        <item>@string/motion_sense_glow_red</item>
+        <item>@string/motion_sense_glow_orange</item>
+        <item>@string/motion_sense_glow_gold</item>
+        <item>@string/motion_sense_glow_green</item>
+        <item>@string/motion_sense_glow_teal</item>
+        <item>@string/motion_sense_glow_cyan</item>
+        <item>@string/motion_sense_glow_violet</item>
+        <item>@string/motion_sense_glow_purple</item>
+        <item>@string/motion_sense_glow_pink</item>
+    </string-array>
+    <string-array name="motion_sense_glow_values" translatable="false">
+        <item>0</item>
+        <item>30</item>
+        <item>48</item>
+        <item>140</item>
+        <item>175</item>
+        <item>190</item>
+        <item>270</item>
+        <item>290</item>
+        <item>320</item>
+    </string-array>
+</resources>

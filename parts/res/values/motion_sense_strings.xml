@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2026 its-hecker
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- Settings entry -->
+    <string name="motion_sense_title">Motion Sense</string>
+    <string name="motion_sense_summary">Quick Gestures and reach to check phone</string>
+
+    <!-- Main switch -->
+    <string name="motion_sense_intro">Your phone uses a radar sensor to recognise distance and movement around it</string>
+    <string name="motion_sense_use">Use Motion Sense</string>
+    <string name="motion_sense_off_dialog_title">Turn off Motion Sense?</string>
+    <string name="motion_sense_off_dialog_message">If you turn off Motion Sense, you can\'t use Quick Gestures, show display when nearby and reach to check phone</string>
+    <string name="motion_sense_off_dialog_confirm">Turn off</string>
+
+    <!-- Quick Gestures -->
+    <string name="motion_sense_category_gestures">Quick Gestures</string>
+    <string name="motion_sense_skip_title">Skip songs</string>
+    <string name="motion_sense_skip_summary">Swipe your hand above the phone to skip to the next or previous song</string>
+    <string name="motion_sense_skip_direction_title">Swipe direction</string>
+    <string name="motion_sense_skip_direction_rtl">Swipe right to left for next song</string>
+    <string name="motion_sense_skip_direction_ltr">Swipe left to right for next song</string>
+    <string name="motion_sense_silence_title">Silence interruptions</string>
+    <string name="motion_sense_silence_summary">Swipe your hand above the phone to snooze alarms, dismiss timers and silence calls</string>
+    <string name="motion_sense_tap_title">Pause music</string>
+    <string name="motion_sense_tap_summary">Tap the air above the phone to pause or resume music</string>
+
+    <!-- Display -->
+    <string name="motion_sense_category_display">Ambient display</string>
+    <string name="motion_sense_idle_title">Idle lock screen</string>
+    <string name="motion_sense_idle_nearby">On when you\'re nearby</string>
+    <string name="motion_sense_idle_always">Always show time and info</string>
+    <string name="motion_sense_idle_off">Off</string>
+    <string name="motion_sense_reach_title">Reach to check phone</string>
+    <string name="motion_sense_reach_summary">To check time, notifications and other info, reach for your phone</string>
+
+    <!-- Security -->
+    <string name="motion_sense_category_security">Device security</string>
+    <string name="motion_sense_lock_title">Auto-lock when nobody\'s around</string>
+    <string name="motion_sense_lock_summary">Lock the phone soon after you walk away from it</string>
+
+    <!-- Extras (read by OsloFeedback) -->
+    <string name="motion_sense_category_extras">More options</string>
+    <string name="motion_sense_any_media_app_title">Control any media app</string>
+    <string name="motion_sense_any_media_app_summary">Skip and pause work in every app that plays media, not only the apps Google supports</string>
+    <string name="motion_sense_ignore_videos_title">Ignore videos</string>
+    <string name="motion_sense_ignore_videos_summary">Don\'t skip or pause videos in apps Google doesn\'t support, like YouTube</string>
+    <string name="motion_sense_glow_custom_title">Custom glow color</string>
+    <string name="motion_sense_glow_custom_summary">Change the color of the light at the top of the screen. A new color shows the next time the light appears</string>
+    <string name="motion_sense_glow_color_title">Glow color</string>
+    <string name="motion_sense_glow_color_custom">Custom (<xliff:g id="hue" example="200">%1$d</xliff:g>°)</string>
+    <string name="motion_sense_glow_red">Red</string>
+    <string name="motion_sense_glow_orange">Orange</string>
+    <string name="motion_sense_glow_gold">Gold</string>
+    <string name="motion_sense_glow_green">Green</string>
+    <string name="motion_sense_glow_teal">Teal</string>
+    <string name="motion_sense_glow_cyan">Cyan</string>
+    <string name="motion_sense_glow_violet">Violet</string>
+    <string name="motion_sense_glow_purple">Purple</string>
+    <string name="motion_sense_glow_pink">Pink</string>
+
+    <!-- Footer -->
+    <string name="motion_sense_footer">Motion Sense detects nearby movement. It does not use your camera, mic or location.</string>
+    <string name="motion_sense_unavailable_airplane">Motion Sense is unavailable because airplane mode is on</string>
+    <string name="motion_sense_unavailable_saver">Motion Sense is unavailable because Battery Saver is on</string>
+    <string name="motion_sense_unavailable_airplane_saver">Motion Sense is unavailable because airplane mode and Battery Saver are on</string>
+    <string name="motion_sense_not_allowed">Motion Sense is not supported in this country</string>
+</resources>

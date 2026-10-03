@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2026 its-hecker
+     SPDX-License-Identifier: Apache-2.0
+-->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="@string/motion_sense_title">
+
+    <com.android.settingslib.widget.TopIntroPreference
+        android:key="motion_sense_intro"
+        android:title="@string/motion_sense_intro"
+        android:persistent="false" />
+
+    <com.android.settingslib.widget.MainSwitchPreference
+        android:key="aware_enabled"
+        android:title="@string/motion_sense_use"
+        android:persistent="false" />
+
+    <PreferenceCategory
+        android:key="category_gestures"
+        android:title="@string/motion_sense_category_gestures">
+
+        <SwitchPreferenceCompat
+            android:key="skip_gesture"
+            android:title="@string/motion_sense_skip_title"
+            android:summary="@string/motion_sense_skip_summary"
+            android:persistent="false" />
+
+        <ListPreference
+            android:key="skip_gesture_direction"
+            android:title="@string/motion_sense_skip_direction_title"
+            android:dialogTitle="@string/motion_sense_skip_direction_title"
+            android:entries="@array/motion_sense_skip_direction_entries"
+            android:entryValues="@array/motion_sense_skip_direction_values"
+            android:persistent="false" />
+
+        <SwitchPreferenceCompat
+            android:key="silence_gesture"
+            android:title="@string/motion_sense_silence_title"
+            android:summary="@string/motion_sense_silence_summary"
+            android:persistent="false" />
+
+        <SwitchPreferenceCompat
+            android:key="tap_gesture"
+            android:title="@string/motion_sense_tap_title"
+            android:summary="@string/motion_sense_tap_summary"
+            android:persistent="false" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="category_display"
+        android:title="@string/motion_sense_category_display">
+
+        <ListPreference
+            android:key="idle_lock_screen"
+            android:title="@string/motion_sense_idle_title"
+            android:dialogTitle="@string/motion_sense_idle_title"
+            android:entries="@array/motion_sense_idle_entries"
+            android:entryValues="@array/motion_sense_idle_values"
+            android:persistent="false" />
+
+        <SwitchPreferenceCompat
+            android:key="doze_wake_screen_gesture"
+            android:title="@string/motion_sense_reach_title"
+            android:summary="@string/motion_sense_reach_summary"
+            android:persistent="false" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="category_security"
+        android:title="@string/motion_sense_category_security">
+
+        <SwitchPreferenceCompat
+            android:key="aware_lock_enabled"
+            android:title="@string/motion_sense_lock_title"
+            android:summary="@string/motion_sense_lock_summary"
+            android:persistent="false" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="category_extras"
+        android:title="@string/motion_sense_category_extras">
+
+        <SwitchPreferenceCompat
+            android:key="aware_any_media_app"
+            android:title="@string/motion_sense_any_media_app_title"
+            android:summary="@string/motion_sense_any_media_app_summary"
+            android:persistent="false" />
+
+        <SwitchPreferenceCompat
+            android:key="aware_ignore_videos"
+            android:title="@string/motion_sense_ignore_videos_title"
+            android:summary="@string/motion_sense_ignore_videos_summary"
+            android:persistent="false" />
+
+        <SwitchPreferenceCompat
+            android:key="aware_glow_custom"
+            android:title="@string/motion_sense_glow_custom_title"
+            android:summary="@string/motion_sense_glow_custom_summary"
+            android:persistent="false" />
+
+        <ListPreference
+            android:key="aware_glow_hue"
+            android:title="@string/motion_sense_glow_color_title"
+            android:dialogTitle="@string/motion_sense_glow_color_title"
+            android:entries="@array/motion_sense_glow_entries"
+            android:entryValues="@array/motion_sense_glow_values"
+            android:persistent="false" />
+
+    </PreferenceCategory>
+
+    <com.android.settingslib.widget.FooterPreference
+        android:key="motion_sense_footer"
+        android:title="@string/motion_sense_footer"
+        android:selectable="false"
+        android:persistent="false" />
+
+</PreferenceScreen>
