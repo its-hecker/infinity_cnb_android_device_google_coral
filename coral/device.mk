@@ -34,3 +34,11 @@ PRODUCT_PACKAGES += \
     SettingsOverlayG020J \
     SettingsOverlayG020P \
     SettingsOverlayG020Q
+
+# HIDL vendor interfaces required by the camera and face HALs.
+# thermal@2.0 stopped being built implicitly after Android 14 QPR1; without it
+# the Google camera provider and the face HAL both crash (front and rear camera).
+# See LineageOS 3ec0957b ("Build android.hardware.thermal@2.0").
+PRODUCT_PACKAGES += \
+    android.hardware.thermal@2.0.vendor:64 \
+    android.hardware.biometrics.face@1.0.vendor:64
