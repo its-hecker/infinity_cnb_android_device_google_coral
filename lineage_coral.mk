@@ -3,6 +3,8 @@
 # SPDX-License-Identifier: Apache-2.0
 # Infinity-X Build Flags
 INFINITY_BUILD := coral
+# 3D face unlock (Pixel Neural Core) replaces Infinity's camera-based FaceUnlock
+TARGET_FACE_UNLOCK_SUPPORTED := false
 INFINITY_MAINTAINER := "Hecker"
 TARGET_HAS_UDFPS := false
 WITH_GAPPS := true

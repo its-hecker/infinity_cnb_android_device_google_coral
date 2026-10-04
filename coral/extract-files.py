@@ -60,6 +60,7 @@ blob_fixups: blob_fixups_user_type = {
     'vendor/bin/color_init': blob_fixup()
         .add_needed('libbase_shim.so'),
     (
+         'vendor/bin/hw/android.hardware.biometrics.face@1.0-service.google',
          'vendor/bin/hw/vendor.google.airbrush@1.0-service',
          'vendor/bin/hw/android.hardware.neuralnetworks@1.2-service-noronha',
     ): blob_fixup()

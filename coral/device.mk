@@ -42,3 +42,7 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     android.hardware.thermal@2.0.vendor:64 \
     android.hardware.biometrics.face@1.0.vendor:64
+
+# Face unlock (3D, android.hardware.biometrics.face@1.0-service.google)
+PRODUCT_COPY_FILES += \
+    frameworks/native/data/etc/android.hardware.biometrics.face.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.biometrics.face.xml
