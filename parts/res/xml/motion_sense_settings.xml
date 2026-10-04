@@ -96,18 +96,10 @@
             android:summary="@string/motion_sense_ignore_videos_summary"
             android:persistent="false" />
 
-        <SwitchPreferenceCompat
-            android:key="aware_glow_custom"
-            android:title="@string/motion_sense_glow_custom_title"
-            android:summary="@string/motion_sense_glow_custom_summary"
-            android:persistent="false" />
-
-        <ListPreference
-            android:key="aware_glow_hue"
-            android:title="@string/motion_sense_glow_color_title"
-            android:dialogTitle="@string/motion_sense_glow_color_title"
-            android:entries="@array/motion_sense_glow_entries"
-            android:entryValues="@array/motion_sense_glow_values"
+        <Preference
+            android:key="glow_page"
+            android:title="@string/motion_sense_glow_page_title"
+            android:summary="@string/motion_sense_glow_page_summary"
             android:persistent="false" />
 
     </PreferenceCategory>

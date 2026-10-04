@@ -61,6 +61,14 @@
     <string name="motion_sense_media_apps_no_match">No apps match your search</string>
     <string name="motion_sense_media_apps_search">Search apps</string>
     <string name="motion_sense_media_apps_reset">Reset to Google\'s list</string>
+    <string name="motion_sense_glow_page_title">Glow light</string>
+    <string name="motion_sense_glow_page_summary">Brightness, size and color of the light at the top of the screen</string>
+    <string name="motion_sense_glow_show_title">Show glow light</string>
+    <string name="motion_sense_glow_brightness_title">Brightness</string>
+    <string name="motion_sense_glow_size_title">Size</string>
+    <string name="motion_sense_glow_rainbow_title">Rainbow</string>
+    <string name="motion_sense_glow_rainbow_summary">Use a different color each time the light appears</string>
+    <string name="motion_sense_glow_footer">The glow is the light that sweeps across the top of the screen when Motion Sense sees a gesture. A new look shows the next time it appears.</string>
     <string name="motion_sense_glow_custom_title">Custom glow color</string>
     <string name="motion_sense_glow_custom_summary">Change the color of the light at the top of the screen. A new color shows the next time the light appears</string>
     <string name="motion_sense_glow_color_title">Glow color</string>

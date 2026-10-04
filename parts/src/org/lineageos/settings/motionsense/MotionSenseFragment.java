@@ -67,8 +67,6 @@ public class MotionSenseFragment extends SettingsBasePreferenceFragment
     private SwitchPreferenceCompat mAnyMediaApp;
     private Preference mMediaApps;
     private SwitchPreferenceCompat mIgnoreVideos;
-    private SwitchPreferenceCompat mGlowCustom;
-    private ListPreference mGlowHue;
     private FooterPreference mFooter;
     private PreferenceCategory mSecurityCategory;
 
@@ -97,15 +95,14 @@ public class MotionSenseFragment extends SettingsBasePreferenceFragment
         mAnyMediaApp = findPreference(KEY_ANY_MEDIA_APP);
         mMediaApps = findPreference(KEY_MEDIA_APPS);
         mIgnoreVideos = findPreference(KEY_IGNORE_VIDEOS);
-        mGlowCustom = findPreference(KEY_GLOW_CUSTOM);
-        mGlowHue = findPreference(KEY_GLOW_HUE);
         mFooter = findPreference(PREF_FOOTER);
         mSecurityCategory = findPreference(PREF_CATEGORY_SECURITY);
 
         for (Preference preference : new Preference[] {mMainSwitch, mIdleLockScreen, mLock,
-                mAnyMediaApp, mIgnoreVideos, mGlowCustom, mGlowHue}) {
+                mAnyMediaApp, mIgnoreVideos}) {
             preference.setOnPreferenceChangeListener(this);
         }
+        findPreference("glow_page").setIntent(new Intent(context, GlowActivity.class));
         for (String key : GESTURE_KEYS) {
             Preference row = findPreference(key);
             row.setOnPreferenceChangeListener(this);
@@ -193,13 +190,6 @@ public class MotionSenseFragment extends SettingsBasePreferenceFragment
                 R.plurals.motion_sense_media_apps_summary, listed, listed));
         mIgnoreVideos.setChecked(isOn(context, KEY_IGNORE_VIDEOS));
         mIgnoreVideos.setEnabled(mAnyMediaApp.isChecked());
-        mGlowCustom.setChecked(isOn(context, KEY_GLOW_CUSTOM));
-        int hue = get(context, KEY_GLOW_HUE);
-        mGlowHue.setValue(String.valueOf(hue));
-        CharSequence hueName = mGlowHue.getEntry();
-        mGlowHue.setSummary(hueName != null ? hueName
-                : getString(R.string.motion_sense_glow_color_custom, hue));
-        mGlowHue.setEnabled(mGlowCustom.isChecked());
 
         int reason = getUnavailableReason(context);
         mFooter.setTitle(reason != 0 ? reason : R.string.motion_sense_footer);

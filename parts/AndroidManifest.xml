@@ -77,6 +77,12 @@
             android:theme="@style/Theme.SubSettingsBase" />
 
         <activity
+            android:name=".motionsense.GlowActivity"
+            android:exported="false"
+            android:label="@string/motion_sense_glow_page_title"
+            android:theme="@style/Theme.SubSettingsBase" />
+
+        <activity
             android:name=".motionsense.MediaAppsActivity"
             android:exported="false"
             android:label="@string/motion_sense_media_apps_title"

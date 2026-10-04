@@ -40,7 +40,14 @@ final class MotionSense {
     static final String KEY_IGNORE_VIDEOS = "aware_ignore_videos";
     static final String KEY_GLOW_CUSTOM = "aware_glow_custom";
     static final String KEY_GLOW_HUE = "aware_glow_hue";
+    static final String KEY_GLOW_SHOW = "aware_glow_show";
+    static final String KEY_GLOW_BRIGHTNESS = "aware_glow_brightness";
+    static final String KEY_GLOW_SIZE = "aware_glow_size";
+    static final String KEY_GLOW_RAINBOW = "aware_glow_rainbow";
     static final String KEY_MEDIA_APPS = "aware_media_apps";
+
+    static final int DEFAULT_GLOW_BRIGHTNESS = 100;
+    static final int DEFAULT_GLOW_SIZE = 100;
 
     // Settings.Global
     static final String KEY_ALLOWED = "aware_allowed";
@@ -53,7 +60,8 @@ final class MotionSense {
     static final String[] SECURE_KEYS = {
         KEY_ENABLED, KEY_SKIP, KEY_SKIP_DIRECTION, KEY_SILENCE, KEY_TAP, KEY_WAKE_DISPLAY,
         KEY_ALWAYS_ON, KEY_WAKE_SCREEN, KEY_LOCK, KEY_ANY_MEDIA_APP, KEY_IGNORE_VIDEOS,
-        KEY_GLOW_CUSTOM, KEY_GLOW_HUE, KEY_MEDIA_APPS,
+        KEY_GLOW_CUSTOM, KEY_GLOW_HUE, KEY_GLOW_SHOW, KEY_GLOW_BRIGHTNESS, KEY_GLOW_SIZE,
+        KEY_GLOW_RAINBOW, KEY_MEDIA_APPS,
     };
     static final String[] GLOBAL_KEYS = {KEY_ALLOWED, KEY_AIRPLANE, KEY_LOW_POWER};
 
@@ -67,9 +75,14 @@ final class MotionSense {
             case KEY_ENABLED:
             case KEY_TAP:
             case KEY_SKIP_DIRECTION:
+            case KEY_GLOW_RAINBOW:
                 return 0;
             case KEY_GLOW_HUE:
                 return DEFAULT_GLOW_HUE;
+            case KEY_GLOW_BRIGHTNESS:
+                return DEFAULT_GLOW_BRIGHTNESS;
+            case KEY_GLOW_SIZE:
+                return DEFAULT_GLOW_SIZE;
             default:
                 return 1;
         }
