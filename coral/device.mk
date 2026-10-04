@@ -34,7 +34,3 @@ PRODUCT_PACKAGES += \
     SettingsOverlayG020J \
     SettingsOverlayG020P \
     SettingsOverlayG020Q
-
-# Face unlock (3D, android.hardware.biometrics.face@1.0-service.google)
-PRODUCT_COPY_FILES += \
-    frameworks/native/data/etc/android.hardware.biometrics.face.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.biometrics.face.xml
