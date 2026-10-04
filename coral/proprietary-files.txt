@@ -12,9 +12,6 @@ product/etc/firmware/music_detector.descriptor
 product/etc/firmware/music_detector.sound_model
 product/priv-app/AmbientSensePrebuilt/AmbientSensePrebuilt.apk;PRESIGNED
 
-# Camera
-product/app/GoogleCamera/GoogleCamera.apk;PRESIGNED
-product/app/GoogleCamera/PortSegm-precomp.unenc
 # Camera extensions
 product/app/PixelCameraServicesCoral/PixelCameraServicesCoral.apk;PRESIGNED
 
