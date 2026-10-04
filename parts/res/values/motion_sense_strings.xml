@@ -68,7 +68,13 @@
     <string name="motion_sense_glow_size_title">Size</string>
     <string name="motion_sense_glow_rainbow_title">Rainbow</string>
     <string name="motion_sense_glow_rainbow_summary">Use a different color each time the light appears</string>
+    <string name="motion_sense_glow_accent_title">Match system accent</string>
+    <string name="motion_sense_glow_accent_summary">Use your Material You wallpaper color for the glow</string>
+    <string name="motion_sense_glow_night_title">Dim at night</string>
+    <string name="motion_sense_glow_night_summary">Soften the glow during night hours</string>
+    <string name="motion_sense_glow_night_start_title">Night starts at</string>
     <string name="motion_sense_glow_footer">The glow is the light that sweeps across the top of the screen when Motion Sense sees a gesture. A new look shows the next time it appears.</string>
+    <string name="motion_sense_tile_label">Motion Sense</string>
     <string name="motion_sense_glow_custom_title">Custom glow color</string>
     <string name="motion_sense_glow_custom_summary">Change the color of the light at the top of the screen. A new color shows the next time the light appears</string>
     <string name="motion_sense_glow_color_title">Glow color</string>

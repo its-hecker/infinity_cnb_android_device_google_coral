@@ -46,4 +46,19 @@
         <item>290</item>
         <item>320</item>
     </string-array>
+
+    <string-array name="motion_sense_glow_night_entries" translatable="false">
+        <item>8:00 PM</item>
+        <item>9:00 PM</item>
+        <item>10:00 PM</item>
+        <item>11:00 PM</item>
+        <item>Midnight</item>
+    </string-array>
+    <string-array name="motion_sense_glow_night_values" translatable="false">
+        <item>20</item>
+        <item>21</item>
+        <item>22</item>
+        <item>23</item>
+        <item>0</item>
+    </string-array>
 </resources>

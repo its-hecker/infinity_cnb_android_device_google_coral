@@ -41,6 +41,9 @@ public class GlowFragment extends SettingsBasePreferenceFragment {
     private SwitchPreferenceCompat mCustom;
     private ListPreference mColor;
     private SwitchPreferenceCompat mRainbow;
+    private SwitchPreferenceCompat mAccent;
+    private SwitchPreferenceCompat mNight;
+    private ListPreference mNightStart;
     private FooterPreference mFooter;
 
     private final ContentObserver mObserver = new ContentObserver(
@@ -118,6 +121,44 @@ public class GlowFragment extends SettingsBasePreferenceFragment {
         });
         screen.addPreference(mRainbow);
 
+        mAccent = new SwitchPreferenceCompat(context);
+        mAccent.setKey(KEY_GLOW_ACCENT);
+        mAccent.setTitle(R.string.motion_sense_glow_accent_title);
+        mAccent.setSummary(R.string.motion_sense_glow_accent_summary);
+        mAccent.setPersistent(false);
+        mAccent.setOnPreferenceChangeListener((p, v) -> {
+            put(context, KEY_GLOW_ACCENT, (Boolean) v ? 1 : 0);
+            updateState();
+            return true;
+        });
+        screen.addPreference(mAccent);
+
+        mNight = new SwitchPreferenceCompat(context);
+        mNight.setKey(KEY_GLOW_NIGHT);
+        mNight.setTitle(R.string.motion_sense_glow_night_title);
+        mNight.setSummary(R.string.motion_sense_glow_night_summary);
+        mNight.setPersistent(false);
+        mNight.setOnPreferenceChangeListener((p, v) -> {
+            put(context, KEY_GLOW_NIGHT, (Boolean) v ? 1 : 0);
+            updateState();
+            return true;
+        });
+        screen.addPreference(mNight);
+
+        mNightStart = new ListPreference(context);
+        mNightStart.setKey(KEY_GLOW_NIGHT_START);
+        mNightStart.setTitle(R.string.motion_sense_glow_night_start_title);
+        mNightStart.setDialogTitle(R.string.motion_sense_glow_night_start_title);
+        mNightStart.setEntries(R.array.motion_sense_glow_night_entries);
+        mNightStart.setEntryValues(R.array.motion_sense_glow_night_values);
+        mNightStart.setPersistent(false);
+        mNightStart.setOnPreferenceChangeListener((p, v) -> {
+            put(context, KEY_GLOW_NIGHT_START, Integer.parseInt((String) v));
+            updateState();
+            return true;
+        });
+        screen.addPreference(mNightStart);
+
         mFooter = new FooterPreference(context);
         mFooter.setKey("glow_footer");
         mFooter.setTitle(R.string.motion_sense_glow_footer);
@@ -173,16 +214,30 @@ public class GlowFragment extends SettingsBasePreferenceFragment {
         mSize.setValue(get(context, KEY_GLOW_SIZE));
         mSize.setEnabled(glowOn);
 
+        boolean accent = isOn(context, KEY_GLOW_ACCENT);
+        boolean night = isOn(context, KEY_GLOW_NIGHT);
+
         mCustom.setChecked(custom);
         mCustom.setEnabled(glowOn);
+        mAccent.setChecked(accent);
+        mAccent.setEnabled(glowOn && custom);
         mRainbow.setChecked(rainbow);
-        mRainbow.setEnabled(glowOn && custom);
+        mRainbow.setEnabled(glowOn && custom && !accent);
 
         mColor.setValue(String.valueOf(get(context, KEY_GLOW_HUE)));
         CharSequence entry = mColor.getEntry();
         mColor.setSummary(entry != null ? entry
                 : getString(R.string.motion_sense_glow_color_custom, get(context, KEY_GLOW_HUE)));
-        mColor.setEnabled(glowOn && custom && !rainbow);
+        mColor.setEnabled(glowOn && custom && !rainbow && !accent);
+
+        mNight.setChecked(night);
+        mNight.setEnabled(glowOn);
+        mNightStart.setValue(String.valueOf(get(context, KEY_GLOW_NIGHT_START)));
+        CharSequence nightEntry = mNightStart.getEntry();
+        if (nightEntry != null) {
+            mNightStart.setSummary(nightEntry);
+        }
+        mNightStart.setEnabled(glowOn && night);
 
         int reason = MotionSense.getUnavailableReason(context);
         if (reason != 0) {

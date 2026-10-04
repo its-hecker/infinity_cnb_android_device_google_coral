@@ -88,5 +88,16 @@
             android:label="@string/motion_sense_media_apps_title"
             android:theme="@style/Theme.SubSettingsBase" />
 
+        <service
+            android:name=".motionsense.MotionSenseTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_motion_sense"
+            android:label="@string/motion_sense_tile_label"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
     </application>
 </manifest>
