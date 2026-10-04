@@ -133,6 +133,12 @@
                 android:data="https://t.me/pixel4seriesupdates" />
         </Preference>
 
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="category_donate"
+        android:title="@string/motion_sense_donate">
+
         <Preference
             android:key="about_binance"
             android:title="@string/motion_sense_about_binance"

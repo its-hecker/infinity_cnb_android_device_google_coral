@@ -77,12 +77,13 @@
 
     <!-- About -->
     <string name="motion_sense_about">About</string>
-    <string name="motion_sense_about_port">Ported for Android 17 by Hecker</string>
-    <string name="motion_sense_about_port_summary">Motion Sense for the Pixel 4 and Pixel 4 XL</string>
+    <string name="motion_sense_about_port">Original Motion Sense port by Dirty Unicorns and Aswin</string>
+    <string name="motion_sense_about_port_summary">Ported for Android 17 by Hecker</string>
     <string name="motion_sense_about_contact">Contact developer</string>
     <string name="motion_sense_about_contact_summary">Telegram: t.me/pixel4seriesupdates</string>
-    <string name="motion_sense_about_binance">Buy me a coffee ☕ · Binance ID</string>
-    <string name="motion_sense_about_usdt">Buy me a coffee ☕ · USDT (TRC20)</string>
+    <string name="motion_sense_donate">Buy me a coffee ☕</string>
+    <string name="motion_sense_about_binance">Binance ID</string>
+    <string name="motion_sense_about_usdt">USDT (TRC20)</string>
     <string name="motion_sense_binance_id" translatable="false">1063984390</string>
     <string name="motion_sense_usdt_trc20" translatable="false">TBMDKXt39ZdkHmeMZcf2afXnRtAutX2siD</string>
     <string name="motion_sense_copied">Copied</string>
