@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wallpaper xmlns:android="http://schemas.android.com/apk/res/android"
+    android:author="@string/developer"
+    android:description="@string/wallpaper_mochi_description"
+    android:thumbnail="@drawable/thumb_mochi"
+    android:settingsActivity="com.hecker.motionsense.wallpapers.AboutActivity"
+    android:contextUri="@string/contact_url"
+    android:contextDescription="@string/contact_developer"
+    android:showMetadataInPreview="true" />

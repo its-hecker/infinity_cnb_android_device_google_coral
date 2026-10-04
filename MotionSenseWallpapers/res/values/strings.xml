@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2026 Hecker
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <string name="app_name">Sidekick Wallpapers</string>
+    <string name="developer" translatable="false">Hecker</string>
+    <string name="contact_url" translatable="false">https://t.me/pixel4seriesupdates</string>
+    <string name="contact_developer">Contact developer</string>
+
+    <string name="wallpaper_hecker" translatable="false">Hecker</string>
+    <string name="wallpaper_hecker_description">An office cat in a suit. Heavy-lidded and unimpressed until you reach for the phone</string>
+    <string name="wallpaper_mochi" translatable="false">Mochi</string>
+    <string name="wallpaper_mochi_description">A bunny in a moonlit meadow. Perks her ears and waves back</string>
+    <string name="wallpaper_biscuit" translatable="false">Biscuit</string>
+    <string name="wallpaper_biscuit_description">A shiba pup at sunset. Wags, tilts his head at your swipes and barks on a tap</string>
+    <string name="wallpaper_whisk_crumb" translatable="false">Whisk &amp; Crumb</string>
+    <string name="wallpaper_whisk_crumb_description">A tabby keeps watch while a mouse nibbles cheese. Tap and the cat pounces</string>
+    <string name="wallpaper_pip" translatable="false">Pip</string>
+    <string name="wallpaper_pip_description">A tiny hover-bot over a neon grid. Waves back and naps on the floor</string>
+    <string name="wallpaper_drift" translatable="false">Drift</string>
+    <string name="wallpaper_drift_description">Glowing jellyfish in the deep sea. Wave and they swim up together</string>
+    <string name="wallpaper_orbit" translatable="false">Orbit</string>
+    <string name="wallpaper_orbit_description">A ringed planet and a little rocket that loops around it when you wave</string>
+    <string name="wallpaper_aurora" translatable="false">Aurora</string>
+    <string name="wallpaper_aurora_description">Color fields and a ring of light that swirl and ripple with your hand</string>
+
+    <!-- About -->
+    <string name="about_title">About</string>
+    <string name="about_made_by">Made by Hecker</string>
+    <string name="about_body">Each wallpaper has a little character or scene that reacts to you. It notices you when you unlock or come back to the home screen, waves when you tap the screen, nods on a double tap and looks around as you swipe between home screens. Leave the phone alone for a while and it falls asleep.</string>
+    <string name="about_contact">Contact developer</string>
+    <string name="about_contact_summary">Telegram: t.me/pixel4seriesupdates</string>
+    <string name="about_coffee">Buy me a coffee</string>
+    <string name="about_binance">Binance ID</string>
+    <string name="about_usdt">USDT (TRC20)</string>
+    <string name="about_copy">Copy</string>
+    <string name="about_copied">Copied</string>
+</resources>

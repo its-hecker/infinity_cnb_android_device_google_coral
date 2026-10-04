@@ -7,6 +7,8 @@ package org.lineageos.settings.motionsense;
 
 import android.app.AlertDialog;
 import android.app.KeyguardManager;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.ContentObserver;
@@ -17,6 +19,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.UserHandle;
 import android.provider.DeviceConfig;
+import android.widget.Toast;
 
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
@@ -110,6 +113,16 @@ public class MotionSenseFragment extends SettingsBasePreferenceFragment
                     .putExtra(GestureActivity.EXTRA_GESTURE, key));
         }
         mMediaApps.setIntent(new Intent(context, MediaAppsActivity.class));
+
+        // About: tap a donation address to copy it
+        findPreference("about_binance").setOnPreferenceClickListener(p -> {
+            copy(getString(R.string.motion_sense_binance_id));
+            return true;
+        });
+        findPreference("about_usdt").setOnPreferenceClickListener(p -> {
+            copy(getString(R.string.motion_sense_usdt_trc20));
+            return true;
+        });
 
         // Pixel hides "Pause music" when Google turns tap off for a device.
         if (!DeviceConfig.getBoolean("oslo", "enable_tap", true)) {
@@ -226,6 +239,14 @@ public class MotionSenseFragment extends SettingsBasePreferenceFragment
         }
         updateState();
         return true;
+    }
+
+    private void copy(String text) {
+        ClipboardManager clipboard = requireContext().getSystemService(ClipboardManager.class);
+        if (clipboard != null) {
+            clipboard.setPrimaryClip(ClipData.newPlainText(text, text));
+            Toast.makeText(requireContext(), R.string.motion_sense_copied, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void confirmTurnOff() {

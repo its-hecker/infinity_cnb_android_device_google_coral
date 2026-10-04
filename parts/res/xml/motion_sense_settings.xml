@@ -112,6 +112,41 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:key="category_about"
+        android:title="@string/motion_sense_about">
+
+        <Preference
+            android:key="about_port"
+            android:title="@string/motion_sense_about_port"
+            android:summary="@string/motion_sense_about_port_summary"
+            android:selectable="false"
+            android:persistent="false" />
+
+        <Preference
+            android:key="about_contact"
+            android:title="@string/motion_sense_about_contact"
+            android:summary="@string/motion_sense_about_contact_summary"
+            android:persistent="false">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://t.me/pixel4seriesupdates" />
+        </Preference>
+
+        <Preference
+            android:key="about_binance"
+            android:title="@string/motion_sense_about_binance"
+            android:summary="@string/motion_sense_binance_id"
+            android:persistent="false" />
+
+        <Preference
+            android:key="about_usdt"
+            android:title="@string/motion_sense_about_usdt"
+            android:summary="@string/motion_sense_usdt_trc20"
+            android:persistent="false" />
+
+    </PreferenceCategory>
+
     <com.android.settingslib.widget.FooterPreference
         android:key="motion_sense_footer"
         android:title="@string/motion_sense_footer"

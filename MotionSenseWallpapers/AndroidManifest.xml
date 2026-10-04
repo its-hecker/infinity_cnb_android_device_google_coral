@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2026 Hecker
+     SPDX-License-Identifier: Apache-2.0
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.hecker.motionsense.wallpapers"
+    android:versionCode="1"
+    android:versionName="1.0">
+
+    <uses-feature android:name="android.software.live_wallpaper" android:required="true" />
+
+    <application
+        android:icon="@drawable/ic_wallpapers"
+        android:label="@string/app_name"
+        android:allowBackup="false"
+        android:supportsRtl="true">
+
+        <activity
+            android:name=".AboutActivity"
+            android:exported="true"
+            android:label="@string/about_title"
+            android:theme="@android:style/Theme.DeviceDefault.DayNight" />
+
+        <service
+            android:name=".HeckerWallpaper"
+            android:exported="true"
+            android:label="@string/wallpaper_hecker"
+            android:permission="android.permission.BIND_WALLPAPER">
+            <intent-filter>
+                <action android:name="android.service.wallpaper.WallpaperService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.service.wallpaper"
+                android:resource="@xml/wallpaper_hecker" />
+        </service>
+
+        <service
+            android:name=".MochiWallpaper"
+            android:exported="true"
+            android:label="@string/wallpaper_mochi"
+            android:permission="android.permission.BIND_WALLPAPER">
+            <intent-filter>
+                <action android:name="android.service.wallpaper.WallpaperService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.service.wallpaper"
+                android:resource="@xml/wallpaper_mochi" />
+        </service>
+
+        <service
+            android:name=".BiscuitWallpaper"
+            android:exported="true"
+            android:label="@string/wallpaper_biscuit"
+            android:permission="android.permission.BIND_WALLPAPER">
+            <intent-filter>
+                <action android:name="android.service.wallpaper.WallpaperService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.service.wallpaper"
+                android:resource="@xml/wallpaper_biscuit" />
+        </service>
+
+        <service
+            android:name=".WhiskCrumbWallpaper"
+            android:exported="true"
+            android:label="@string/wallpaper_whisk_crumb"
+            android:permission="android.permission.BIND_WALLPAPER">
+            <intent-filter>
+                <action android:name="android.service.wallpaper.WallpaperService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.service.wallpaper"
+                android:resource="@xml/wallpaper_whisk_crumb" />
+        </service>
+
+        <service
+            android:name=".PipWallpaper"
+            android:exported="true"
+            android:label="@string/wallpaper_pip"
+            android:permission="android.permission.BIND_WALLPAPER">
+            <intent-filter>
+                <action android:name="android.service.wallpaper.WallpaperService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.service.wallpaper"
+                android:resource="@xml/wallpaper_pip" />
+        </service>
+
+        <service
+            android:name=".DriftWallpaper"
+            android:exported="true"
+            android:label="@string/wallpaper_drift"
+            android:permission="android.permission.BIND_WALLPAPER">
+            <intent-filter>
+                <action android:name="android.service.wallpaper.WallpaperService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.service.wallpaper"
+                android:resource="@xml/wallpaper_drift" />
+        </service>
+
+        <service
+            android:name=".OrbitWallpaper"
+            android:exported="true"
+            android:label="@string/wallpaper_orbit"
+            android:permission="android.permission.BIND_WALLPAPER">
+            <intent-filter>
+                <action android:name="android.service.wallpaper.WallpaperService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.service.wallpaper"
+                android:resource="@xml/wallpaper_orbit" />
+        </service>
+
+        <service
+            android:name=".AuroraWallpaper"
+            android:exported="true"
+            android:label="@string/wallpaper_aurora"
+            android:permission="android.permission.BIND_WALLPAPER">
+            <intent-filter>
+                <action android:name="android.service.wallpaper.WallpaperService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.service.wallpaper"
+                android:resource="@xml/wallpaper_aurora" />
+        </service>
+
+    </application>
+</manifest>

@@ -1,0 +1,22 @@
+//
+// SPDX-FileCopyrightText: 2026 Hecker
+// SPDX-License-Identifier: Apache-2.0
+//
+
+android_app {
+    name: "MotionSenseWallpapers",
+
+    srcs: ["src/**/*.java"],
+    resource_dirs: ["res"],
+    certificate: "platform",
+    platform_apis: true,
+    system_ext_specific: true,
+
+    static_libs: [
+        "lottie",
+    ],
+
+    optimize: {
+        proguard_flags_files: ["proguard.flags"],
+    },
+}

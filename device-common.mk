@@ -361,7 +361,8 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/developer_gsi_keys.mk)
 
 # Parts
 PRODUCT_PACKAGES += \
-    GoogleParts
+    GoogleParts \
+    MotionSenseWallpapers
 
 # Permissions
 PRODUCT_COPY_FILES += \
