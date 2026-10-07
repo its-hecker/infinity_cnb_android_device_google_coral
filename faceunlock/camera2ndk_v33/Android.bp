@@ -13,6 +13,7 @@ cc_library_shared {
     vendor: true,
     relative_install_path: "facecompat",
     compile_multilib: "64",
+    cpp_std: "gnu++17",
 
     srcs: [
         "NdkCameraCaptureSession.cpp",
