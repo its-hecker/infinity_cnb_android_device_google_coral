@@ -41,7 +41,8 @@ PRODUCT_PACKAGES += \
 # See LineageOS 3ec0957b ("Build android.hardware.thermal@2.0").
 PRODUCT_PACKAGES += \
     android.hardware.thermal@2.0.vendor:64 \
-    android.hardware.biometrics.face@1.0.vendor:64
+    android.hardware.biometrics.face@1.0.vendor:64 \
+    libcamera2ndk_v33_face
 
 # Face unlock (3D, android.hardware.biometrics.face@1.0-service.google)
 PRODUCT_COPY_FILES += \

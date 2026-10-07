@@ -1,0 +1,72 @@
+// SPDX-License-Identifier: Apache-2.0
+//
+// Android 13 vendor Camera NDK compatibility library for the Pixel 4 face HAL.
+//
+// The stock coral Face HAL was built against the VNDK camera ABI where
+// ACameraWindowType is a native_handle_t and libcamera2ndk_vendor talks to the
+// HIDL cameraservice interface. Newer Android releases use ANativeWindow and
+// the AIDL cameraservice interface. Keep the legacy ABI isolated to Face HAL.
+
+cc_library_shared {
+    name: "libcamera2ndk_v33_face",
+    stem: "libcamera2ndk_vendor",
+    vendor: true,
+    relative_install_path: "facecompat",
+    compile_multilib: "64",
+
+    srcs: [
+        "NdkCameraCaptureSession.cpp",
+        "NdkCameraDevice.cpp",
+        "NdkCameraManager.cpp",
+        "NdkCameraMetadata.cpp",
+        "NdkCaptureRequest.cpp",
+        "impl/ACameraCaptureSession.cpp",
+        "impl/ACameraMetadata.cpp",
+        "ndk_vendor/impl/ACameraDevice.cpp",
+        "ndk_vendor/impl/ACameraManager.cpp",
+        "ndk_vendor/impl/utils.cpp",
+    ],
+
+    export_include_dirs: ["include"],
+    export_shared_lib_headers: ["libcutils"],
+
+    local_include_dirs: [
+        ".",
+        "include",
+        "impl",
+    ],
+
+    cflags: [
+        "-fvisibility=hidden",
+        "-DEXPORT=__attribute__((visibility(\"default\")))",
+        "-D__ANDROID_VNDK__",
+    ],
+
+    shared_libs: [
+        "libfmq",
+        "libhidlbase",
+        "libhardware",
+        "libnativewindow",
+        "liblog",
+        "libutils",
+        "libstagefright_foundation",
+        "libcutils",
+        "libcamera_metadata",
+        "libmediandk",
+        "android.frameworks.cameraservice.device@2.0",
+        "android.frameworks.cameraservice.device@2.1",
+        "android.frameworks.cameraservice.common@2.0",
+        "android.frameworks.cameraservice.service@2.0",
+        "android.frameworks.cameraservice.service@2.1",
+        "android.frameworks.cameraservice.service@2.2",
+    ],
+
+    static_libs: [
+        "android.hardware.camera.common@1.0-helper",
+        "libarect",
+    ],
+
+    include_dirs: [
+        "system/media/private/camera/include",
+    ],
+}
