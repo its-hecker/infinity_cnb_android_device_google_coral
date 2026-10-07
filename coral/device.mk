@@ -44,6 +44,10 @@ PRODUCT_PACKAGES += \
     android.hardware.biometrics.face@1.0.vendor:64 \
     libcamera2ndk_v33_face
 
+# Android 13 BoringSSL ABI required by the Citadel Keymaster used by Face Unlock.
+PRODUCT_PACKAGES += \
+    libcrypto-v33
+
 # Face unlock (3D, android.hardware.biometrics.face@1.0-service.google)
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.biometrics.face.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.biometrics.face.xml
