@@ -59,6 +59,16 @@ blob_fixups: blob_fixups_user_type = {
         .apktool_patch('patches/HbmSVManager.patch'),
     'vendor/bin/color_init': blob_fixup()
         .add_needed('libbase_shim.so'),
+    'vendor/etc/init/android.hardware.biometrics.face@1.0-service.google.rc': blob_fixup()
+        .regex_replace(
+            r'(service vendor\\.face-hal-1-0 /vendor/bin/hw/android\\.hardware\\.biometrics\\.face@1\\.0-service\\.google\\n)',
+            r'\\1    setenv LD_LIBRARY_PATH /vendor/lib64/facecompat:/vendor/lib64\\n',
+        ),
+    'vendor/etc/init/android.hardware.keymaster@4.1-service.citadel.rc': blob_fixup()
+        .regex_replace(
+            r'(group hsm drmrpc\\n)',
+            r'\\1    setenv LD_PRELOAD /vendor/lib64/libcrypto-v33.so\\n',
+        ),
     (
          'vendor/bin/hw/android.hardware.biometrics.face@1.0-service.google',
          'vendor/bin/hw/vendor.google.airbrush@1.0-service',
