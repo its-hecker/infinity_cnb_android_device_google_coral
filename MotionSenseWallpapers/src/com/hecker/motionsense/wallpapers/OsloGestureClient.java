@@ -20,13 +20,16 @@ import android.util.Log;
 /**
  * Small binder client for the Pixel 4 Oslo service.
  *
- * It uses ambient-priority regular listeners. Foreground Motion Sense clients keep precedence, so
- * the wallpaper never steals a media/control gesture from the rest of the Oslo stack.
+ * It keeps low-priority regular subscriptions as a fallback so the CHRE gesture stays enabled
+ * when no other client needs it, and echo subscriptions for gestures that support them. Echo
+ * callbacks let Sidekick animate without stealing media/control gestures from foreground clients.
  */
 final class OsloGestureClient {
     interface Callback {
+        void onPresence();
         void onReach();
         void onFlick(int direction);
+        void onSwipe(int direction);
     }
 
     private static final String TAG = "Sidekick/Oslo";
@@ -42,10 +45,15 @@ final class OsloGestureClient {
     private static final int TRANSACTION_GESTURE = 1;
 
     private static final int FLICK = 1;
+    private static final int FLICK_ECHO = 2;
+    private static final int PRESENCE = 3;
     private static final int REACH = 4;
+    private static final int REACH_ECHO = 5;
+    private static final int SWIPE = 7;
+    private static final int SWIPE_ECHO = 8;
 
-    // OsloGestureConfig priority 3 maps to AMBIENT in the current Oslo listener stack.
-    private static final int PRIORITY_AMBIENT = 3;
+    // Oslo priority 1 is LOW. This keeps Sidekick behind foreground/ambient system clients.
+    private static final int PRIORITY_LOW = 1;
 
     private final Context mContext;
     private final Callback mCallback;
@@ -143,9 +151,19 @@ final class OsloGestureClient {
         try {
             // Mark first so a failure after a partial registration still cleans every listener.
             mRegistered = true;
+            // Low-priority regular subscriptions keep a gesture alive only when the system does
+            // not already have a higher-priority subscriber.
             registerOne(FLICK, config("flick"));
+            registerOne(PRESENCE, config("presence"));
             registerOne(REACH, config("reach"));
-            Log.d(TAG, "Motion Sense wallpaper listeners registered");
+            registerOne(SWIPE, config("swipe"));
+
+            // Echo subscriptions observe active gestures even when a foreground Oslo client owns
+            // the regular slot. Presence has no echo gesture in the Pixel 4 Oslo service.
+            registerOne(FLICK_ECHO, config("flick.echo"));
+            registerOne(REACH_ECHO, config("reach.echo"));
+            registerOne(SWIPE_ECHO, config("swipe.echo"));
+            Log.d(TAG, "Motion Sense Sidekick listeners registered");
         } catch (RemoteException | SecurityException e) {
             Log.w(TAG, "Unable to register Motion Sense wallpaper listeners", e);
             unregister();
@@ -158,7 +176,7 @@ final class OsloGestureClient {
         b.putFloat("radius", 1.0f);
         b.putInt("sensitivity", 1);
         b.putInt("granularity", 3);
-        b.putInt("priority", PRIORITY_AMBIENT);
+        b.putInt("priority", PRIORITY_LOW);
         return b;
     }
 
@@ -236,13 +254,31 @@ final class OsloGestureClient {
 
             final int direction = output.getInt("direction", 0);
             final boolean directional = output.containsKey("direction");
+            final boolean hasAxialVelocity = output.containsKey("axialVelocity");
+            final Object angle = output.get("angle");
+
             mMainHandler.post(() -> {
                 if (!mStarted) {
                     return;
                 }
+
+                // Flick output has direction but no axialVelocity. Swipe has both.
                 if (directional) {
-                    mCallback.onFlick(direction);
-                } else {
+                    if (hasAxialVelocity) {
+                        mCallback.onSwipe(direction);
+                    } else {
+                        mCallback.onFlick(direction);
+                    }
+                    return;
+                }
+
+                // Reach carries float[] angle; Presence carries a scalar angle.
+                if (angle instanceof float[]) {
+                    mCallback.onReach();
+                } else if (angle instanceof Float) {
+                    mCallback.onPresence();
+                } else if (hasAxialVelocity) {
+                    // Be tolerant of vendor bundles that omit the angle key.
                     mCallback.onReach();
                 }
             });

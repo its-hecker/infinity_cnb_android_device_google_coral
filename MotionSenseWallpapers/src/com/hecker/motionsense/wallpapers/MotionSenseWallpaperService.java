@@ -85,6 +85,15 @@ public abstract class MotionSenseWallpaperService extends WallpaperService {
             mOslo = new OsloGestureClient(MotionSenseWallpaperService.this,
                     new OsloGestureClient.Callback() {
                         @Override
+                        public void onPresence() {
+                            // Presence is a streaming gesture. Only use it to wake a sleeping
+                            // Sidekick so it cannot continuously restart foreground animations.
+                            if (isAsleep()) {
+                                react("wake");
+                            }
+                        }
+
+                        @Override
                         public void onReach() {
                             // Match Sidekick's approach/pet behaviour: a reach wakes a sleeping
                             // character, otherwise it acknowledges the hand with the nod marker.
@@ -93,14 +102,14 @@ public abstract class MotionSenseWallpaperService extends WallpaperService {
 
                         @Override
                         public void onFlick(int direction) {
-                            // Oslo direction enum: E/NE/SE = 1/2/8, W/NW/SW = 5/4/6.
-                            if (direction == 1 || direction == 2 || direction == 8) {
-                                react("right");
-                            } else if (direction == 4 || direction == 5 || direction == 6) {
-                                react("left");
-                            } else {
-                                react("wave");
-                            }
+                            reactForDirection(direction);
+                        }
+
+                        @Override
+                        public void onSwipe(int direction) {
+                            // Pokémon Wave Hello consumes both flick and swipe. Mirror that
+                            // behaviour so every Sidekick gets the same Soli interaction surface.
+                            reactForDirection(direction);
                         }
                     });
             mComposition = LottieCompositionFactory.fromRawResSync(
@@ -161,6 +170,18 @@ public abstract class MotionSenseWallpaperService extends WallpaperService {
             mHandler.removeCallbacks(mSleep);
             if (mOslo != null) {
                 mOslo.stop();
+            }
+        }
+
+        private void reactForDirection(int direction) {
+            // Oslo direction enum: E/NE/SE = 1/2/8, W/NW/SW = 5/4/6.
+            // N/S/unknown have no horizontal animation equivalent.
+            if (direction == 1 || direction == 2 || direction == 8) {
+                react("right");
+            } else if (direction == 4 || direction == 5 || direction == 6) {
+                react("left");
+            } else {
+                react("wave");
             }
         }
 
