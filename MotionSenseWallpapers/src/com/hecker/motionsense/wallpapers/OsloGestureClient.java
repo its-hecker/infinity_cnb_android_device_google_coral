@@ -80,7 +80,7 @@ final class OsloGestureClient {
             if (!mBound) {
                 Log.w(TAG, "Oslo service is not available");
             }
-        } catch (SecurityException | RuntimeException e) {
+        } catch (RuntimeException e) {
             mBound = false;
             Log.w(TAG, "Unable to bind to Oslo service", e);
         }
@@ -144,11 +144,12 @@ final class OsloGestureClient {
         }
 
         try {
+            // Mark first so a failure after a partial registration still cleans every listener.
+            mRegistered = true;
             registerOne(FLICK, config("flick"));
             registerOne(REACH, config("reach"));
             registerOne(FLICK_ECHO, config("flick.echo"));
             registerOne(REACH_ECHO, config("reach.echo"));
-            mRegistered = true;
             Log.d(TAG, "Motion Sense wallpaper listeners registered");
         } catch (RemoteException | SecurityException e) {
             Log.w(TAG, "Unable to register Motion Sense wallpaper listeners", e);
