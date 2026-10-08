@@ -30,11 +30,24 @@ import java.util.ArrayDeque;
  * left, right, nod, sleep, asleep (loops) and wakeup. Subclasses only pick the animation.
  *
  * Reactions: coming back to the home screen or unlocking wakes it, a tap waves, a double
- * tap nods, swiping between home screen pages looks left or right, and after a while
- * without any of these it falls asleep. To start a reaction from elsewhere, call
+ * tap switches to the next Sidekick character, swiping between home screen pages looks left
+ * or right, and after a while without any of these it falls asleep. To start a reaction from
+ * elsewhere, call
  * react("wake" | "wave" | "left" | "right" | "nod" | "sleep").
  */
 public abstract class MotionSenseWallpaperService extends WallpaperService {
+
+    /** All built-in Sidekick characters, in double-tap cycle order. */
+    private static final int[] CHARACTER_ANIMATIONS = {
+            R.raw.wallpaper_hecker,
+            R.raw.wallpaper_mochi,
+            R.raw.wallpaper_biscuit,
+            R.raw.wallpaper_whisk_crumb,
+            R.raw.wallpaper_pip,
+            R.raw.wallpaper_drift,
+            R.raw.wallpaper_orbit,
+            R.raw.wallpaper_aurora,
+    };
 
     /** The raw resource of the Lottie animation. */
     protected abstract int getAnimation();
@@ -61,6 +74,7 @@ public abstract class MotionSenseWallpaperService extends WallpaperService {
         private LottieDrawable mDrawable;
         private float mLastOffset = -1f;
         private long mLastTapAt;
+        private int mAnimationIndex;
         private OsloGestureClient mOslo;
 
         private boolean mVisible;
@@ -112,13 +126,8 @@ public abstract class MotionSenseWallpaperService extends WallpaperService {
                             reactForDirection(direction);
                         }
                     });
-            mComposition = LottieCompositionFactory.fromRawResSync(
-                    MotionSenseWallpaperService.this, getAnimation()).getValue();
-            mDrawable = new LottieDrawable();
-            if (mComposition != null) {
-                mDrawable.setComposition(mComposition);
-            }
-            play("idle", true);
+            mAnimationIndex = findAnimationIndex(getAnimation());
+            loadAnimation(CHARACTER_ANIMATIONS[mAnimationIndex], "idle");
         }
 
         @Override
@@ -185,6 +194,43 @@ public abstract class MotionSenseWallpaperService extends WallpaperService {
             }
         }
 
+        private int findAnimationIndex(int animationRes) {
+            for (int i = 0; i < CHARACTER_ANIMATIONS.length; i++) {
+                if (CHARACTER_ANIMATIONS[i] == animationRes) {
+                    return i;
+                }
+            }
+            return 0;
+        }
+
+        private boolean loadAnimation(int animationRes, String firstSegment) {
+            LottieComposition composition = LottieCompositionFactory.fromRawResSync(
+                    MotionSenseWallpaperService.this, animationRes).getValue();
+            if (composition == null) {
+                return false;
+            }
+
+            mComposition = composition;
+            mDrawable = new LottieDrawable();
+            mDrawable.setComposition(composition);
+            mQueue.clear();
+            play(firstSegment, true);
+            mLastFrameNanos = 0;
+            mLastDrawNanos = 0;
+            draw();
+            return true;
+        }
+
+        private void cycleCharacter() {
+            int nextIndex = (mAnimationIndex + 1) % CHARACTER_ANIMATIONS.length;
+            if (loadAnimation(CHARACTER_ANIMATIONS[nextIndex], "wake")) {
+                mAnimationIndex = nextIndex;
+                mLastGesture = null;
+                mLastGestureAt = 0;
+                scheduleSleep();
+            }
+        }
+
         // ------------------------------------------------------------ segments
 
         private void play(String segment, boolean now) {
@@ -248,7 +294,7 @@ public abstract class MotionSenseWallpaperService extends WallpaperService {
                     && event.getEventTime() - event.getDownTime() < 300) {
                 long now = event.getEventTime();
                 if (now - mLastTapAt < DOUBLE_TAP_MS) {
-                    react("nod");
+                    cycleCharacter();
                     mLastTapAt = 0;
                 } else {
                     react("wave");

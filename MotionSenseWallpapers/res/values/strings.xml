@@ -29,7 +29,7 @@
     <!-- About -->
     <string name="about_title">About</string>
     <string name="about_made_by">Made by Hecker</string>
-    <string name="about_body">Each wallpaper has a little character or scene that reacts to you. It notices you when you unlock or come back to the home screen, waves when you tap the screen, nods on a double tap and looks around as you swipe between home screens. Leave the phone alone for a while and it falls asleep.</string>
+    <string name="about_body">Each wallpaper has a little character or scene that reacts to you. It notices you when you unlock or come back to the home screen, waves when you tap the screen, switches to the next Sidekick on a double tap and looks around as you swipe between home screens. Leave the phone alone for a while and it falls asleep.</string>
     <string name="about_contact">Contact developer</string>
     <string name="about_contact_summary">Telegram: t.me/pixel4seriesupdates</string>
     <string name="about_coffee">Buy me a coffee</string>
