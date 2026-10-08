@@ -20,9 +20,8 @@ import android.util.Log;
 /**
  * Small binder client for the Pixel 4 Oslo service.
  *
- * It uses an ambient regular listener so Sidekick can keep gesture detection alive when nothing
- * higher-priority needs it, and an echo listener so foreground Motion Sense actions (media skip,
- * etc.) keep precedence while the wallpaper still receives the animation event.
+ * It uses ambient-priority regular listeners. Foreground Motion Sense clients keep precedence, so
+ * the wallpaper never steals a media/control gesture from the rest of the Oslo stack.
  */
 final class OsloGestureClient {
     interface Callback {
@@ -43,9 +42,7 @@ final class OsloGestureClient {
     private static final int TRANSACTION_GESTURE = 1;
 
     private static final int FLICK = 1;
-    private static final int FLICK_ECHO = 2;
     private static final int REACH = 4;
-    private static final int REACH_ECHO = 5;
 
     // OsloGestureConfig priority 3 maps to AMBIENT in the current Oslo listener stack.
     private static final int PRIORITY_AMBIENT = 3;
@@ -148,8 +145,6 @@ final class OsloGestureClient {
             mRegistered = true;
             registerOne(FLICK, config("flick"));
             registerOne(REACH, config("reach"));
-            registerOne(FLICK_ECHO, config("flick.echo"));
-            registerOne(REACH_ECHO, config("reach.echo"));
             Log.d(TAG, "Motion Sense wallpaper listeners registered");
         } catch (RemoteException | SecurityException e) {
             Log.w(TAG, "Unable to register Motion Sense wallpaper listeners", e);
