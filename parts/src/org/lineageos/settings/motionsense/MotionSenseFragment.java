@@ -61,6 +61,8 @@ public class MotionSenseFragment extends SettingsBasePreferenceFragment
     private final int mUserId = UserHandle.myUserId();
 
     private MotionSense.Illustration mIllustration;
+    private MotionSense.Illustration mAirDjIllustration;
+    private MotionSense.Illustration mLabIllustration;
     private MainSwitchPreference mMainSwitch;
     private ListPreference mIdleLockScreen;
     private SwitchPreferenceCompat mLock;
@@ -90,6 +92,10 @@ public class MotionSenseFragment extends SettingsBasePreferenceFragment
         IllustrationPreference illustration = findPreference(PREF_ILLUSTRATION);
         mIllustration = MotionSense.setUpIllustration(context, illustration,
                 R.raw.motion_sense_main, R.string.motion_sense_title);
+        mAirDjIllustration = MotionSense.setUpIllustration(context, findPreference("air_dj_illustration"),
+                R.raw.motion_lab_air_dj, R.string.motion_sense_air_dj_summary);
+        mLabIllustration = MotionSense.setUpIllustration(context, findPreference("motion_lab_illustration"),
+                R.raw.motion_lab_overview, R.string.motion_lab_overview);
 
         mMainSwitch = findPreference(KEY_ENABLED);
         mIdleLockScreen = findPreference(PREF_IDLE);
@@ -115,6 +121,8 @@ public class MotionSenseFragment extends SettingsBasePreferenceFragment
                 org.lineageos.settings.motionsense.lab.ControlPanelActivity.class));
         findPreference("motion_lab_studio").setIntent(new Intent(context,
                 org.lineageos.settings.motionsense.lab.GlowStudioActivity.class));
+        findPreference("motion_lab_album").setIntent(new Intent(context,
+                org.lineageos.settings.motionsense.lab.AlbumArtGlowActivity.class));
 
         for (String key : GESTURE_KEYS) {
             Preference row = findPreference(key);
@@ -215,6 +223,8 @@ public class MotionSenseFragment extends SettingsBasePreferenceFragment
         mFooter.setTitle(reason != 0 ? reason : R.string.motion_sense_footer);
 
         mIllustration.updateGlow();
+        mAirDjIllustration.updateGlow();
+        mLabIllustration.updateGlow();
     }
 
     @Override

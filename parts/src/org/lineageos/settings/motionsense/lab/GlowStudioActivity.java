@@ -49,11 +49,13 @@ public final class GlowStudioActivity extends LabActivity {
             @Override public void onStopTrackingTouch(SeekBar b) {}
         });
         content.addView(tempo,new LinearLayout.LayoutParams(-1,dp(48)));
+        illustration(R.raw.motion_lab_trails,R.string.motion_lab_trails_intro,128);
         trails=new CheckBox(this); trails.setText(R.string.motion_lab_trails); trails.setTextColor(foreground);
         trails.setMinHeight(dp(48)); trails.setChecked(savedTrails); content.addView(trails);
         content.addView(text(getString(R.string.motion_lab_trails_intro),14));
         studio=new StudioView(); content.addView(studio,new LinearLayout.LayoutParams(-1,dp(140)));
         content.addView(status); status.setText(R.string.motion_lab_draft);
+        illustration(R.raw.motion_lab_preview,R.string.motion_lab_preview_demo,128);
         preview=button(getString(R.string.motion_lab_preview),this::preview);
         LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(-1,dp(56)); lp.topMargin=dp(10);
         content.addView(preview,lp);

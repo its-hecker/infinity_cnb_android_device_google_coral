@@ -79,6 +79,10 @@
         android:key="category_extras"
         android:title="@string/motion_sense_category_extras">
 
+        <com.android.settingslib.widget.IllustrationPreference
+            android:key="air_dj_illustration"
+            android:persistent="false" />
+
         <SwitchPreferenceCompat
             android:key="aware_air_dj"
             android:title="@string/motion_sense_air_dj_title"
@@ -121,6 +125,16 @@
     <PreferenceCategory
         android:key="category_motion_lab"
         android:title="@string/motion_lab_category">
+
+        <com.android.settingslib.widget.IllustrationPreference
+            android:key="motion_lab_illustration"
+            android:persistent="false" />
+
+        <Preference
+            android:key="motion_lab_album"
+            android:title="@string/motion_lab_album"
+            android:summary="@string/motion_lab_album_summary"
+            android:persistent="false" />
 
         <Preference
             android:key="motion_lab_arcade"

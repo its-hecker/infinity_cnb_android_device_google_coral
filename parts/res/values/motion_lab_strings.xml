@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="motion_lab_category">Motion Lab • Experimental</string>
+    <string name="motion_lab_overview">Explore gesture games, training, touchless controls and new glow styles.</string>
+    <string name="motion_lab_album">Album Art Glow</string>
+    <string name="motion_lab_album_details">About Album Art Glow</string>
+    <string name="motion_lab_album_summary">Match the glow to the playing track’s artwork. Off by default.</string>
+    <string name="motion_lab_album_intro">Use a color from the artwork supplied by the playing media app. The illustration shows example covers.</string>
+    <string name="motion_lab_album_toggle">Use album artwork colors</string>
+    <string name="motion_lab_album_help">Motion Sense and Show glow light must be on. Missing artwork or paused playback restores your saved tint. Air DJ mode colors take priority. Your saved custom, accent and rainbow settings are kept.</string>
+    <string name="motion_lab_album_on">Enabled. Artwork colors apply while a media session is playing.</string>
+    <string name="motion_lab_album_off">Off. Your saved glow tint is used.</string>
+    <string name="motion_lab_album_hidden">Turn on Show glow light to see artwork colors.</string>
+    <string name="motion_lab_album_air_dj">Enabled. Air DJ currently has priority; turn it off to see artwork colors.</string>
+    <string name="motion_lab_preview_demo">Illustration of a temporary glow preview ending automatically.</string>
     <string name="motion_lab_back">Back to Motion Sense</string>
     <string name="motion_lab_arcade">Touchless Game Arcade</string>
     <string name="motion_lab_arcade_intro">Play with air swipes and taps while this screen is open.</string>

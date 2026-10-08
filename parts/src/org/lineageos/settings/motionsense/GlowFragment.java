@@ -43,6 +43,7 @@ public class GlowFragment extends SettingsBasePreferenceFragment {
     private ListPreference mColor;
     private SwitchPreferenceCompat mRainbow;
     private SwitchPreferenceCompat mAccent;
+    private SwitchPreferenceCompat mAlbum;
     private SwitchPreferenceCompat mNight;
     private ListPreference mNightStart;
     private FooterPreference mFooter;
@@ -160,6 +161,25 @@ public class GlowFragment extends SettingsBasePreferenceFragment {
         });
         screen.addPreference(mNightStart);
 
+        mAlbum = new SwitchPreferenceCompat(context);
+        mAlbum.setKey(KEY_ALBUM_ART_GLOW);
+        mAlbum.setTitle(R.string.motion_lab_album);
+        mAlbum.setSummary(R.string.motion_lab_album_summary);
+        mAlbum.setPersistent(false);
+        mAlbum.setOnPreferenceChangeListener((p,v) -> {
+            put(context,KEY_ALBUM_ART_GLOW,(Boolean)v ? 1 : 0);
+            return true;
+        });
+        screen.addPreference(mAlbum);
+
+        Preference albumPage = new Preference(context);
+        albumPage.setKey("motion_lab_album");
+        albumPage.setTitle(R.string.motion_lab_album_details);
+        albumPage.setSummary(R.string.motion_lab_album_intro);
+        albumPage.setIntent(new Intent(context,
+                org.lineageos.settings.motionsense.lab.AlbumArtGlowActivity.class));
+        screen.addPreference(albumPage);
+
         Preference studio = new Preference(context);
         studio.setKey("motion_lab_studio");
         studio.setTitle(R.string.motion_lab_studio);
@@ -222,6 +242,8 @@ public class GlowFragment extends SettingsBasePreferenceFragment {
         mBrightness.setEnabled(glowOn);
         mSize.setValue(get(context, KEY_GLOW_SIZE));
         mSize.setEnabled(glowOn);
+        mAlbum.setChecked(isOn(context,KEY_ALBUM_ART_GLOW));
+        mAlbum.setEnabled(glowOn);
 
         boolean accent = isOn(context, KEY_GLOW_ACCENT);
         boolean night = isOn(context, KEY_GLOW_NIGHT);

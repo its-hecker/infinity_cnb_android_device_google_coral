@@ -118,6 +118,12 @@
             android:label="@string/motion_lab_studio"
             android:theme="@android:style/Theme.DeviceDefault.DayNight" />
 
+        <activity
+            android:name=".motionsense.lab.AlbumArtGlowActivity"
+            android:exported="false"
+            android:label="@string/motion_lab_album"
+            android:theme="@android:style/Theme.DeviceDefault.DayNight" />
+
         <service
             android:name=".motionsense.MotionSenseTileService"
             android:exported="true"

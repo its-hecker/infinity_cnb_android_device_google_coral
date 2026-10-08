@@ -22,8 +22,11 @@ jobs:
           yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-35' 'build-tools;35.0.0'
           curl --fail --location --retry 3 https://dl.google.com/dl/android/maven2/com/android/tools/r8/8.7.18/r8-8.7.18.jar -o "$RUNNER_TEMP/r8.jar"
+          curl --fail --location --retry 3 https://repo.maven.apache.org/maven2/com/airbnb/android/lottie/5.2.0/lottie-5.2.0.aar -o "$RUNNER_TEMP/lottie.aar"
+          unzip -p "$RUNNER_TEMP/lottie.aar" classes.jar > "$RUNNER_TEMP/lottie.jar"
       - name: Check rules, resources and Android APIs
         run: |
           ANDROID_JAR="$ANDROID_HOME/platforms/android-35/android.jar" \
           AAPT2="$ANDROID_HOME/build-tools/35.0.0/aapt2" \
+          LOTTIE_JAR="$RUNNER_TEMP/lottie.jar" \
           R8_JAR="$RUNNER_TEMP/r8.jar" bash parts/tests/check-motion-lab.sh
