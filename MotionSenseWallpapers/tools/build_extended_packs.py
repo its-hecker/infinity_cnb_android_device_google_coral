@@ -6,7 +6,8 @@ Build the Sidekick asset set used by the unified PixelLiveWallpaper payload.
 - Adds semantic interaction markers used by the enhanced engine.
 - Adds subtle depth lighting to the custom character scenes.
 - Generates four optional fan-art character packs requested for the faceid build.
-- Never edits Google's Pokemon Unity assets; those are handled separately by the
+- Generates four original premium Sidekicks (Nova, Kumo, Ember and Byte).
+- Never edits Google's Pokemon character assets; those are handled separately by the
   vendor unification pipeline so Pokemon character artwork remains byte-for-byte intact.
 """
 
@@ -63,6 +64,14 @@ ALIASES = {
     "up": "wake",
     "look_left": "left",
     "look_right": "right",
+    # Richer semantic reactions. The unified renderer layers its own spring/tilt/
+    # glow dynamics on top, so these remain useful even for old Lottie timelines.
+    "excited": "wave",
+    "peek": "left",
+    "celebrate": "wave",
+    "jump": "wake",
+    "cuddle": "nod",
+    "surprised": "wake",
 }
 
 
@@ -258,21 +267,36 @@ def add_depth_lighting(doc, key):
     # Soft floor/contact shadow.
     layers.append(shape_layer(
         "sidekick-depth-shadow", max_ind + 1,
-        [ellipse("contact shadow", 216, 790, 235, 48, "#05060a", 26)],
+        [
+            ellipse("contact shadow", 216, 790, 245, 52, "#05060a", 30),
+            ellipse("soft ground bounce", 216, 772, 205, 38, color, 6),
+        ],
         opacity=100,
+    ))
+
+    # A broad, low-alpha halo behind the subject makes the original Sidekicks
+    # read as part of the scene rather than flat stickers. It deliberately stays
+    # behind the face/body artwork and does not change their geometry.
+    layers.append(shape_layer(
+        "sidekick-back-halo", max_ind + 2,
+        [
+            ellipse("halo", 216, 535, 330, 420, color, 5),
+            ellipse("top haze", 216, 205, 520, 250, "#ffffff", 3),
+        ],
+        opacity=100, blend=1,
     ))
 
     if key in PORTRAIT_LIGHTS:
         x, y, w, h = PORTRAIT_LIGHTS[key]
         # Low-alpha key and rim lights add a small sense of volume.
         layers.append(shape_layer(
-            "sidekick-soft-key-light", max_ind + 2,
+            "sidekick-soft-key-light", max_ind + 3,
             [ellipse("key light", x - w * .18, y - h * .20,
                      w * .62, h * .62, "#ffffff", 7)],
             opacity=100, blend=1,
         ))
         layers.append(shape_layer(
-            "sidekick-rim-light", max_ind + 3,
+            "sidekick-rim-light", max_ind + 4,
             [ellipse("rim light", x + w * .28, y - h * .05,
                      w * .30, h * .76, color, 7)],
             opacity=100, blend=1,
@@ -286,7 +310,7 @@ def add_depth_lighting(doc, key):
         y = 120 + ((i * 137) % 650)
         motes.append(ellipse("mote%d" % i, x, y, 3 + i % 3, 3 + i % 3,
                              color, 10 + (i % 2) * 4))
-    layers.append(shape_layer("sidekick-atmosphere", max_ind + 4, motes, blend=1))
+    layers.append(shape_layer("sidekick-atmosphere", max_ind + 5, motes, blend=1))
 
     # Insert at the front so lighting is visible, but keep original artwork unchanged.
     doc["layers"] = layers + doc.get("layers", [])
@@ -311,11 +335,18 @@ def common_scene(bg, accent):
     ], blend=1))
     # Floor and distant lights.
     layers.append(shape_layer("depth", 88, [
-        ellipse("floor shadow", 216, 825, 320, 60, "#000000", 28),
+        ellipse("floor shadow", 216, 825, 340, 66, "#000000", 32),
+        ellipse("floor bounce", 216, 790, 280, 46, accent, 7),
         ellipse("far light 1", 70, 330, 5, 5, "#ffffff", 38),
         ellipse("far light 2", 355, 235, 4, 4, "#ffffff", 34),
         ellipse("far light 3", 330, 520, 3, 3, "#ffffff", 24),
+        ellipse("far light 4", 105, 590, 2.5, 2.5, accent, 28),
+        ellipse("far light 5", 382, 410, 3.5, 3.5, accent, 24),
     ]))
+    layers.append(shape_layer("cinematic haze", 87, [
+        ellipse("upper haze", 216, 160, 590, 300, "#ffffff", 3),
+        ellipse("accent haze", 216, 590, 460, 520, accent, 4),
+    ], blend=1))
     return layers
 
 
@@ -485,12 +516,147 @@ def tom_jerry():
     return compose("Tom & Jerry Sidekick", "#21181d", "#ffc878", scene, char, arm)
 
 
+
+def nova():
+    scene = [
+        rect("deck", 216, 830, 500, 220, 0, "#0a1020"),
+        rect("window", 216, 310, 350, 390, 28, "#111f3f", 100, "#6c86ff", 3),
+        ellipse("planet", 315, 220, 132, 132, "#a7b8ff", 82),
+        ellipse("planet shade", 342, 235, 105, 105, "#5360a8", 45),
+        ellipse("star 1", 82, 180, 4, 4, "#ffffff", 80),
+        ellipse("star 2", 125, 268, 3, 3, "#ffffff", 60),
+        ellipse("star 3", 350, 330, 3, 3, "#ffffff", 70),
+    ]
+    char = [
+        ellipse("shadow", 216, 816, 205, 46, "#000000", 34),
+        rect("coat", 216, 650, 180, 260, 42, "#25365f", 100, "#10182e", 5),
+        rect("inner suit", 216, 650, 105, 238, 30, "#151f37", 100, "#090e1a", 3),
+        ellipse("helmet", 216, 425, 188, 185, "#303f68", 100, "#11192c", 5),
+        ellipse("visor", 216, 425, 145, 108, "#17243d", 100, "#7288e8", 3),
+        ellipse("visor glow", 195, 401, 80, 42, "#a9d7ff", 14),
+        rect("collar", 216, 535, 130, 38, 17, "#5065a4", 100, "#1d2a4d", 3),
+        rect("chest panel", 216, 625, 84, 58, 14, "#111a2e", 100, "#7087e8", 3),
+        ellipse("status light", 216, 625, 15, 15, "#7bf0ff", 100),
+        rect("leg left", 181, 785, 58, 135, 24, "#202f54", 100, "#0c1325", 4),
+        rect("leg right", 251, 785, 58, 135, 24, "#202f54", 100, "#0c1325", 4),
+        ellipse("rim", 173, 405, 32, 120, "#d6e5ff", 8),
+    ]
+    arm = [
+        rect("arm", 310, 620, 46, 170, 21, "#25365f", 100, "#10182e", 4),
+        ellipse("glove", 314, 540, 50, 50, "#425581", 100, "#15213c", 3),
+    ]
+    return compose("Nova Sidekick", "#070b18", "#718cff", scene, char, arm)
+
+
+def kumo():
+    scene = [
+        rect("wall", 216, 420, 500, 840, 0, "#17201f"),
+        rect("floor", 216, 830, 500, 210, 0, "#0e1515"),
+        rect("window", 330, 255, 145, 205, 20, "#203b42", 100, "#8ed9d1", 3),
+        ellipse("moon", 344, 226, 74, 74, "#d5fff7", 78),
+        ellipse("plant", 70, 690, 90, 130, "#254d42", 88),
+    ]
+    char = [
+        ellipse("shadow", 216, 814, 220, 46, "#000000", 32),
+        ellipse("tail", 302, 680, 108, 190, "#9ba3a1", 100, "#414948", 4),
+        ellipse("body", 216, 665, 190, 240, "#aeb6b4", 100, "#4a5351", 5),
+        ellipse("chest", 216, 695, 110, 145, "#e6ebe8", 100, "#8a9591", 3),
+        ellipse("head", 216, 470, 190, 176, "#b7bfbd", 100, "#4a5351", 5),
+        polygon("ear l", [(145, 430), (160, 330), (202, 423)], "#aeb6b4", 100, "#4a5351", 4),
+        polygon("ear r", [(230, 423), (272, 330), (287, 430)], "#aeb6b4", 100, "#4a5351", 4),
+        polygon("inner ear l", [(160, 417), (166, 356), (190, 415)], "#d9aaa9", 82),
+        polygon("inner ear r", [(242, 415), (266, 356), (272, 417)], "#d9aaa9", 82),
+        ellipse("muzzle", 216, 507, 110, 72, "#e8ece9", 100),
+        ellipse("eye l", 185, 466, 24, 30, "#152522", 100),
+        ellipse("eye r", 247, 466, 24, 30, "#152522", 100),
+        ellipse("eye glint l", 181, 458, 7, 7, "#ffffff", 90),
+        ellipse("eye glint r", 243, 458, 7, 7, "#ffffff", 90),
+        ellipse("nose", 216, 502, 23, 17, "#323a38", 100),
+        rect("collar", 216, 570, 135, 24, 12, "#3b8f84", 100, "#1f514b", 2),
+        ellipse("tag", 216, 587, 24, 24, "#9ef5e8", 100, "#3f8d83", 2),
+    ]
+    arm = [ellipse("paw", 305, 630, 52, 82, "#aeb6b4", 100, "#4a5351", 4)]
+    return compose("Kumo Sidekick", "#0c1515", "#8de8d9", scene, char, arm)
+
+
+def ember():
+    scene = [
+        rect("ground", 216, 830, 500, 220, 0, "#1a1011"),
+        rect("stone left", 70, 720, 130, 170, 18, "#2b2224"),
+        rect("stone right", 360, 745, 130, 150, 18, "#2b2224"),
+        ellipse("sunset", 216, 245, 235, 235, "#ff9b54", 16),
+        ellipse("spark 1", 95, 540, 8, 8, "#ffb45f", 75),
+        ellipse("spark 2", 342, 460, 6, 6, "#ffd18b", 72),
+        ellipse("spark 3", 315, 620, 5, 5, "#ff8d4f", 65),
+    ]
+    char = [
+        ellipse("shadow", 216, 816, 210, 48, "#000000", 34),
+        polygon("cloak", [(126, 790), (146, 525), (216, 490), (287, 525), (310, 790),
+                          (265, 760), (216, 808), (166, 760)], "#3c252a", 100, "#160d10", 5),
+        rect("torso", 216, 650, 150, 245, 36, "#512d2f", 100, "#1c1012", 4),
+        ellipse("head", 216, 430, 148, 160, "#d79c7b", 100, "#7e513e", 4),
+        polygon("hair", [(148, 425), (155, 332), (183, 355), (205, 310), (230, 354),
+                         (270, 326), (283, 430), (250, 392), (218, 405), (184, 386)],
+                "#6c2f29", 100, "#2f1412", 4),
+        ellipse("eye l", 190, 440, 20, 12, "#fff3e6", 100, "#543225", 2),
+        ellipse("eye r", 242, 440, 20, 12, "#fff3e6", 100, "#543225", 2),
+        ellipse("iris l", 192, 440, 7, 7, "#ffb45d"),
+        ellipse("iris r", 240, 440, 7, 7, "#ffb45d"),
+        rect("scarf", 216, 540, 145, 34, 16, "#8b3e35", 100, "#4f211f", 3),
+        ellipse("chest glow", 216, 627, 48, 48, "#ff8f4d", 30),
+        ellipse("core", 216, 627, 22, 22, "#ffd39a", 100, "#a34d2b", 2),
+        ellipse("rim light", 178, 418, 30, 85, "#ffd0a0", 9),
+    ]
+    arm = [
+        rect("arm", 304, 626, 44, 160, 20, "#512d2f", 100, "#1c1012", 4),
+        ellipse("flame", 318, 535, 62, 88, "#ff8b48", 82, "#ffd28d", 2),
+        ellipse("flame core", 318, 548, 30, 46, "#ffe7b3", 90),
+    ]
+    return compose("Ember Sidekick", "#12090b", "#ff8f52", scene, char, arm)
+
+
+def byte():
+    scene = [
+        rect("floor", 216, 830, 500, 220, 0, "#07181c"),
+        rect("panel left", 74, 470, 112, 520, 16, "#0b242a"),
+        rect("panel right", 358, 470, 112, 520, 16, "#0b242a"),
+        rect("light strip l", 90, 450, 8, 430, 4, "#4ff7eb", 34),
+        rect("light strip r", 342, 450, 8, 430, 4, "#4ff7eb", 34),
+        ellipse("console glow", 216, 710, 360, 130, "#48f6e8", 8),
+    ]
+    char = [
+        ellipse("shadow", 216, 817, 205, 44, "#000000", 35),
+        rect("body", 216, 655, 180, 225, 44, "#263a40", 100, "#0b171b", 5),
+        rect("body inset", 216, 655, 120, 155, 28, "#13252b", 100, "#405d65", 3),
+        ellipse("core glow", 216, 645, 56, 56, "#52fff0", 28),
+        ellipse("core", 216, 645, 28, 28, "#a9fff8", 100, "#3ca69d", 3),
+        rect("head", 216, 435, 180, 145, 42, "#30484f", 100, "#0c181c", 5),
+        rect("face screen", 216, 442, 132, 88, 30, "#07171b", 100, "#4e727b", 3),
+        ellipse("eye l", 184, 442, 18, 18, "#61fff0", 100),
+        ellipse("eye r", 248, 442, 18, 18, "#61fff0", 100),
+        rect("antenna", 216, 335, 10, 55, 5, "#405f67", 100),
+        ellipse("antenna light", 216, 305, 24, 24, "#61fff0", 100, "#2a7e78", 2),
+        rect("leg l", 178, 790, 50, 125, 22, "#263a40", 100, "#0b171b", 4),
+        rect("leg r", 254, 790, 50, 125, 22, "#263a40", 100, "#0b171b", 4),
+        ellipse("rim", 174, 420, 26, 90, "#b6fff9", 8),
+    ]
+    arm = [
+        rect("arm", 310, 640, 40, 150, 20, "#263a40", 100, "#0b171b", 4),
+        ellipse("hand", 314, 566, 48, 48, "#39545b", 100, "#13252a", 3),
+    ]
+    return compose("Byte Sidekick", "#061216", "#53f8ea", scene, char, arm)
+
+
 def write_new(out: Path):
     generated = {
         "wallpaper_doraemon.json": doraemon(),
         "wallpaper_ben10.json": ben10(),
         "wallpaper_batman.json": batman(),
         "wallpaper_tom_jerry.json": tom_jerry(),
+        "wallpaper_nova.json": nova(),
+        "wallpaper_kumo.json": kumo(),
+        "wallpaper_ember.json": ember(),
+        "wallpaper_byte.json": byte(),
     }
     for filename, doc in generated.items():
         (out / filename).write_text(
