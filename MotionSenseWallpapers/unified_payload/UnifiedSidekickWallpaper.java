@@ -122,6 +122,18 @@ public final class UnifiedSidekickWallpaper extends WallpaperService {
             new CharacterSpec("wallpaper_tom_jerry.json", "Tom & Jerry",
                     .07f, .31f, .93f, .99f, .034f, 2.5f, 0xffffb473,
                     "look_left", "look_right", "special", "wave"),
+            new CharacterSpec("wallpaper_nova.json", "Nova",
+                    .12f, .22f, .88f, .99f, .040f, 2.0f, 0xff718cff,
+                    "peek", "look_left", "look_right", "excited"),
+            new CharacterSpec("wallpaper_kumo.json", "Kumo",
+                    .10f, .30f, .90f, .99f, .034f, 2.4f, 0xff8de8d9,
+                    "peek", "cuddle", "look_left", "look_right"),
+            new CharacterSpec("wallpaper_ember.json", "Ember",
+                    .11f, .21f, .89f, .99f, .038f, 2.2f, 0xffff8f52,
+                    "peek", "surprised", "look_left", "look_right"),
+            new CharacterSpec("wallpaper_byte.json", "Byte",
+                    .12f, .24f, .88f, .99f, .042f, 2.6f, 0xff53f8ea,
+                    "peek", "excited", "look_left", "look_right"),
     };
 
     @Override
@@ -186,6 +198,7 @@ public final class UnifiedSidekickWallpaper extends WallpaperService {
         private float touchThreshold;
         private long lastTapAt;
         private boolean lastTapOnCharacter;
+        private int maxPointers;
         private int ambientStep;
 
         private final Runnable singleTap = () -> {
@@ -195,11 +208,14 @@ public final class UnifiedSidekickWallpaper extends WallpaperService {
             boolean onCharacter = lastTapOnCharacter;
             lastTapAt = 0;
             if (onCharacter) {
-                kick(1.018f, 0f, 0f, -height * .006f, .72f);
-                react("tap", "wave", "nod");
+                kick(1.022f, 0f, 0f, -height * .008f, .78f);
+                react("tap", "excited", "wave", "nod");
             } else {
-                kick(1.008f, 0f, 0f, 0f, .42f);
-                react("nod", "wave");
+                float side = width > 0 ? (downX / width) - .5f : 0f;
+                targetParallaxX = side * width * .018f;
+                targetSceneRotation = side * (character != null ? character.tilt * .32f : .5f);
+                kick(1.008f, targetSceneRotation, targetParallaxX, 0f, .42f);
+                react(side < 0 ? "look_left" : "look_right", "peek", "nod", "wave");
             }
         };
 
@@ -212,7 +228,7 @@ public final class UnifiedSidekickWallpaper extends WallpaperService {
             handler.removeCallbacks(singleTap);
             if (downOnCharacter) {
                 kick(1.026f, 0f, 0f, -height * .010f, 1f);
-                react("special", "pet", "nod", "wave");
+                react("cuddle", "special", "pet", "nod", "wave");
             } else {
                 kick(1.012f, 0f, 0f, 0f, .60f);
                 react("wave", "nod");
@@ -267,7 +283,7 @@ public final class UnifiedSidekickWallpaper extends WallpaperService {
                                 kick(1.014f, 0f, 0f, -height * .008f, .52f);
                                 react("wake", "wakeup");
                             } else {
-                                react("look_left", "look_right", "nod");
+                                react("surprised", "peek", "look_left", "look_right", "nod");
                             }
                         }
 
@@ -277,7 +293,7 @@ public final class UnifiedSidekickWallpaper extends WallpaperService {
                             if (isAsleep()) {
                                 react("wake", "wakeup");
                             } else {
-                                react("pet", "nod", "wave");
+                                react("cuddle", "pet", "nod", "wave");
                             }
                         }
 
@@ -351,6 +367,7 @@ public final class UnifiedSidekickWallpaper extends WallpaperService {
                 if (load(available.get(next), "wake")) {
                     characterIndex = next;
                     prefs.edit().putString(PREF_CHARACTER, character.file).apply();
+                    react("celebrate", "wake", "excited", "wave");
                     lastReaction = null;
                     lastReactionAt = 0;
                     kick(1.045f, 0f, 0f, -height * .010f, 1f);
@@ -573,12 +590,18 @@ public final class UnifiedSidekickWallpaper extends WallpaperService {
                 case MotionEvent.ACTION_DOWN:
                     touchActive = true;
                     longPressTriggered = false;
+                    maxPointers = event.getPointerCount();
                     downX = event.getX();
                     downY = event.getY();
                     downOnCharacter = character != null
                             && character.hit(downX, downY, width, height);
                     handler.removeCallbacks(longPress);
                     handler.postDelayed(longPress, LONG_PRESS_MS);
+                    break;
+
+                case MotionEvent.ACTION_POINTER_DOWN:
+                    maxPointers = Math.max(maxPointers, event.getPointerCount());
+                    handler.removeCallbacks(longPress);
                     break;
 
                 case MotionEvent.ACTION_MOVE:
@@ -620,7 +643,7 @@ public final class UnifiedSidekickWallpaper extends WallpaperService {
                             directional(dx > 0 ? 1 : 4, downOnCharacter ? 1f : .65f);
                         } else if (dy < 0) {
                             kick(1.025f, 0f, 0f, -height * .018f, .75f);
-                            react("up", "wake", "nod", "wave");
+                            react("jump", "up", "wake", "excited", "wave");
                         } else {
                             kick(.992f, 0f, 0f, height * .008f, .25f);
                             react("sleep", "nod");
@@ -632,6 +655,18 @@ public final class UnifiedSidekickWallpaper extends WallpaperService {
                             && character.hit(event.getX(), event.getY(), width, height);
                     boolean tapOnCharacter = downOnCharacter && upOnCharacter;
                     long now = SystemClock.uptimeMillis();
+
+                    // Two-finger tap is a universal celebration/special reaction. It does not
+                    // change characters, leaving double-tap-on-character dedicated to cycling.
+                    if (maxPointers >= 2) {
+                        handler.removeCallbacks(singleTap);
+                        lastTapAt = 0;
+                        lastTapOnCharacter = false;
+                        kick(1.055f, 0f, 0f, -height * .018f, 1f);
+                        react("celebrate", "special", "excited", "wave");
+                        maxPointers = 0;
+                        break;
+                    }
 
                     if (tapOnCharacter && lastTapAt != 0 && lastTapOnCharacter
                             && now - lastTapAt <= DOUBLE_TAP_MS) {
@@ -650,6 +685,7 @@ public final class UnifiedSidekickWallpaper extends WallpaperService {
                 case MotionEvent.ACTION_CANCEL:
                     touchActive = false;
                     longPressTriggered = false;
+                    maxPointers = 0;
                     handler.removeCallbacks(longPress);
                     break;
 
@@ -773,7 +809,12 @@ public final class UnifiedSidekickWallpaper extends WallpaperService {
             canvas.drawCircle(cx, cy, radius, glow);
             glow.setShader(null);
 
-            // Slow, low-alpha motes add depth without repainting or obscuring character artwork.
+            // Slow, low-alpha motes and a tiny floor bloom add depth without repainting
+            // or obscuring the character artwork.
+            particle.setColor(character.glow);
+            particle.setAlpha(10 + (int) (glowEnergy * 10f));
+            canvas.drawOval(width * .31f, height * .84f, width * .69f, height * .885f, particle);
+
             long t = SystemClock.uptimeMillis();
             particle.setColor(character.glow);
             for (int i = 0; i < 8; i++) {
