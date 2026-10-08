@@ -36,6 +36,8 @@ final class MotionSense {
     static final String KEY_ALWAYS_ON = "doze_always_on";
     static final String KEY_WAKE_SCREEN = "doze_wake_screen_gesture";
     static final String KEY_LOCK = "aware_lock_enabled";
+    static final String KEY_AIR_DJ = "aware_air_dj";
+    static final String KEY_AIR_DJ_MODE = "aware_air_dj_mode";
     static final String KEY_ANY_MEDIA_APP = "aware_any_media_app";
     static final String KEY_IGNORE_VIDEOS = "aware_ignore_videos";
     static final String KEY_GLOW_CUSTOM = "aware_glow_custom";
@@ -62,7 +64,7 @@ final class MotionSense {
 
     /** Every Secure key the pages show, for content observers. */
     static final String[] SECURE_KEYS = {
-        KEY_ENABLED, KEY_SKIP, KEY_SKIP_DIRECTION, KEY_SILENCE, KEY_TAP, KEY_WAKE_DISPLAY,
+        KEY_AIR_DJ, KEY_AIR_DJ_MODE, KEY_ENABLED, KEY_SKIP, KEY_SKIP_DIRECTION, KEY_SILENCE, KEY_TAP, KEY_WAKE_DISPLAY,
         KEY_ALWAYS_ON, KEY_WAKE_SCREEN, KEY_LOCK, KEY_ANY_MEDIA_APP, KEY_IGNORE_VIDEOS,
         KEY_GLOW_CUSTOM, KEY_GLOW_HUE, KEY_GLOW_SHOW, KEY_GLOW_BRIGHTNESS, KEY_GLOW_SIZE,
         KEY_GLOW_RAINBOW, KEY_GLOW_ACCENT, KEY_GLOW_NIGHT, KEY_GLOW_NIGHT_START, KEY_MEDIA_APPS,
@@ -76,6 +78,8 @@ final class MotionSense {
 
     static int getDefault(String key) {
         switch (key) {
+            case KEY_AIR_DJ:
+            case KEY_AIR_DJ_MODE:
             case KEY_ENABLED:
             case KEY_TAP:
             case KEY_SKIP_DIRECTION:

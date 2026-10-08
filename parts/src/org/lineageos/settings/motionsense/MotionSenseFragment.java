@@ -64,6 +64,8 @@ public class MotionSenseFragment extends SettingsBasePreferenceFragment
     private MainSwitchPreference mMainSwitch;
     private ListPreference mIdleLockScreen;
     private SwitchPreferenceCompat mLock;
+    private SwitchPreferenceCompat mAirDj;
+    private ListPreference mAirDjMode;
     private SwitchPreferenceCompat mAnyMediaApp;
     private Preference mMediaApps;
     private SwitchPreferenceCompat mIgnoreVideos;
@@ -92,6 +94,8 @@ public class MotionSenseFragment extends SettingsBasePreferenceFragment
         mMainSwitch = findPreference(KEY_ENABLED);
         mIdleLockScreen = findPreference(PREF_IDLE);
         mLock = findPreference(KEY_LOCK);
+        mAirDj = findPreference(KEY_AIR_DJ);
+        mAirDjMode = findPreference(KEY_AIR_DJ_MODE);
         mAnyMediaApp = findPreference(KEY_ANY_MEDIA_APP);
         mMediaApps = findPreference(KEY_MEDIA_APPS);
         mIgnoreVideos = findPreference(KEY_IGNORE_VIDEOS);
@@ -99,7 +103,7 @@ public class MotionSenseFragment extends SettingsBasePreferenceFragment
         mSecurityCategory = findPreference(PREF_CATEGORY_SECURITY);
 
         for (Preference preference : new Preference[] {mMainSwitch, mIdleLockScreen, mLock,
-                mAnyMediaApp, mIgnoreVideos}) {
+                mAirDj, mAirDjMode, mAnyMediaApp, mIgnoreVideos}) {
             preference.setOnPreferenceChangeListener(this);
         }
         findPreference("glow_page").setIntent(new Intent(context, GlowActivity.class));
@@ -183,6 +187,13 @@ public class MotionSenseFragment extends SettingsBasePreferenceFragment
         mLock.setChecked(isOn(context, KEY_LOCK));
         mLock.setEnabled(configurable);
 
+        mAirDj.setChecked(isOn(context, KEY_AIR_DJ));
+        mAirDj.setEnabled(configurable && DeviceConfig.getBoolean("oslo", "enable_tap", true));
+        int airDjMode = get(context, KEY_AIR_DJ_MODE);
+        mAirDjMode.setValue(Integer.toString(airDjMode >= 0 && airDjMode <= 2 ? airDjMode : 0));
+        mAirDjMode.setEnabled(configurable && mAirDj.isChecked());
+        mAirDjMode.setSummary(mAirDjMode.getEntry());
+
         // Extras, read by OsloFeedback
         mAnyMediaApp.setChecked(isOn(context, KEY_ANY_MEDIA_APP));
         int listed = MediaApps.countInstalled(context);
@@ -211,6 +222,27 @@ public class MotionSenseFragment extends SettingsBasePreferenceFragment
                 }
                 confirmTurnOff();
                 return false;
+            case KEY_AIR_DJ:
+                boolean airDjOn = (Boolean) newValue;
+                if (airDjOn) {
+                    // Air tap selects the mode; flick controls it. Both detectors are required.
+                    put(context, KEY_SKIP, 1);
+                    put(context, KEY_TAP, 1);
+                    rememberFeature(context, KEY_SKIP, true);
+                    rememberFeature(context, KEY_TAP, true);
+                    put(context, KEY_AIR_DJ_MODE, 0);
+                }
+                put(context, KEY_AIR_DJ, airDjOn ? 1 : 0);
+                break;
+            case KEY_AIR_DJ_MODE:
+                try {
+                    int mode = Integer.parseInt((String) newValue);
+                    if (mode < 0 || mode > 2) return false;
+                    put(context, key, mode);
+                } catch (NumberFormatException e) {
+                    return false;
+                }
+                break;
             case KEY_GLOW_HUE:
                 try {
                     put(context, key, Integer.parseInt((String) newValue));
@@ -225,6 +257,9 @@ public class MotionSenseFragment extends SettingsBasePreferenceFragment
                 boolean on = (Boolean) newValue;
                 put(context, key, on ? 1 : 0);
                 rememberFeature(context, key, on);
+                if (!on && (KEY_SKIP.equals(key) || KEY_TAP.equals(key))) {
+                    put(context, KEY_AIR_DJ, 0);
+                }
                 break;
         }
         updateState();

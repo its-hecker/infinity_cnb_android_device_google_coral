@@ -91,6 +91,9 @@ public class GestureFragment extends SettingsBasePreferenceFragment {
             boolean on = (Boolean) newValue;
             MotionSense.put(context, mGesture.key, on ? 1 : 0);
             MotionSense.rememberFeature(context, mGesture.key, on);
+            if (!on && (mGesture == Gesture.SKIP || mGesture == Gesture.TAP)) {
+                MotionSense.put(context, MotionSense.KEY_AIR_DJ, 0);
+            }
             return true;
         });
         screen.addPreference(mSwitch);
@@ -154,7 +157,9 @@ public class GestureFragment extends SettingsBasePreferenceFragment {
         } else if (!MotionSense.isOn(context, MotionSense.KEY_ENABLED)) {
             mFooter.setTitle(R.string.motion_sense_turn_on_first);
         } else {
-            mFooter.setTitle(mGesture.summary);
+            mFooter.setTitle(MotionSense.isOn(context, MotionSense.KEY_AIR_DJ)
+                    && (mGesture == Gesture.SKIP || mGesture == Gesture.TAP)
+                    ? R.string.motion_sense_air_dj_summary : mGesture.summary);
         }
         mIllustration.updateGlow();
     }

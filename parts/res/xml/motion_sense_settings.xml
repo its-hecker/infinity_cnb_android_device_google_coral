@@ -80,6 +80,20 @@
         android:title="@string/motion_sense_category_extras">
 
         <SwitchPreferenceCompat
+            android:key="aware_air_dj"
+            android:title="@string/motion_sense_air_dj_title"
+            android:summary="@string/motion_sense_air_dj_summary"
+            android:persistent="false" />
+
+        <ListPreference
+            android:key="aware_air_dj_mode"
+            android:title="@string/motion_sense_air_dj_mode_title"
+            android:dialogTitle="@string/motion_sense_air_dj_mode_title"
+            android:entries="@array/motion_sense_air_dj_modes"
+            android:entryValues="@array/motion_sense_air_dj_mode_values"
+            android:persistent="false" />
+
+        <SwitchPreferenceCompat
             android:key="aware_any_media_app"
             android:title="@string/motion_sense_any_media_app_title"
             android:summary="@string/motion_sense_any_media_app_summary"

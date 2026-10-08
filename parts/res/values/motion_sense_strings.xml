@@ -89,10 +89,14 @@
     <string name="motion_sense_glow_purple">Purple</string>
     <string name="motion_sense_glow_pink">Pink</string>
 
+    <string name="motion_sense_air_dj_title">Air DJ</string>
+    <string name="motion_sense_air_dj_summary">Air tap cycles Track → Volume → Seek while music plays. Swipes skip tracks, change volume or seek 10 seconds, following your skip direction. Blue, green and orange glow show the mode. Enables Skip songs and Pause music; air tap switches modes instead of pausing.</string>
+    <string name="motion_sense_air_dj_mode_title">Air DJ mode</string>
+
     <!-- About -->
     <string name="motion_sense_about">About</string>
     <string name="motion_sense_about_port">Original Motion Sense port by Dirty Unicorns and Aswin</string>
-    <string name="motion_sense_about_port_summary">Ported for Android 17 by Hecker</string>
+    <string name="motion_sense_about_port_summary">Ported for Android 17 (Polished &amp; Additional features added by Hecker)</string>
     <string name="motion_sense_about_contact">Contact developer</string>
     <string name="motion_sense_about_contact_summary">Telegram: t.me/pixel4seriesupdates</string>
     <string name="motion_sense_donate">Buy me a coffee ☕</string>

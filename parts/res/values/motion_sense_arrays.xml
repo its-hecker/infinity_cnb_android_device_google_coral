@@ -61,4 +61,14 @@
         <item>23</item>
         <item>0</item>
     </string-array>
+    <string-array name="motion_sense_air_dj_modes">
+        <item>Track (blue)</item>
+        <item>Volume (green)</item>
+        <item>Seek 10 seconds (orange)</item>
+    </string-array>
+    <string-array name="motion_sense_air_dj_mode_values" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
 </resources>
