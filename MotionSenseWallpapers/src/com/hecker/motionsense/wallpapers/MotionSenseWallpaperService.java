@@ -61,6 +61,7 @@ public abstract class MotionSenseWallpaperService extends WallpaperService {
         private LottieDrawable mDrawable;
         private float mLastOffset = -1f;
         private long mLastTapAt;
+        private OsloGestureClient mOslo;
 
         private boolean mVisible;
         private int mWidth;
@@ -81,6 +82,27 @@ public abstract class MotionSenseWallpaperService extends WallpaperService {
             super.onCreate(surfaceHolder);
             setTouchEventsEnabled(true);
             setOffsetNotificationsEnabled(true);
+            mOslo = new OsloGestureClient(MotionSenseWallpaperService.this,
+                    new OsloGestureClient.Callback() {
+                        @Override
+                        public void onReach() {
+                            // Match Sidekick's approach/pet behaviour: a reach wakes a sleeping
+                            // character, otherwise it acknowledges the hand with the nod marker.
+                            react(isAsleep() ? "wake" : "nod");
+                        }
+
+                        @Override
+                        public void onFlick(int direction) {
+                            // Oslo direction enum: E/NE/SE = 1/2/8, W/NW/SW = 5/4/6.
+                            if (direction == 1 || direction == 2 || direction == 8) {
+                                react("right");
+                            } else if (direction == 4 || direction == 5 || direction == 6) {
+                                react("left");
+                            } else {
+                                react("wave");
+                            }
+                        }
+                    });
             mComposition = LottieCompositionFactory.fromRawResSync(
                     MotionSenseWallpaperService.this, getAnimation()).getValue();
             mDrawable = new LottieDrawable();
@@ -93,6 +115,10 @@ public abstract class MotionSenseWallpaperService extends WallpaperService {
         @Override
         public void onDestroy() {
             stop();
+            if (mOslo != null) {
+                mOslo.destroy();
+                mOslo = null;
+            }
             mHandler.removeCallbacksAndMessages(null);
             super.onDestroy();
         }
@@ -120,6 +146,9 @@ public abstract class MotionSenseWallpaperService extends WallpaperService {
                 // Back on the home screen or the lock screen: it notices you.
                 if (!isPreview()) {
                     react("wake");
+                    if (mOslo != null) {
+                        mOslo.start();
+                    }
                 }
                 scheduleSleep();
             } else {
@@ -130,6 +159,9 @@ public abstract class MotionSenseWallpaperService extends WallpaperService {
         private void stop() {
             Choreographer.getInstance().removeFrameCallback(this);
             mHandler.removeCallbacks(mSleep);
+            if (mOslo != null) {
+                mOslo.stop();
+            }
         }
 
         // ------------------------------------------------------------ segments
