@@ -107,6 +107,15 @@ public class MotionSenseFragment extends SettingsBasePreferenceFragment
             preference.setOnPreferenceChangeListener(this);
         }
         findPreference("glow_page").setIntent(new Intent(context, GlowActivity.class));
+        findPreference("motion_lab_arcade").setIntent(new Intent(context,
+                org.lineageos.settings.motionsense.lab.ArcadeActivity.class));
+        findPreference("motion_lab_training").setIntent(new Intent(context,
+                org.lineageos.settings.motionsense.lab.TrainingActivity.class));
+        findPreference("motion_lab_panel").setIntent(new Intent(context,
+                org.lineageos.settings.motionsense.lab.ControlPanelActivity.class));
+        findPreference("motion_lab_studio").setIntent(new Intent(context,
+                org.lineageos.settings.motionsense.lab.GlowStudioActivity.class));
+
         for (String key : GESTURE_KEYS) {
             Preference row = findPreference(key);
             row.setOnPreferenceChangeListener(this);

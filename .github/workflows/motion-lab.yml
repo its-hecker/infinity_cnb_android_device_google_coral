@@ -1,0 +1,29 @@
+name: Check experimental Motion Lab pages
+on:
+  push:
+    branches: [features-experimental]
+    paths: ['parts/**', '.github/workflows/motion-lab.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    if: github.ref == 'refs/heads/features-experimental'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Prepare SDK tools
+        run: |
+          set -euo pipefail
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-35' 'build-tools;35.0.0'
+          curl --fail --location --retry 3 https://dl.google.com/dl/android/maven2/com/android/tools/r8/8.7.18/r8-8.7.18.jar -o "$RUNNER_TEMP/r8.jar"
+      - name: Check rules, resources and Android APIs
+        run: |
+          ANDROID_JAR="$ANDROID_HOME/platforms/android-35/android.jar" \
+          AAPT2="$ANDROID_HOME/build-tools/35.0.0/aapt2" \
+          R8_JAR="$RUNNER_TEMP/r8.jar" bash parts/tests/check-motion-lab.sh

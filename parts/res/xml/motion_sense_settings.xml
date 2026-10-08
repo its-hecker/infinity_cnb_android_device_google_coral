@@ -119,6 +119,36 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:key="category_motion_lab"
+        android:title="@string/motion_lab_category">
+
+        <Preference
+            android:key="motion_lab_arcade"
+            android:title="@string/motion_lab_arcade"
+            android:summary="@string/motion_lab_arcade_intro"
+            android:persistent="false" />
+
+        <Preference
+            android:key="motion_lab_training"
+            android:title="@string/motion_lab_training"
+            android:summary="@string/motion_lab_training_intro"
+            android:persistent="false" />
+
+        <Preference
+            android:key="motion_lab_panel"
+            android:title="@string/motion_lab_panel"
+            android:summary="@string/motion_lab_panel_intro"
+            android:persistent="false" />
+
+        <Preference
+            android:key="motion_lab_studio"
+            android:title="@string/motion_lab_studio"
+            android:summary="@string/motion_lab_studio_intro"
+            android:persistent="false" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:key="category_about"
         android:title="@string/motion_sense_about">
 

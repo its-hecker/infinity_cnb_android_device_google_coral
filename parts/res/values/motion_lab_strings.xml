@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="motion_lab_category">Motion Lab • Experimental</string>
+    <string name="motion_lab_back">Back to Motion Sense</string>
+    <string name="motion_lab_arcade">Touchless Game Arcade</string>
+    <string name="motion_lab_arcade_intro">Play with air swipes and taps while this screen is open.</string>
+    <string name="motion_lab_studio">Glow Theme Studio</string>
+    <string name="motion_lab_studio_intro">Choose a glow style and animation speed. Apply saves your draft; Preview tries it for eight seconds.</string>
+    <string name="motion_lab_training">Gesture Training Room</string>
+    <string name="motion_lab_training_intro">Practice one gesture at a time with immediate radar feedback.</string>
+    <string name="motion_lab_panel">Air Control Panel</string>
+    <string name="motion_lab_panel_intro">Swipe to select a control, then air tap to use it. Controls work only while this page is open.</string>
+    <string name="motion_lab_waiting">Connecting to Motion Sense…</string>
+    <string name="motion_lab_ready">Radar connected. Ready for your gesture.</string>
+    <string name="motion_lab_unavailable">Turn on Motion Sense. Radar also needs an allowed region, Airplane mode off and Battery Saver off.</string>
+    <string name="motion_lab_left">Swipe left</string>
+    <string name="motion_lab_right">Swipe right</string>
+    <string name="motion_lab_tap">Air tap</string>
+    <string name="motion_lab_reach">Reach toward the phone</string>
+    <string name="motion_lab_detected">Detected: %1$s</string>
+    <string name="motion_lab_dodge">Play Air Dodge</string>
+    <string name="motion_lab_targets">Play Target Rush</string>
+    <string name="motion_lab_restart">Restart game</string>
+    <string name="motion_lab_games_help">Air Dodge: swipe between three lanes and air tap for a short shield. Target Rush: match the arrow with a swipe. Each round lasts 30 seconds.</string>
+    <string name="motion_lab_dodge_help">Avoid the red blocks. Air tap activates your shield.</string>
+    <string name="motion_lab_targets_help">Swipe in the arrow direction to score.</string>
+    <string name="motion_lab_air_tap_start">Air tap to start</string>
+    <string name="motion_lab_score">Score %1$d • %2$d seconds</string>
+    <string name="motion_lab_finished">Round complete! Score: %1$d</string>
+    <string name="motion_lab_game_over">Game over. Score: %1$d</string>
+    <string name="motion_lab_training_help">Keep the phone still and your hand above the top edge. Follow the prompt. Detector confidence is shown when Oslo provides it.</string>
+    <string name="motion_lab_lesson_reach">1 of 4 • Reach toward the phone</string>
+    <string name="motion_lab_lesson_left">2 of 4 • Swipe left above the phone</string>
+    <string name="motion_lab_lesson_right">3 of 4 • Swipe right above the phone</string>
+    <string name="motion_lab_lesson_tap">4 of 4 • Make an air tap</string>
+    <string name="motion_lab_lesson_done">All four gestures complete!</string>
+    <string name="motion_lab_practice_again">Practice again</string>
+    <string name="motion_lab_match">Matched! Move to the next gesture.</string>
+    <string name="motion_lab_try_prompt">Detected. Try the gesture in the prompt.</string>
+    <string name="motion_lab_training_feedback">%1$s • confidence %2$d%% • %3$s</string>
+    <string name="motion_lab_training_feedback_no_confidence">%1$s • %2$s</string>
+    <string name="motion_lab_play_pause">Play / pause media</string>
+    <string name="motion_lab_volume_up">Volume up</string>
+    <string name="motion_lab_volume_down">Volume down</string>
+    <string name="motion_lab_previous">Previous track</string>
+    <string name="motion_lab_next">Next track</string>
+    <string name="motion_lab_torch">Flashlight</string>
+    <string name="motion_lab_panel_help">You can also tap a control on screen. Media controls target one playing session; Play / pause can resume a paused session.</string>
+    <string name="motion_lab_selected">Selected: %1$s</string>
+    <string name="motion_lab_control">Control: %1$s</string>
+    <string name="motion_lab_executed">Sent: %1$s</string>
+    <string name="motion_lab_no_media">No eligible active media session.</string>
+    <string name="motion_lab_unsupported">This media session does not support that control.</string>
+    <string name="motion_lab_action_failed">Control unavailable. Try again.</string>
+    <string name="motion_lab_no_torch">No flashlight is available.</string>
+    <string name="motion_lab_torch_on">Flashlight on</string>
+    <string name="motion_lab_torch_off">Flashlight off</string>
+    <string name="motion_lab_torch_permission_ready">Camera permission granted. Select Flashlight again to toggle it.</string>
+    <string name="motion_lab_torch_permission_denied">Camera permission is needed for the flashlight.</string>
+    <string name="motion_lab_speed_label">Animation speed</string>
+    <string name="motion_lab_speed">Animation speed • %1$d%%</string>
+    <string name="motion_lab_trails">Gesture Trails</string>
+    <string name="motion_lab_trails_intro">Show a fading directional trail after a detected swipe. Trails represent detected gestures, not continuous hand tracking.</string>
+    <string name="motion_lab_draft">Draft • changes are saved with Apply</string>
+    <string name="motion_lab_preview">Preview glow • 8 seconds</string>
+    <string name="motion_lab_stop_preview">Stop preview</string>
+    <string name="motion_lab_apply">Apply glow settings</string>
+    <string name="motion_lab_preview_active">Preview active for eight seconds. Saved settings are unchanged.</string>
+    <string name="motion_lab_preview_ended">Preview ended. Saved glow restored.</string>
+    <string name="motion_lab_saved">Glow settings saved.</string>
+    <string name="motion_lab_save_failed">Could not save glow settings.</string>
+    <string name="motion_lab_local_preview">Draft animation preview</string>
+    <string-array name="motion_lab_styles">
+        <item>Stock</item>
+        <item>Neon</item>
+        <item>Aurora</item>
+        <item>Pixel</item>
+        <item>Minimal</item>
+    </string-array>
+</resources>

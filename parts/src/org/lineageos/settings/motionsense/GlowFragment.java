@@ -6,6 +6,7 @@
 package org.lineageos.settings.motionsense;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Bundle;
@@ -158,6 +159,14 @@ public class GlowFragment extends SettingsBasePreferenceFragment {
             return true;
         });
         screen.addPreference(mNightStart);
+
+        Preference studio = new Preference(context);
+        studio.setKey("motion_lab_studio");
+        studio.setTitle(R.string.motion_lab_studio);
+        studio.setSummary(R.string.motion_lab_studio_intro);
+        studio.setIntent(new Intent(context,
+                org.lineageos.settings.motionsense.lab.GlowStudioActivity.class));
+        screen.addPreference(studio);
 
         mFooter = new FooterPreference(context);
         mFooter.setKey("glow_footer");
