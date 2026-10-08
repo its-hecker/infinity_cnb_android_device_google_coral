@@ -219,10 +219,7 @@ public final class UnifiedSidekickWallpaper extends WallpaperService {
             }
         };
 
-        private final Runnable sleep = () -> {
-            handler.removeCallbacks(ambient);
-            playFirst("sleep", "asleep");
-        };
+        private final Runnable sleep = () -> playFirst("sleep", "asleep");
 
         private final Runnable ambient = new Runnable() {
             @Override
