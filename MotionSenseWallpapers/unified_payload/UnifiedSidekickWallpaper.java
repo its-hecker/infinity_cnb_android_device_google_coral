@@ -82,8 +82,9 @@ public final class UnifiedSidekickWallpaper extends WallpaperService {
     }
 
     /*
-     * The last four are optional third-party fan-art packs generated/added by the faceid build.
-     * If an asset is absent it is simply skipped; this keeps the payload safe for stripped builds.
+     * Doraemon, Ben 10, Batman and Tom & Jerry are optional fan-art packs prepared by the
+     * faceid build. Nova, Kumo, Ember and Byte are original premium Sidekicks. If any asset is
+     * absent it is simply skipped, keeping the payload safe for stripped builds.
      */
     private static final CharacterSpec[] CATALOG = {
             new CharacterSpec("wallpaper_hecker.json", "Hecker",
