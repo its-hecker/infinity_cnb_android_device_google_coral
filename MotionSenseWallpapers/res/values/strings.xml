@@ -10,26 +10,31 @@
     <string name="contact_developer">Contact developer</string>
 
     <string name="wallpaper_hecker" translatable="false">Hecker</string>
-    <string name="wallpaper_hecker_description">An office cat in a suit. Heavy-lidded and unimpressed until you reach for the phone</string>
+    <string name="wallpaper_hecker_description">An office cat in a suit with Motion Sense reactions, depth and ambient animation</string>
     <string name="wallpaper_mochi" translatable="false">Mochi</string>
-    <string name="wallpaper_mochi_description">A bunny in a moonlit meadow. Perks her ears and waves back</string>
+    <string name="wallpaper_mochi_description">A bunny in a moonlit meadow that reacts to touch, swipes, reach and presence</string>
     <string name="wallpaper_biscuit" translatable="false">Biscuit</string>
-    <string name="wallpaper_biscuit_description">A shiba pup at sunset. Wags, tilts his head at your swipes and barks on a tap</string>
+    <string name="wallpaper_biscuit_description">A shiba pup at sunset with Motion Sense reactions and a more dimensional scene</string>
     <string name="wallpaper_whisk_crumb" translatable="false">Whisk &amp; Crumb</string>
-    <string name="wallpaper_whisk_crumb_description">A tabby keeps watch while a mouse nibbles cheese. Tap and the cat pounces</string>
+    <string name="wallpaper_whisk_crumb_description">A tabby and mouse scene with touch, Motion Sense and ambient reactions</string>
     <string name="wallpaper_pip" translatable="false">Pip</string>
-    <string name="wallpaper_pip_description">A tiny hover-bot over a neon grid. Waves back and naps on the floor</string>
+    <string name="wallpaper_pip_description">A tiny hover-bot over a neon grid with reactive depth and Motion Sense</string>
     <string name="wallpaper_drift" translatable="false">Drift</string>
-    <string name="wallpaper_drift_description">Glowing jellyfish in the deep sea. Wave and they swim up together</string>
+    <string name="wallpaper_drift_description">Glowing jellyfish in a deep-sea scene that follows swipes and Motion Sense</string>
     <string name="wallpaper_orbit" translatable="false">Orbit</string>
-    <string name="wallpaper_orbit_description">A ringed planet and a little rocket that loops around it when you wave</string>
+    <string name="wallpaper_orbit_description">A ringed planet and rocket with reactive parallax and ambient animation</string>
     <string name="wallpaper_aurora" translatable="false">Aurora</string>
-    <string name="wallpaper_aurora_description">Color fields and a ring of light that swirl and ripple with your hand</string>
+    <string name="wallpaper_aurora_description">Color fields and light that ripple with touch and Motion Sense gestures</string>
 
     <!-- About -->
-    <string name="about_title">About</string>
+    <string name="about_title">Sidekick collection</string>
     <string name="about_made_by">Made by Hecker</string>
-    <string name="about_body">Each wallpaper has a little character or scene that reacts to you. It notices you when you unlock or come back to the home screen, waves when you tap the screen, switches to the next Sidekick on a double tap and looks around as you swipe between home screens. Leave the phone alone for a while and it falls asleep.</string>
+    <string name="about_body">Sidekick now uses one interaction engine for the custom characters: tap for a reaction, double tap to switch character, hold for a special reaction, swipe left or right to make it follow you, swipe up to wake it and swipe down to put it to sleep. Motion Sense presence, reach, flick and swipe are supported too. Your double-tap character choice is remembered.</string>
+    <string name="collection_title">Google Pokémon + Sidekick</string>
+    <string name="collection_summary">Google Pokémon stays on Google’s original renderer and keeps the original Pokémon character artwork. Custom Sidekicks use the enhanced Sidekick engine. Both use the Pixel 4 Motion Sense stack.</string>
+    <string name="open_pokemon">Open Google Pokémon</string>
+    <string name="pokemon_summary">Launch the original Pokémon live wallpaper without modifying the Pokémon characters.</string>
+    <string name="pokemon_unavailable">Google Pokémon wallpaper is not available</string>
     <string name="about_contact">Contact developer</string>
     <string name="about_contact_summary">Telegram: t.me/pixel4seriesupdates</string>
     <string name="about_coffee">Buy me a coffee</string>

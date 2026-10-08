@@ -52,8 +52,8 @@ final class OsloGestureClient {
     private static final int SWIPE = 7;
     private static final int SWIPE_ECHO = 8;
 
-    // Oslo priority 1 is LOW. This keeps Sidekick behind foreground/ambient system clients.
     private static final int PRIORITY_LOW = 1;
+    private static final long RECONNECT_DELAY_MS = 1_250;
 
     private final Context mContext;
     private final Callback mCallback;
@@ -67,6 +67,17 @@ final class OsloGestureClient {
     private boolean mBound;
     private boolean mRegistered;
 
+    private final Runnable mReconnect = new Runnable() {
+        @Override
+        public void run() {
+            if (!mStarted) {
+                return;
+            }
+            safeUnbind();
+            bind();
+        }
+    };
+
     OsloGestureClient(Context context, Callback callback) {
         mContext = context;
         mCallback = callback;
@@ -77,41 +88,59 @@ final class OsloGestureClient {
             return;
         }
         mStarted = true;
+        bind();
+    }
 
+    void stop() {
+        mStarted = false;
+        mMainHandler.removeCallbacks(mReconnect);
+        unregister();
+        mService = null;
+        safeUnbind();
+    }
+
+    void destroy() {
+        stop();
+        mMainHandler.removeCallbacksAndMessages(null);
+    }
+
+    private void bind() {
+        if (!mStarted || mBound) {
+            return;
+        }
         Intent intent = new Intent();
         intent.setComponent(new ComponentName(OSLO_PACKAGE, OSLO_SERVICE));
         try {
             mBound = mContext.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
             if (!mBound) {
                 Log.w(TAG, "Oslo service is not available");
+                scheduleReconnect();
             }
         } catch (RuntimeException e) {
             mBound = false;
             Log.w(TAG, "Unable to bind to Oslo service", e);
+            scheduleReconnect();
         }
     }
 
-    void stop() {
-        if (!mStarted && !mBound && mService == null) {
+    private void safeUnbind() {
+        if (!mBound) {
             return;
         }
-        mStarted = false;
-        unregister();
-        mService = null;
-
-        if (mBound) {
-            try {
-                mContext.unbindService(mConnection);
-            } catch (IllegalArgumentException ignored) {
-                // Service disappeared while the wallpaper was being hidden.
-            }
-            mBound = false;
+        try {
+            mContext.unbindService(mConnection);
+        } catch (IllegalArgumentException ignored) {
+            // Service disappeared while the wallpaper was hidden or reconnecting.
         }
+        mBound = false;
     }
 
-    void destroy() {
-        stop();
-        mMainHandler.removeCallbacksAndMessages(null);
+    private void scheduleReconnect() {
+        if (!mStarted) {
+            return;
+        }
+        mMainHandler.removeCallbacks(mReconnect);
+        mMainHandler.postDelayed(mReconnect, RECONNECT_DELAY_MS);
     }
 
     private final ServiceConnection mConnection = new ServiceConnection() {
@@ -120,6 +149,7 @@ final class OsloGestureClient {
             if (!mStarted) {
                 return;
             }
+            mMainHandler.removeCallbacks(mReconnect);
             mService = service;
             register();
         }
@@ -128,18 +158,21 @@ final class OsloGestureClient {
         public void onServiceDisconnected(ComponentName name) {
             mRegistered = false;
             mService = null;
+            scheduleReconnect();
         }
 
         @Override
         public void onBindingDied(ComponentName name) {
             mRegistered = false;
             mService = null;
+            scheduleReconnect();
         }
 
         @Override
         public void onNullBinding(ComponentName name) {
             mRegistered = false;
             mService = null;
+            scheduleReconnect();
         }
     };
 
@@ -151,6 +184,7 @@ final class OsloGestureClient {
         try {
             // Mark first so a failure after a partial registration still cleans every listener.
             mRegistered = true;
+
             // Low-priority regular subscriptions keep a gesture alive only when the system does
             // not already have a higher-priority subscriber.
             registerOne(FLICK, config("flick"));
@@ -167,6 +201,7 @@ final class OsloGestureClient {
         } catch (RemoteException | SecurityException e) {
             Log.w(TAG, "Unable to register Motion Sense wallpaper listeners", e);
             unregister();
+            scheduleReconnect();
         }
     }
 
