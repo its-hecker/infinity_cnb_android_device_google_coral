@@ -9,9 +9,9 @@
 
 cc_library_shared {
     name: "libcamera2ndk_v33_face",
-    stem: "libcamera2ndk_vendor",
+    // Give the legacy ABI its own SONAME, directly linked by the Face HAL.
+    stem: "libcamera2ndk_face",
     vendor: true,
-    relative_install_path: "facecompat",
     compile_multilib: "64",
     cpp_std: "gnu++17",
 

@@ -62,15 +62,18 @@ blob_fixups: blob_fixups_user_type = {
     'vendor/etc/init/android.hardware.biometrics.face@1.0-service.google.rc': blob_fixup()
         .regex_replace(
             r'(service vendor\.face-hal-1-0 /vendor/bin/hw/android\.hardware\.biometrics\.face@1\.0-service\.google\n)',
-            r'\1    setenv LD_LIBRARY_PATH /vendor/lib64/facecompat:/vendor/lib64\n',
+            r'\1    interface android.hardware.biometrics.face@1.0::IBiometricsFace default\n',
         ),
     'vendor/etc/init/android.hardware.keymaster@4.1-service.citadel.rc': blob_fixup()
         .regex_replace(
             r'(group hsm drmrpc\n)',
             r'\1    setenv LD_PRELOAD /vendor/lib64/libcrypto-v33.so\n',
         ),
+    # Bind the stock native_handle_t camera ABI to its private source-built library.
+    'vendor/bin/hw/android.hardware.biometrics.face@1.0-service.google': blob_fixup()
+        .replace_needed('libbase.so', 'libbase-v33.so')
+        .replace_needed('libcamera2ndk_vendor.so', 'libcamera2ndk_face.so'),
     (
-         'vendor/bin/hw/android.hardware.biometrics.face@1.0-service.google',
          'vendor/bin/hw/vendor.google.airbrush@1.0-service',
          'vendor/bin/hw/android.hardware.neuralnetworks@1.2-service-noronha',
     ): blob_fixup()
