@@ -11,6 +11,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
+import org.robolectric.shadow.api.Shadow;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 35)
@@ -61,6 +62,14 @@ public class SidekickPlaybackTest {
         UnifiedSidekickWallpaper service = Robolectric.buildService(UnifiedSidekickWallpaper.class)
                 .create().get();
         WallpaperService.Engine engine = service.onCreateEngine();
+        // Android normally installs this wrapper when WallpaperManager attaches the engine.
+        // Robolectric supplies a constructor-free Android instance for the lifecycle fixture.
+        Class<?> wrapperType = Class.forName(
+                "android.service.wallpaper.WallpaperService$IWallpaperEngineWrapper");
+        Object wrapper = Shadow.newInstanceOf(wrapperType);
+        Field wrapperField = WallpaperService.Engine.class.getDeclaredField("mIWallpaperEngine");
+        wrapperField.setAccessible(true);
+        wrapperField.set(engine, wrapper);
         engine.onSurfaceCreated(engine.getSurfaceHolder());
         engine.onVisibilityChanged(true);
         assertEquals(1, callbacksFor(engine));
