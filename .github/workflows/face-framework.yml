@@ -1,4 +1,4 @@
-name: Check Face challenge completion
+name: Check Face framework compatibility
 on:
   push:
     branches: [features-experimental]
@@ -28,12 +28,15 @@ jobs:
           base='https://raw.githubusercontent.com/LineageOS/android_frameworks_base/6cdc375a23b72398dbe0358832c9305d31b802aa/services/core/java/com/android/server/biometrics/sensors/face'
           curl --fail --location --retry 3 "$base/hidl/HidlToAidlSessionAdapter.java" -o "$RUNNER_TEMP/face-reference/HidlToAidlSessionAdapter.java"
           curl --fail --location --retry 3 "$base/aidl/FaceRevokeChallengeClient.java" -o "$RUNNER_TEMP/face-reference/FaceRevokeChallengeClient.java"
-      - name: Test guarded application and real Java challenge methods
+          curl --fail --location --retry 3 "$base/aidl/FaceEnrollClient.java" -o "$RUNNER_TEMP/face-reference/FaceEnrollClient.java"
+          curl --fail --location --retry 3 "$base/aidl/AidlConversionUtils.java" -o "$RUNNER_TEMP/face-reference/AidlConversionUtils.java"
+      - name: Test guarded application and real Java challenge and enrollment methods
         shell: bash
         run: |
           set -euo pipefail
           python3 faceunlock/tests/check_framework_fixes.py --reference-dir "$RUNNER_TEMP/face-reference" 2>&1 | tee "$RUNNER_TEMP/face-challenge-validation.txt"
       - uses: actions/upload-artifact@v4
         with:
-          name: face-challenge-validation
+          name: face-framework-validation
           path: ${{ runner.temp }}/face-challenge-validation.txt
+

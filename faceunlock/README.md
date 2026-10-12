@@ -50,13 +50,35 @@ Opening Face Unlock settings can still stall authentication and model removal.
 The new log shows FaceRevokeChallengeClient stuck after an ignored error from
 the HIDL adapter's shared-challenge path. The watchdog later clears its queue.
 patches/README.md documents the targeted completion fix and regression checks.
-Apply it from the ROM root before building:
+The user subsequently confirmed Face Unlock works after this challenge fix.
+Apply the guarded framework fixes from the ROM root before building:
 
     python3 device/google/coral/faceunlock/tools/apply_framework_fixes.py --apply
 
 This guarded framework patch must be applied separately from syncing the device
 and vendor trees. Its source and regression validation do not establish phone
 runtime success; repeat the Settings, unlock and model removal flow after flashing.
+
+## Enrollment poses and stock-style guidance
+
+The current Settings enrollment screen uses a circular preview and progress ring.
+The moving pose boxes from stock Pixel enrollment have not been ported.
+
+The Android 17 framework requests REQUIRE_DIVERSE_POSES for ordinary enrollment.
+The unpatched HIDL adapter incorrectly adds that enabled feature to the native
+disabledFeatures list. The second framework patch preserves the requested pose
+requirement and keeps the native attention default. It also honors the framework's
+reduced-pose request for limited mobility.
+
+The apply script checks both known adapter methods and the incoming feature
+builder in FaceEnrollClient.java before writing. It retains an existing challenge
+fix, backs up the current adapter, and refuses unfamiliar source. See
+patches/README.md for the interface evidence and regression validation.
+
+This change applies to new enrollments after rebuilding and flashing. It does
+not add the moving box overlay or establish stock-equivalent pose capture on a
+phone; those need the corresponding UI/pose feedback integration and runtime
+validation. Existing enrolled models are kept.
 
 The earlier logcat/dmesg files capture the booted fallback image, not the
 failed boot itself. They do not establish why the first flash failed to
@@ -71,3 +93,4 @@ Before flashing, verify the build outputs:
 The HAL init service declares its HIDL interface so hwservicemanager can
 request startup after a crash. Keep raw enrollment logs from all buffers
 and the crash buffer immediately after the next enrollment attempt.
+

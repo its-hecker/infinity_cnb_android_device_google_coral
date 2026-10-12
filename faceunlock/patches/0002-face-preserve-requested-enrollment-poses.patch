@@ -1,0 +1,23 @@
+--- a/services/core/java/com/android/server/biometrics/sensors/face/hidl/HidlToAidlSessionAdapter.java
++++ b/services/core/java/com/android/server/biometrics/sensors/face/hidl/HidlToAidlSessionAdapter.java
+@@ -135,9 +135,18 @@
+             token.add(b);
+         }
+         final ArrayList<Integer> disabledFeatures = new ArrayList<>();
++        boolean requireDiversePoses = false;
+         for (byte b: features) {
+-            disabledFeatures.add(AidlConversionUtils.convertAidlToFrameworkFeature(b));
+-        }
++            final int feature = AidlConversionUtils.convertAidlToFrameworkFeature(b);
++            if (feature == BiometricFaceConstants.FEATURE_REQUIRE_REQUIRE_DIVERSITY) {
++                requireDiversePoses = true;
++            }
++        }
++        // AIDL requests enabled features; HIDL expects features to disable.
++        if (!requireDiversePoses) {
++            disabledFeatures.add(BiometricFaceConstants.FEATURE_REQUIRE_REQUIRE_DIVERSITY);
++        }
++        // Preserve HIDL's attention default: the AIDL client does not request it here.
+         mSession.get().enroll(token, ENROLL_TIMEOUT_SEC, disabledFeatures);
+         return new Cancellation();
+     }

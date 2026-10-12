@@ -1,0 +1,127 @@
+/*
+ * Copyright (C) 2023 The Android Open Source Project
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The runner inserts the actual framework feature builder, converters and enroll methods.
+ * HIDL transport/token serialization are test doubles; no secure hardware is exercised here.
+ */
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
+
+public class FaceEnrollmentFeatureRegression {
+    static int assertions;
+    static class RemoteException extends Exception {}
+    static class NativeHandle {}
+    static class HardwareAuthToken { final byte[] token = {1, 2, -3, 4}; }
+    static class HardwareAuthTokenUtils {
+        static byte[] toByteArray(HardwareAuthToken token) { return token.token; }
+    }
+    static class Feature {
+        static final byte REQUIRE_ATTENTION = 0;
+        static final byte REQUIRE_DIVERSE_POSES = 1;
+        static final byte DEBUG = 2;
+    }
+    static class BiometricFaceConstants {
+        static final int FEATURE_REQUIRE_ATTENTION = 1;
+        static final int FEATURE_REQUIRE_REQUIRE_DIVERSITY = 2;
+    }
+    static class Slog { static void e(String tag, String text) {} }
+    static class AidlConversionUtils {
+        static final String TAG = "test";
+@@FRAMEWORK_TO_AIDL@@
+@@AIDL_TO_FRAMEWORK@@
+    }
+
+    static byte[] frameworkFeatures(int[] mDisabledFeatures) {
+        boolean mDebugConsent = false;
+@@FRAMEWORK_FEATURE_BUILDER@@
+        return features;
+    }
+
+    interface ICancellationSignal { void cancel(); }
+    static class FakeHal {
+        int calls, cancels, timeout;
+        List<Byte> token;
+        List<Integer> disabled;
+        void enroll(ArrayList<Byte> hat, int timeoutSec, ArrayList<Integer> disabledFeatures) {
+            calls++;
+            timeout = timeoutSec;
+            token = new ArrayList<>(hat);
+            disabled = new ArrayList<>(disabledFeatures);
+        }
+        void cancel() { cancels++; }
+    }
+    abstract static class Adapter {
+        static final int ENROLL_TIMEOUT_SEC = 75;
+        final FakeHal hal = new FakeHal();
+        final Supplier<FakeHal> mSession = () -> hal;
+        abstract ICancellationSignal enroll(HardwareAuthToken hat, byte type, byte[] features,
+                NativeHandle previewSurface) throws RemoteException;
+        class Cancellation implements ICancellationSignal {
+            public void cancel() { hal.cancel(); }
+        }
+    }
+    static class Before extends Adapter {
+@@ORIGINAL_ENROLL@@
+    }
+    static class After extends Adapter {
+@@FIXED_ENROLL@@
+    }
+    static void require(boolean value, String message) {
+        assertions++;
+        if (!value) throw new AssertionError(message);
+    }
+    static void verifyUnchangedArguments(Adapter adapter) {
+        require(adapter.hal.calls == 1, "HAL enrollment requested once");
+        require(adapter.hal.token.equals(List.of((byte) 1, (byte) 2, (byte) -3, (byte) 4)),
+                "HAT bytes must not change");
+        require(adapter.hal.timeout == 75, "keep enrollment timeout");
+    }
+    public static void main(String[] args) throws Exception {
+        byte[] defaults = frameworkFeatures(new int[0]);
+        require(defaults.length == 1 && defaults[0] == Feature.REQUIRE_DIVERSE_POSES,
+                "actual framework builder requests diverse poses by default");
+        Before before = new Before();
+        before.enroll(new HardwareAuthToken(), (byte) 0, defaults, null);
+        require(before.hal.disabled.equals(List.of(2)),
+                "negative control must reproduce a requested pose feature being disabled");
+        verifyUnchangedArguments(before);
+
+        After after = new After();
+        ICancellationSignal cancel = after.enroll(new HardwareAuthToken(), (byte) 0, defaults, null);
+        require(after.hal.disabled.isEmpty(), "default enrollment must keep native pose checks enabled");
+        verifyUnchangedArguments(after);
+        cancel.cancel();
+        require(after.hal.cancels == 1, "cancellation still reaches HAL");
+
+        byte[] reducedPoses = frameworkFeatures(new int[] {2});
+        require(reducedPoses.length == 0, "actual accessibility request omits diverse-pose flag");
+        After reduced = new After();
+        reduced.enroll(new HardwareAuthToken(), (byte) 0, reducedPoses, null);
+        require(reduced.hal.disabled.equals(List.of(2)), "honor explicitly reduced pose enrollment");
+        require(!reduced.hal.disabled.contains(1), "do not disable the HAL attention default");
+        verifyUnchangedArguments(reduced);
+
+        After explicit = new After();
+        explicit.enroll(new HardwareAuthToken(), (byte) 0,
+                new byte[] {Feature.REQUIRE_ATTENTION, Feature.REQUIRE_DIVERSE_POSES,
+                        Feature.REQUIRE_DIVERSE_POSES}, null);
+        require(explicit.hal.disabled.isEmpty(), "positive attention/pose requests cannot disable them");
+        verifyUnchangedArguments(explicit);
+
+        for (byte unsupported : new byte[] {Feature.DEBUG, 42}) {
+            for (Adapter adapter : List.of(new Before(), new After())) {
+                boolean rejected = false;
+                try { adapter.enroll(new HardwareAuthToken(), (byte) 0,
+                        new byte[] {unsupported}, null); }
+                catch (IllegalArgumentException expected) { rejected = true; }
+                require(rejected, "unsupported feature behavior unchanged");
+                require(adapter.hal.calls == 0, "invalid features cannot start native enrollment");
+            }
+        }
+        System.out.println("PASS: original adapter disables requested poses; corrected adapter preserves them");
+        System.out.println("PASS: reduced-pose option, attention default, HAT, timeout and cancellation");
+        System.out.println("PASS: " + assertions + " enrollment Java assertions using extracted methods");
+    }
+}
