@@ -1,1 +1,1 @@
-type hardware_info_app, domain;
+type hardware_info_app, domain, coredomain;
