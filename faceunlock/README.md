@@ -43,7 +43,9 @@ consent button disabled.
 Rebuild both features-experimental trees and test enrollment on the phone.
 Source, ELF and header checks do not establish runtime enrollment success.
 The same logs also contain a separate Citadel Keymaster abort in
-export_key_der. That failure is still under investigation.
+export_key_der. The process maps show the intended legacy crypto preload
+was absent. keymaster/README.md documents its direct dependency repair
+and remaining runtime checks.
 
 The earlier logcat/dmesg files capture the booted fallback image, not the
 failed boot itself. They do not establish why the first flash failed to
