@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.Choreographer;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
+import android.view.WindowManager;
 
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieCompositionFactory;
@@ -250,7 +251,6 @@ public class UnifiedSidekickWallpaper extends WallpaperService {
         private static final long DOUBLE_TAP_MS = 315;
         private static final long LONG_PRESS_MS = 560;
         private static final long DEBOUNCE_MS = 330;
-        private static final long IDLE_FRAME_NS = 33_000_000L;
         private static final float BASE_OVERSCAN = 1.04f;
 
         private final Handler handler = new Handler(Looper.getMainLooper());
@@ -259,7 +259,12 @@ public class UnifiedSidekickWallpaper extends WallpaperService {
         private final Paint glow = new Paint(Paint.ANTI_ALIAS_FLAG);
         private final Paint particle = new Paint(Paint.ANTI_ALIAS_FLAG);
         private final SidekickRenderer renderer = new SidekickRenderer();
+        private final SidekickFramePacer framePacer = new SidekickFramePacer();
         private long lastRenderError;
+        private long renderStatsStartNs;
+        private long renderTotalNs;
+        private int renderCount;
+        private int slowRenderCount;
 
         private SharedPreferences prefs;
         private final List<CharacterSpec> available = new ArrayList<>();
@@ -271,6 +276,8 @@ public class UnifiedSidekickWallpaper extends WallpaperService {
         private OsloGestureClient oslo;
 
         private boolean visible;
+        private boolean surfaceReady;
+        private boolean frameScheduled;
         private int width;
         private int height;
         private String segment = "idle";
@@ -278,7 +285,6 @@ public class UnifiedSidekickWallpaper extends WallpaperService {
         private float segmentEnd;
         private float frame;
         private long lastFrameNs;
-        private long lastDrawNs;
         private String lastReaction;
         private long lastReactionAt;
 
@@ -459,10 +465,14 @@ public class UnifiedSidekickWallpaper extends WallpaperService {
             composition = next;
             drawable = new LottieDrawable();
             drawable.setComposition(next);
+            int rgb = spec.glow & 0x00ffffff;
+            glow.setShader(new RadialGradient(0f, 0f, 1f,
+                    new int[] {rgb | 0xff000000, rgb | 0x55000000, Color.TRANSPARENT},
+                    new float[] {0f, .52f, 1f}, Shader.TileMode.CLAMP));
             queue.clear();
             playFirst(first, "idle");
             lastFrameNs = 0;
-            lastDrawNs = 0;
+            framePacer.reset();
             resetDynamics();
             draw();
             return true;
@@ -495,10 +505,20 @@ public class UnifiedSidekickWallpaper extends WallpaperService {
         }
 
         @Override
+        public void onSurfaceCreated(SurfaceHolder holder) {
+            super.onSurfaceCreated(holder);
+            surfaceReady = true;
+            if (visible) {
+                startVisible();
+            }
+        }
+
+        @Override
         public void onSurfaceChanged(SurfaceHolder holder, int format, int w, int h) {
             super.onSurfaceChanged(holder, format, w, h);
             width = w;
             height = h;
+            surfaceReady = w > 0 && h > 0;
             float radius = Math.max(w, h) * .82f;
             vignette.setShader(new RadialGradient(
                     w * .5f, h * .43f, radius,
@@ -506,29 +526,56 @@ public class UnifiedSidekickWallpaper extends WallpaperService {
                             Color.argb(54, 0, 0, 0)},
                     new float[] {0f, .66f, 1f}, Shader.TileMode.CLAMP));
             draw();
+            if (visible) {
+                startVisible();
+            }
         }
 
         @Override
         public void onVisibilityChanged(boolean isVisible) {
+            if (visible == isVisible) {
+                return;
+            }
             visible = isVisible;
-            if (visible) {
-                lastFrameNs = 0;
-                Choreographer.getInstance().postFrameCallback(this);
-                if (!isPreview()) {
-                    react("wake", "wakeup", "nod");
-                    if (oslo != null) {
-                        oslo.start();
-                    }
-                }
-                scheduleSleep();
-                scheduleAmbient();
+            if (visible && surfaceReady) {
+                startVisible();
             } else {
                 stop();
             }
         }
 
+        private void startVisible() {
+            if (!visible || !surfaceReady || frameScheduled) {
+                return;
+            }
+            lastFrameNs = 0;
+            renderStatsStartNs = 0;
+            renderTotalNs = 0;
+            renderCount = slowRenderCount = 0;
+            WindowManager manager = getSystemService(WindowManager.class);
+            framePacer.setRefreshRate(manager == null ? 60f
+                    : manager.getDefaultDisplay().getRefreshRate());
+            if (!isPreview()) {
+                react("wake", "wakeup", "nod");
+                if (oslo != null) {
+                    oslo.start();
+                }
+            }
+            scheduleFrame();
+            scheduleSleep();
+            scheduleAmbient();
+        }
+
+        private void scheduleFrame() {
+            if (visible && surfaceReady && !frameScheduled) {
+                frameScheduled = true;
+                Choreographer.getInstance().postFrameCallback(this);
+            }
+        }
+
         @Override
         public void onSurfaceDestroyed(SurfaceHolder holder) {
+            surfaceReady = false;
             stop();
             super.onSurfaceDestroyed(holder);
         }
@@ -546,6 +593,9 @@ public class UnifiedSidekickWallpaper extends WallpaperService {
 
         private void stop() {
             Choreographer.getInstance().removeFrameCallback(this);
+            frameScheduled = false;
+            lastFrameNs = 0;
+            framePacer.reset();
             handler.removeCallbacks(sleep);
             handler.removeCallbacks(ambient);
             handler.removeCallbacks(singleTap);
@@ -841,11 +891,13 @@ public class UnifiedSidekickWallpaper extends WallpaperService {
 
         @Override
         public void doFrame(long frameTimeNanos) {
-            if (!visible) {
+            frameScheduled = false;
+            if (!visible || !surfaceReady) {
                 return;
             }
             if (lastFrameNs != 0 && composition != null) {
-                float dt = Math.min(.050f, (frameTimeNanos - lastFrameNs) / 1_000_000_000f);
+                float dt = Math.max(0f, Math.min(.250f,
+                        (frameTimeNanos - lastFrameNs) / 1_000_000_000f));
                 updateDynamics(dt);
                 frame += dt * composition.getFrameRate();
                 if (frame >= segmentEnd) {
@@ -860,17 +912,18 @@ public class UnifiedSidekickWallpaper extends WallpaperService {
                     || Math.abs(sceneScale - 1f) > .001f
                     || Math.abs(sceneRotation) > .05f
                     || glowEnergy > .01f;
-            if (!idle || dynamics || frameTimeNanos - lastDrawNs >= IDLE_FRAME_NS) {
-                lastDrawNs = frameTimeNanos;
+            if (framePacer.shouldDraw(frameTimeNanos, idle && !dynamics)) {
                 draw();
             }
-            Choreographer.getInstance().postFrameCallback(this);
+            scheduleFrame();
         }
 
         private void draw() {
-            if (composition == null || drawable == null || width == 0 || height == 0) {
+            if (!surfaceReady || composition == null || drawable == null
+                    || width == 0 || height == 0) {
                 return;
             }
+            long startedNs = SystemClock.elapsedRealtimeNanos();
             SurfaceHolder holder = getSurfaceHolder();
             Canvas canvas = null;
             try {
@@ -879,7 +932,7 @@ public class UnifiedSidekickWallpaper extends WallpaperService {
                     return;
                 }
                 canvas.drawColor(Color.BLACK);
-                drawable.setFrame((int) frame);
+                renderer.setFrame(drawable, frame);
                 renderer.draw(canvas, drawable, width, height, BASE_OVERSCAN,
                         sceneScale, sceneRotation, parallaxX, parallaxY);
 
@@ -901,7 +954,28 @@ public class UnifiedSidekickWallpaper extends WallpaperService {
                         holder.unlockCanvasAndPost(canvas);
                     } catch (IllegalStateException | IllegalArgumentException ignored) {
                     }
+                    recordRender(SystemClock.elapsedRealtimeNanos() - startedNs);
                 }
+            }
+        }
+
+        private void recordRender(long durationNs) {
+            long nowNs = SystemClock.elapsedRealtimeNanos();
+            if (renderStatsStartNs == 0) {
+                renderStatsStartNs = nowNs;
+            }
+            renderCount++;
+            renderTotalNs += durationNs;
+            if (durationNs >= 33_000_000L) {
+                slowRenderCount++;
+            }
+            if (nowNs - renderStatsStartNs >= 5_000_000_000L) {
+                Log.d(TAG, "render " + width + "x" + height + " mode=" + drawable.getRenderMode()
+                        + " submitted=" + renderCount + " avgSubmitMs="
+                        + renderTotalNs / (renderCount * 1_000_000L) + " slow=" + slowRenderCount);
+                renderStatsStartNs = nowNs;
+                renderTotalNs = 0;
+                renderCount = slowRenderCount = 0;
             }
         }
 
@@ -913,12 +987,12 @@ public class UnifiedSidekickWallpaper extends WallpaperService {
             float cy = height * .53f + parallaxY * .25f;
             float radius = Math.max(width, height) * (.25f + glowEnergy * .06f);
             int alpha = Math.min(44, 8 + (int) (glowEnergy * 34f));
-            int rgb = character.glow & 0x00ffffff;
-            glow.setShader(new RadialGradient(cx, cy, radius,
-                    new int[] {rgb | (alpha << 24), rgb | (alpha / 3 << 24), Color.TRANSPARENT},
-                    new float[] {0f, .52f, 1f}, Shader.TileMode.CLAMP));
-            canvas.drawCircle(cx, cy, radius, glow);
-            glow.setShader(null);
+            glow.setAlpha(alpha);
+            int checkpoint = canvas.save();
+            canvas.translate(cx, cy);
+            canvas.scale(radius, radius);
+            canvas.drawCircle(0f, 0f, 1f, glow);
+            canvas.restoreToCount(checkpoint);
 
             // Slow, low-alpha motes and a tiny floor bloom add depth without repainting
             // or obscuring the character artwork.

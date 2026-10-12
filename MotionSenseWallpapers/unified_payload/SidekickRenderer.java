@@ -10,6 +10,18 @@ import com.airbnb.lottie.LottieDrawable;
 
 /** Shares the wallpaper's fit, parallax and tilt drawing with native frame tests. */
 public final class SidekickRenderer {
+    /** Keep fractional source frames when the display and composition rates differ. */
+    public void setFrame(LottieDrawable drawable, float frame) {
+        if (drawable.getComposition() == null) {
+            return;
+        }
+        float start = drawable.getComposition().getStartFrame();
+        float span = drawable.getComposition().getEndFrame() - start;
+        if (span > 0f) {
+            drawable.setProgress(Math.max(0f, Math.min(1f, (frame - start) / span)));
+        }
+    }
+
     public void draw(Canvas canvas, LottieDrawable drawable, int width, int height,
             float overscan, float sceneScale, float rotation, float parallaxX, float parallaxY) {
         if (width <= 0 || height <= 0 || drawable.getComposition() == null) {

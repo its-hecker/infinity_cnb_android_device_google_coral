@@ -22,6 +22,10 @@ The unified wallpaper code and build pipeline are implemented on `features-exper
 - Source pushes to the vendor workflow rebuild and validate the Sidekick payload.
 - A manual metadata-only run preserves the existing payload; `rebuild_payload: true` rebuilds it.
 - Native Android bitmap tests render idle, wave and sleep frames across densities and preview sizes before packaging.
+- Playback owns one Choreographer callback and stops it when the surface is unavailable.
+- Idle playback targets 30 fps; reactions use even display intervals up to 60 fps (45 fps on a 90 Hz display). Fractional Lottie frames avoid integer-frame stepping.
+- The atmosphere shader is cached instead of being allocated every frame.
+- Typed Oslo listeners deduplicate regular/echo events and discard queued events when stopped.
 - The GitHub Actions workflow validates the compiled APK before writing it back to the selected vendor branch.
 
 CI success proves the package can be rebuilt, signed for validation, inspected, and repacked. **Final behavior still needs real-device testing in a ROM build on Pixel 4 / Pixel 4 XL**, especially Motion Sense delivery, launcher/wallpaper-picker behavior, touch hitboxes and long-running animation stability.
@@ -166,7 +170,7 @@ Pixel's picker groups services from `com.google.pixel.livewallpaper` into built-
 
 All 16 named Sidekick components appear exactly once in `come_alive_service_names`. Their wallpaper XML supplies distinct rendered thumbnails, descriptions and author metadata. Look under **Wallpaper & style → Come Alive** for Hecker, Mochi, Biscuit, Whisk & Crumb, Pip, Drift, Orbit, Aurora, Doraemon, Ben 10, Batman, Tom & Jerry, Nova, Kumo, Ember and Byte. The original collection component stays declared for already-applied wallpapers but has no duplicate catalog tile.
 
-Pixel 4 XL testing on 12 October 2026 confirmed that Come Alive became visible, but the character appeared as thin vertical lines. Native Android bitmap tests reproduced the same failure, with Hecker visible in only five pixel columns. The added lighting layers used Bodymovin blend mode 1 (multiply), which Lottie maps to alpha-modulating compositing; this erased the scene outside the intersection of the light bounds. The fix uses blend mode 2 (screen) and keeps the original vector canvas draw path. It also fixes the eight generated packs' layer order: Lottie lists foreground first, so the opaque background must come last. Native frame tests verify the rendered pictures across markers, densities and preview sizes. Surface rendering and Motion Sense behavior with this updated APK still need confirmation on the phone.
+Pixel 4 XL testing on 12 October 2026 confirmed that Come Alive became visible, but the character appeared as thin vertical lines. Native Android bitmap tests reproduced the same failure, with Hecker visible in only five pixel columns. The added lighting layers used Bodymovin blend mode 1 (multiply), which Lottie maps to alpha-modulating compositing; this erased the scene outside the intersection of the light bounds. The fix uses blend mode 2 (screen) and keeps the original vector canvas draw path. It also fixes the eight generated packs' layer order: Lottie lists foreground first, so the opaque background must come last. Native frame tests verify the rendered pictures across markers, densities and preview sizes. The subsequent Pixel 4 XL build displayed the wallpapers, but the user reported stutter and no Motion Sense reactions. The playback/listener update below addresses issues found in the engine; its phone behavior still needs confirmation.
 
 ## Build pipeline
 
@@ -242,9 +246,46 @@ Reach    -> pet / nod
 Flick    -> left / right
 ```
 
+The Binder client registers separate listener identities for presence, reach, flick
+and swipe, with paired regular/echo subscriptions. The port routes flick and
+swipe through the same native sensor, so duplicate directional callbacks are
+coalesced. Gesture type comes from the subscription rather than guessing from
+optional bundle fields. Hidden/destroyed engines unregister every owned listener;
+service disconnection reconnects while the wallpaper remains visible.
+
+The merged APK must request `android.permission.STATUS_BAR_SERVICE`, and its
+Soong module uses `certificate: "platform"`. The client reports a missing grant,
+binding failure, successful connection, registration, and delivered gestures under
+`Sidekick/Oslo`. Five-second `SidekickWallpaper` summaries report surface size,
+submitted frames, average submission time and slow submissions; these do not
+measure GPU completion or establish device smoothness.
+
+The Robolectric tests use the actual Binder client and its parcel layout to check
+subscriptions, event routing, regular/echo deduplication, stop/restart, reconnect,
+partial-registration cleanup and the permission guard. Playback tests inspect the
+actual Android Choreographer queue across visibility and surface changes, and
+simulate even cadence at 60, 90 and 120 Hz. Native bitmap tests also check fractional
+progress and shader reuse. These tests do not establish real sensor delivery or
+performance on the phone.
+
 Touch interactions still work independently of Motion Sense.
 
 Google's own Pokémon renderer remains proprietary. The Infinity integration does not rewrite its character models; Motion Sense compatibility for the Google package is handled through the Pixel 4 Motion Sense bridge/vendor integration.
+
+## Focused phone log
+
+On Windows CMD, start this capture with an applied Sidekick visible:
+
+```bat
+adb logcat -v threadtime -s Sidekick/Oslo:V SidekickWallpaper:V AndroidRuntime:E Oslo.OsloSensors:V Oslo.FlickGestureSensor:V Oslo.ReachGestureSensor:V Oslo.PresenceGestureSensor:V > sidekick-runtime.txt
+```
+
+Wave/flick a hand above the phone, reach toward it, and leave the wallpaper
+animating for about 20 seconds. Press Ctrl+C and retain the resulting file. Test
+Motion Sense's training room as well, to distinguish wallpaper delivery from a
+sensor/global-setting issue. The current ROM build does not gain changes pushed
+after its source sync; sync the published device/vendor revisions before the next
+build, without changing an in-progress checkout.
 
 ## Validation checklist
 

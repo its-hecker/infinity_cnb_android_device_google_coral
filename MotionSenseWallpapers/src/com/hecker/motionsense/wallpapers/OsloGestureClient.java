@@ -9,13 +9,17 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.IInterface;
 import android.os.Parcel;
 import android.os.RemoteException;
+import android.os.SystemClock;
 import android.util.Log;
+
+import java.util.Arrays;
 
 /**
  * Small binder client for the Pixel 4 Oslo service.
@@ -54,11 +58,18 @@ final class OsloGestureClient {
 
     private static final int PRIORITY_LOW = 1;
     private static final long RECONNECT_DELAY_MS = 1_250;
+    private static final long ECHO_DEBOUNCE_MS = 250;
+    private static final String OSLO_PERMISSION = "android.permission.STATUS_BAR_SERVICE";
 
     private final Context mContext;
     private final Callback mCallback;
     private final IBinder mToken = new Binder();
-    private final GestureListener mListener = new GestureListener();
+    private final GestureListener mFlickListener = new GestureListener(FLICK);
+    private final GestureListener mPresenceListener = new GestureListener(PRESENCE);
+    private final GestureListener mReachListener = new GestureListener(REACH);
+    private final GestureListener mSwipeListener = new GestureListener(SWIPE);
+    private final GestureListener[] mListeners = {
+            mFlickListener, mPresenceListener, mReachListener, mSwipeListener};
     private final android.os.Handler mMainHandler =
             new android.os.Handler(android.os.Looper.getMainLooper());
 
@@ -66,6 +77,9 @@ final class OsloGestureClient {
     private boolean mStarted;
     private boolean mBound;
     private boolean mRegistered;
+    private volatile int mGeneration;
+    private final int[] mLastDirection = new int[5];
+    private final long[] mLastEventAt = new long[5];
 
     private final Runnable mReconnect = new Runnable() {
         @Override
@@ -88,12 +102,15 @@ final class OsloGestureClient {
             return;
         }
         mStarted = true;
+        mGeneration++;
+        Arrays.fill(mLastEventAt, -1);
         bind();
     }
 
     void stop() {
         mStarted = false;
-        mMainHandler.removeCallbacks(mReconnect);
+        mGeneration++;
+        mMainHandler.removeCallbacksAndMessages(null);
         unregister();
         mService = null;
         safeUnbind();
@@ -106,6 +123,11 @@ final class OsloGestureClient {
 
     private void bind() {
         if (!mStarted || mBound) {
+            return;
+        }
+        if (mContext.checkSelfPermission(OSLO_PERMISSION) != PackageManager.PERMISSION_GRANTED) {
+            Log.e(TAG, "Motion Sense unavailable: STATUS_BAR_SERVICE is not granted to "
+                    + mContext.getPackageName());
             return;
         }
         Intent intent = new Intent();
@@ -151,6 +173,7 @@ final class OsloGestureClient {
             }
             mMainHandler.removeCallbacks(mReconnect);
             mService = service;
+            Log.d(TAG, "Connected to Oslo service");
             register();
         }
 
@@ -187,27 +210,27 @@ final class OsloGestureClient {
 
             // Low-priority regular subscriptions keep a gesture alive only when the system does
             // not already have a higher-priority subscriber.
-            registerOne(FLICK, config("flick"));
-            registerOne(PRESENCE, config("presence"));
-            registerOne(REACH, config("reach"));
-            registerOne(SWIPE, config("swipe"));
+            registerOne(FLICK, mFlickListener, config("flick"));
+            registerOne(PRESENCE, mPresenceListener, config("presence"));
+            registerOne(REACH, mReachListener, config("reach"));
+            registerOne(SWIPE, mSwipeListener, config("swipe"));
 
             // Echo subscriptions observe active gestures even when a foreground Oslo client owns
             // the regular slot. Presence has no echo gesture in the Pixel 4 Oslo service.
-            registerOne(FLICK_ECHO, config("flick.echo"));
-            registerOne(REACH_ECHO, config("reach.echo"));
-            registerOne(SWIPE_ECHO, config("swipe.echo"));
+            registerOne(FLICK_ECHO, mFlickListener, config("flick.echo"));
+            registerOne(REACH_ECHO, mReachListener, config("reach.echo"));
+            registerOne(SWIPE_ECHO, mSwipeListener, config("swipe.echo"));
             Log.d(TAG, "Motion Sense Sidekick listeners registered");
-        } catch (RemoteException | SecurityException e) {
+        } catch (RemoteException | RuntimeException e) {
             Log.w(TAG, "Unable to register Motion Sense wallpaper listeners", e);
             unregister();
             scheduleReconnect();
         }
     }
 
-    private static Bundle config(String id) {
+    private Bundle config(String id) {
         Bundle b = new Bundle();
-        b.putString("id", "com.hecker.motionsense.wallpapers." + id);
+        b.putString("id", mContext.getPackageName() + ".sidekick." + id);
         b.putFloat("radius", 1.0f);
         b.putInt("sensitivity", 1);
         b.putInt("granularity", 3);
@@ -215,13 +238,14 @@ final class OsloGestureClient {
         return b;
     }
 
-    private void registerOne(int type, Bundle config) throws RemoteException {
+    private void registerOne(int type, GestureListener listener, Bundle config)
+            throws RemoteException {
         Parcel data = Parcel.obtain();
         Parcel reply = Parcel.obtain();
         try {
             data.writeInterfaceToken(SERVICE_DESCRIPTOR);
             data.writeStrongBinder(mToken);
-            data.writeStrongBinder(mListener);
+            data.writeStrongBinder(listener);
             data.writeInt(type);
             data.writeTypedObject(config, 0);
             if (!mService.transact(TRANSACTION_REGISTER, data, reply, 0)) {
@@ -240,26 +264,31 @@ final class OsloGestureClient {
             return;
         }
 
-        Parcel data = Parcel.obtain();
-        Parcel reply = Parcel.obtain();
-        try {
-            data.writeInterfaceToken(SERVICE_DESCRIPTOR);
-            data.writeStrongBinder(mToken);
-            data.writeStrongBinder(mListener);
-            if (mService.transact(TRANSACTION_UNREGISTER, data, reply, 0)) {
-                reply.readException();
+        for (GestureListener listener : mListeners) {
+            Parcel data = Parcel.obtain();
+            Parcel reply = Parcel.obtain();
+            try {
+                data.writeInterfaceToken(SERVICE_DESCRIPTOR);
+                data.writeStrongBinder(mToken);
+                data.writeStrongBinder(listener);
+                if (mService.transact(TRANSACTION_UNREGISTER, data, reply, 0)) {
+                    reply.readException();
+                }
+            } catch (RemoteException | RuntimeException e) {
+                Log.d(TAG, "Oslo listener already gone", e);
+            } finally {
+                reply.recycle();
+                data.recycle();
             }
-        } catch (RemoteException | RuntimeException e) {
-            Log.d(TAG, "Oslo listener already gone", e);
-        } finally {
-            reply.recycle();
-            data.recycle();
-            mRegistered = false;
         }
+        mRegistered = false;
     }
 
     private final class GestureListener extends Binder implements IInterface {
-        GestureListener() {
+        private final int mKind;
+
+        GestureListener(int kind) {
+            mKind = kind;
             attachInterface(this, LISTENER_DESCRIPTOR);
         }
 
@@ -283,38 +312,47 @@ final class OsloGestureClient {
 
             data.enforceInterface(LISTENER_DESCRIPTOR);
             Bundle output = data.readTypedObject(Bundle.CREATOR);
+            if (reply != null) {
+                reply.writeNoException();
+            }
             if (output == null || !output.getBoolean("detected", false)) {
                 return true;
             }
 
             final int direction = output.getInt("direction", 0);
-            final boolean directional = output.containsKey("direction");
-            final boolean hasAxialVelocity = output.containsKey("axialVelocity");
-            final Object angle = output.get("angle");
+            final int generation = mGeneration;
 
             mMainHandler.post(() -> {
-                if (!mStarted) {
+                if (!mStarted || generation != mGeneration) {
                     return;
                 }
-
-                // Flick output has direction but no axialVelocity. Swipe has both.
-                if (directional) {
-                    if (hasAxialVelocity) {
-                        mCallback.onSwipe(direction);
-                    } else {
+                // The port routes flick and swipe through one sensor. Regular/echo
+                // copies of the same physical directional gesture are one reaction.
+                int kind = mKind == SWIPE ? FLICK : mKind;
+                int side = kind == FLICK ? direction : 0;
+                long now = SystemClock.elapsedRealtime();
+                if (mLastEventAt[kind] >= 0 && now - mLastEventAt[kind] < ECHO_DEBOUNCE_MS
+                        && side == mLastDirection[kind]) {
+                    return;
+                }
+                mLastEventAt[kind] = now;
+                mLastDirection[kind] = side;
+                Log.d(TAG, "Gesture delivered: kind=" + mKind + " direction=" + direction);
+                switch (mKind) {
+                    case FLICK:
                         mCallback.onFlick(direction);
-                    }
-                    return;
-                }
-
-                // Reach carries float[] angle; Presence carries a scalar angle.
-                if (angle instanceof float[]) {
-                    mCallback.onReach();
-                } else if (angle instanceof Float) {
-                    mCallback.onPresence();
-                } else if (hasAxialVelocity) {
-                    // Be tolerant of vendor bundles that omit the angle key.
-                    mCallback.onReach();
+                        break;
+                    case SWIPE:
+                        mCallback.onSwipe(direction);
+                        break;
+                    case REACH:
+                        mCallback.onReach();
+                        break;
+                    case PRESENCE:
+                        mCallback.onPresence();
+                        break;
+                    default:
+                        break;
                 }
             });
             return true;

@@ -6,12 +6,17 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.Paint;
+import android.graphics.Shader;
+import android.service.wallpaper.WallpaperService;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieCompositionFactory;
 import com.airbnb.lottie.LottieDrawable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.HashSet;
@@ -20,6 +25,7 @@ import java.util.Set;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.GraphicsMode;
@@ -28,6 +34,50 @@ import org.robolectric.annotation.GraphicsMode;
 @Config(sdk = 35)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 public class SidekickRenderTest {
+    @Test public void atmosphereReusesItsShaderAcrossFrames() throws Exception {
+        UnifiedSidekickWallpaper service = Robolectric.buildService(UnifiedSidekickWallpaper.Hecker.class)
+                .create().get();
+        WallpaperService.Engine engine = service.onCreateEngine();
+        engine.onCreate(engine.getSurfaceHolder());
+        for (String name : new String[] {"width", "height"}) {
+            Field field = engine.getClass().getDeclaredField(name);
+            field.setAccessible(true);
+            field.setInt(engine, name.equals("width") ? 728 : 1536);
+        }
+        Field glowField = engine.getClass().getDeclaredField("glow");
+        glowField.setAccessible(true);
+        Paint glow = (Paint) glowField.get(engine);
+        Shader shader = glow.getShader();
+        assertNotNull(shader);
+        Method atmosphere = engine.getClass().getDeclaredMethod("drawAtmosphere", Canvas.class);
+        atmosphere.setAccessible(true);
+        Bitmap bitmap = Bitmap.createBitmap(728, 1536, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        for (int i = 0; i < 10; i++) {
+            bitmap.eraseColor(Color.BLACK);
+            atmosphere.invoke(engine, canvas);
+            assertSame(shader, glow.getShader());
+        }
+        assertNotEquals("glow still renders", Color.BLACK, bitmap.getPixel(364, 814));
+        bitmap.recycle();
+        engine.onDestroy();
+    }
+
+    @Test public void fractionalFramesKeepSubFrameProgress() throws Exception {
+        LottieComposition composition;
+        try (InputStream in = RuntimeEnvironment.getApplication().getAssets().open(
+                "sidekick/wallpaper_hecker.json")) {
+            composition = LottieCompositionFactory.fromJsonInputStreamSync(in, null).getValue();
+        }
+        assertNotNull(composition);
+        LottieDrawable drawable = new LottieDrawable();
+        drawable.setComposition(composition);
+        new SidekickRenderer().setFrame(drawable, 60.25f);
+        float expected = (60.25f - composition.getStartFrame())
+                / (composition.getEndFrame() - composition.getStartFrame());
+        assertEquals(expected, drawable.getProgress(), .00001f);
+    }
+
     private static final String[][] CHARACTERS = {
         {"hecker", "Hecker"}, {"mochi", "Mochi"}, {"biscuit", "Biscuit"},
         {"whisk_crumb", "WhiskCrumb"}, {"pip", "Pip"}, {"drift", "Drift"},
