@@ -371,7 +371,8 @@ def compose(name, bg, accent, scene_shapes, character_shapes, arm_shapes=None):
     return {
         "v": "5.12.2", "fr": FPS, "ip": 0, "op": END,
         "w": W, "h": H, "nm": name, "ddd": 0,
-        "assets": [], "layers": layers, "markers": markers(),
+        # Lottie lists the topmost layer first; put the opaque background last.
+        "assets": [], "layers": list(reversed(layers)), "markers": markers(),
     }
 
 

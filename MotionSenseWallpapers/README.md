@@ -16,9 +16,12 @@ The unified wallpaper code and build pipeline are implemented on `features-exper
 - Infinity Sidekicks use the same unified Motion Sense-aware interaction engine.
 - Eight original Sidekicks are enhanced instead of being replaced.
 - Eight extra packs are generated and included.
-- Sidekick is registered in the existing **Come Alive** catalog with a thumbnail and preview metadata.
-- The workflow updates picker metadata by default and preserves all existing DEX, animation and native-library bytes.
-- A manual `rebuild_payload: true` run rebuilds Sidekick code and animations when those sources change.
+- All 16 Sidekicks have individual **Come Alive** picker tiles, names and thumbnails.
+- The original collection component remains valid for wallpapers already applied before this update.
+- Sidekick vectors are rasterized into a reusable bitmap before posting to the wallpaper surface.
+- Source pushes to the vendor workflow rebuild and validate the Sidekick payload.
+- A manual metadata-only run preserves the existing payload; `rebuild_payload: true` rebuilds it.
+- Native Android bitmap tests render idle, wave and sleep frames across densities and preview sizes before packaging.
 - The GitHub Actions workflow validates the compiled APK before writing it back to the selected vendor branch.
 
 CI success proves the package can be rebuilt, signed for validation, inspected, and repacked. **Final behavior still needs real-device testing in a ROM build on Pixel 4 / Pixel 4 XL**, especially Motion Sense delivery, launcher/wallpaper-picker behavior, touch hitboxes and long-running animation stability.
@@ -108,7 +111,7 @@ The generated extended packs use the same marker contract and therefore particip
 
 The renderer also adds subtle parallax overscan, spring/tilt response and a vignette/depth treatment around the custom scenes.
 
-Double-tap cycling is handled by the unified Sidekick engine, so every Sidekick pack in the generated asset set participates in one continuous character cycle.
+Each individual picker component always starts its named character. Double-tapping an individual character triggers a special reaction. The compatible original collection component retains double-tap cycling and its saved selection.
 
 ## Animation marker contract
 
@@ -159,7 +162,9 @@ The old background enhancement tool is no longer called by the workflow. This pi
 
 Pixel's picker groups services from `com.google.pixel.livewallpaper` into built-in categories. Once that package belongs to a category, an unlisted service can be excluded from the generic live-wallpaper list.
 
-The unified service must therefore appear exactly once in `come_alive_service_names`. Its Android wallpaper XML also supplies a thumbnail, description and author. After installing a ROM with the repaired package, look for **Wallpaper & style → Come Alive → Sidekick • Motion Sense**. One entry provides all 16 characters; double-tap the character to cycle.
+All 16 named Sidekick components appear exactly once in `come_alive_service_names`. Their wallpaper XML supplies distinct rendered thumbnails, descriptions and author metadata. Look under **Wallpaper & style → Come Alive** for Hecker, Mochi, Biscuit, Whisk & Crumb, Pip, Drift, Orbit, Aurora, Doraemon, Ben 10, Batman, Tom & Jerry, Nova, Kumo, Ember and Byte. The original collection component stays declared for already-applied wallpapers but has no duplicate catalog tile.
+
+Pixel 4 XL testing on 12 October 2026 confirmed that Come Alive became visible, but the original direct hardware-canvas renderer showed thin vertical lines instead of the character. This update uses a reusable bitmap for the vector render and then posts that bitmap to the surface. It also fixes the eight generated packs' layer order: Lottie lists foreground first, so the opaque background must come last. Frame tests are useful evidence for geometry and artwork; the updated surface rendering still needs confirmation on the phone.
 
 ## Build pipeline
 
@@ -186,10 +191,10 @@ The workflow performs these stages:
 
 1. Check out the vendor branch selected by the event and the matching device branch.
 2. Run picker registration and DEX replacement regression checks.
-3. For a manual `rebuild_payload: true` run, generate the 16 Sidekick packs, build the separate payload and isolate its AndroidX dependencies.
+3. For source pushes or `rebuild_payload: true`, generate the 16 packs, render and validate their animation frames, build the separate payload and isolate its AndroidX dependencies.
 4. Decode the checked-in PixelLiveWallpaper APK without disassembling its DEX.
-5. Register Sidekick in the Come Alive catalog and add application-level category metadata and preview resources.
-6. Rebuild the APK; replace Sidekick assets and DEX only when explicitly requested.
+5. Register 16 individual Sidekicks in Come Alive and add rendered thumbnails, application-level category metadata and preview resources.
+6. Rebuild the APK and replace only the separately owned Sidekick assets and DEX during payload rebuilds.
 7. Zipalign and sign a validation copy. The ROM build signs the imported system APK with its platform certificate.
 8. Verify the compiled catalog, service, thumbnail, preview text and unique payload classes.
 9. Compare existing Google service declarations, category entries, DEX, native libraries and assets with the baseline.
@@ -207,7 +212,7 @@ com.google.pixel.livewallpaper
 
 If it is not, injection stops.
 
-The Sidekick payload is deliberately resource-independent and is inserted as its own DEX/assets plus one wallpaper service entry. That makes ordinary internal resource changes in Google's APK less likely to affect Sidekick than a patch based on hard-coded resource IDs.
+The Sidekick payload is deliberately resource-independent and is inserted as its own DEX/assets plus individual wallpaper service entries. That makes ordinary internal resource changes in Google's APK less likely to affect Sidekick than a patch based on hard-coded resource IDs.
 
 However, a new Google APK can still require review if it changes any of the following:
 
@@ -244,9 +249,11 @@ Google's own Pokémon renderer remains proprietary. The Infinity integration doe
 After a ROM build, verify on-device:
 
 - [ ] Only one Pixel live-wallpaper package is installed for Pokémon + Sidekick.
-- [ ] Sidekick • Motion Sense appears inside Come Alive with a preview thumbnail.
+- [x] Come Alive is visible on the Pixel 4 XL with the earlier registration fix.
+- [ ] All 16 individual Sidekick tiles appear with the updated APK.
 - [ ] All generated Sidekick characters load.
-- [ ] Double tap cycles through every Sidekick and wraps back to the first.
+- [ ] Individual tiles preview and apply their named character; double tap reacts.
+- [ ] The original collection component still cycles and retains its saved selection.
 - [ ] The selected Sidekick survives wallpaper recreation/reboot.
 - [ ] Tap, hold, swipe, two-finger tap and background-look interactions work.
 - [ ] Presence wakes a sleeping Sidekick.

@@ -12,12 +12,12 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RadialGradient;
-import android.graphics.Rect;
 import android.graphics.Shader;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.service.wallpaper.WallpaperService;
+import android.util.Log;
 import android.view.Choreographer;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -34,13 +34,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * One live-wallpaper component for the complete Sidekick collection.
+ * Individual picker components and a compatible collection component share one engine.
  *
  * Assets live under assets/sidekick and are discovered at runtime, so this payload can be
  * injected into Google's PixelLiveWallpaper APK without depending on either app's R table.
  * Google's original Pokemon renderer and Pokemon art stay untouched in the same APK.
  */
-public final class UnifiedSidekickWallpaper extends WallpaperService {
+public class UnifiedSidekickWallpaper extends WallpaperService {
+    private static final String TAG = "SidekickWallpaper";
     private static final String ASSET_DIR = "sidekick";
     private static final String PREFS = "sidekick_unified";
     private static final String PREF_CHARACTER = "selected_character";
@@ -137,6 +138,107 @@ public final class UnifiedSidekickWallpaper extends WallpaperService {
                     "peek", "excited", "look_left", "look_right"),
     };
 
+    // Each picker tile chooses its own asset; the old component keeps saved cycling.
+    protected String initialCharacterAsset() {
+        return null;
+    }
+
+    public static final class Hecker extends UnifiedSidekickWallpaper {
+        @Override protected String initialCharacterAsset() {
+            return "wallpaper_hecker.json";
+        }
+    }
+
+    public static final class Mochi extends UnifiedSidekickWallpaper {
+        @Override protected String initialCharacterAsset() {
+            return "wallpaper_mochi.json";
+        }
+    }
+
+    public static final class Biscuit extends UnifiedSidekickWallpaper {
+        @Override protected String initialCharacterAsset() {
+            return "wallpaper_biscuit.json";
+        }
+    }
+
+    public static final class WhiskCrumb extends UnifiedSidekickWallpaper {
+        @Override protected String initialCharacterAsset() {
+            return "wallpaper_whisk_crumb.json";
+        }
+    }
+
+    public static final class Pip extends UnifiedSidekickWallpaper {
+        @Override protected String initialCharacterAsset() {
+            return "wallpaper_pip.json";
+        }
+    }
+
+    public static final class Drift extends UnifiedSidekickWallpaper {
+        @Override protected String initialCharacterAsset() {
+            return "wallpaper_drift.json";
+        }
+    }
+
+    public static final class Orbit extends UnifiedSidekickWallpaper {
+        @Override protected String initialCharacterAsset() {
+            return "wallpaper_orbit.json";
+        }
+    }
+
+    public static final class Aurora extends UnifiedSidekickWallpaper {
+        @Override protected String initialCharacterAsset() {
+            return "wallpaper_aurora.json";
+        }
+    }
+
+    public static final class Doraemon extends UnifiedSidekickWallpaper {
+        @Override protected String initialCharacterAsset() {
+            return "wallpaper_doraemon.json";
+        }
+    }
+
+    public static final class Ben10 extends UnifiedSidekickWallpaper {
+        @Override protected String initialCharacterAsset() {
+            return "wallpaper_ben10.json";
+        }
+    }
+
+    public static final class Batman extends UnifiedSidekickWallpaper {
+        @Override protected String initialCharacterAsset() {
+            return "wallpaper_batman.json";
+        }
+    }
+
+    public static final class TomJerry extends UnifiedSidekickWallpaper {
+        @Override protected String initialCharacterAsset() {
+            return "wallpaper_tom_jerry.json";
+        }
+    }
+
+    public static final class Nova extends UnifiedSidekickWallpaper {
+        @Override protected String initialCharacterAsset() {
+            return "wallpaper_nova.json";
+        }
+    }
+
+    public static final class Kumo extends UnifiedSidekickWallpaper {
+        @Override protected String initialCharacterAsset() {
+            return "wallpaper_kumo.json";
+        }
+    }
+
+    public static final class Ember extends UnifiedSidekickWallpaper {
+        @Override protected String initialCharacterAsset() {
+            return "wallpaper_ember.json";
+        }
+    }
+
+    public static final class Byte extends UnifiedSidekickWallpaper {
+        @Override protected String initialCharacterAsset() {
+            return "wallpaper_byte.json";
+        }
+    }
+
     @Override
     public Engine onCreateEngine() {
         return new SidekickEngine();
@@ -156,6 +258,8 @@ public final class UnifiedSidekickWallpaper extends WallpaperService {
         private final Paint vignette = new Paint(Paint.ANTI_ALIAS_FLAG);
         private final Paint glow = new Paint(Paint.ANTI_ALIAS_FLAG);
         private final Paint particle = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final SidekickRenderer renderer = new SidekickRenderer();
+        private long lastRenderError;
 
         private SharedPreferences prefs;
         private final List<CharacterSpec> available = new ArrayList<>();
@@ -269,8 +373,13 @@ public final class UnifiedSidekickWallpaper extends WallpaperService {
                 return;
             }
 
-            String saved = prefs.getString(PREF_CHARACTER, null);
+            String selected = initialCharacterAsset();
+            String saved = selected != null ? selected : prefs.getString(PREF_CHARACTER, null);
             characterIndex = indexOf(saved);
+            if (selected != null && characterIndex < 0) {
+                Log.e(TAG, "Picker character asset is missing: " + selected);
+                return;
+            }
             if (characterIndex < 0) {
                 characterIndex = 0;
             }
@@ -339,6 +448,7 @@ public final class UnifiedSidekickWallpaper extends WallpaperService {
                 next = LottieCompositionFactory.fromJsonInputStreamSync(
                         in, "sidekick/" + spec.file).getValue();
             } catch (IOException | RuntimeException e) {
+                Log.e(TAG, "Cannot load Sidekick " + spec.file, e);
                 return false;
             }
             if (next == null || next.getMarker("idle") == null) {
@@ -359,6 +469,11 @@ public final class UnifiedSidekickWallpaper extends WallpaperService {
         }
 
         private void nextCharacter() {
+            if (initialCharacterAsset() != null) {
+                kick(1.045f, 0f, 0f, -height * .010f, 1f);
+                react("celebrate", "special", "excited", "wave");
+                return;
+            }
             if (available.size() < 2) {
                 return;
             }
@@ -415,12 +530,14 @@ public final class UnifiedSidekickWallpaper extends WallpaperService {
         @Override
         public void onSurfaceDestroyed(SurfaceHolder holder) {
             stop();
+            renderer.clear();
             super.onSurfaceDestroyed(holder);
         }
 
         @Override
         public void onDestroy() {
             stop();
+            renderer.clear();
             if (oslo != null) {
                 oslo.destroy();
                 oslo = null;
@@ -764,19 +881,9 @@ public final class UnifiedSidekickWallpaper extends WallpaperService {
                     return;
                 }
                 canvas.drawColor(Color.BLACK);
-                Rect bounds = composition.getBounds();
-                float scale = Math.max(width / (float) bounds.width(),
-                        height / (float) bounds.height()) * BASE_OVERSCAN * sceneScale;
-
-                canvas.save();
-                canvas.rotate(sceneRotation, width * .5f, height * .53f);
-                canvas.translate((width - bounds.width() * scale) * .5f + parallaxX,
-                        (height - bounds.height() * scale) * .5f + parallaxY);
-                canvas.scale(scale, scale);
-                drawable.setBounds(0, 0, bounds.width(), bounds.height());
                 drawable.setFrame((int) frame);
-                drawable.draw(canvas);
-                canvas.restore();
+                renderer.draw(canvas, drawable, width, height, BASE_OVERSCAN,
+                        sceneScale, sceneRotation, parallaxX, parallaxY);
 
                 drawAtmosphere(canvas);
 
@@ -784,7 +891,12 @@ public final class UnifiedSidekickWallpaper extends WallpaperService {
                     canvas.drawRect(0, 0, width, height, vignette);
                 }
             } catch (IllegalStateException | IllegalArgumentException ignored) {
-                // Surface can disappear between callbacks.
+                // Surface can disappear between callbacks; keep errors available to logcat.
+                long now = SystemClock.uptimeMillis();
+                if (now - lastRenderError > 5_000) {
+                    Log.e(TAG, "Sidekick frame failed", ignored);
+                    lastRenderError = now;
+                }
             } finally {
                 if (canvas != null) {
                     try {
