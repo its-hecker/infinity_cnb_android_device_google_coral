@@ -1,0 +1,9 @@
+// SPDX-FileCopyrightText: 2026 Hecker
+// SPDX-License-Identifier: Apache-2.0
+
+runtime_resource_overlay {
+    name: "GoogleOsloSystemUIOverlay",
+    sdk_version: "current",
+    certificate: "platform",
+    system_ext_specific: true,
+}

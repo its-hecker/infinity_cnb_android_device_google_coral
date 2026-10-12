@@ -1,0 +1,56 @@
+name: Check Oslo production SystemUI overlay
+
+on:
+  push:
+    branches: [features-experimental]
+    paths:
+      - 'rro_overlays/OsloSystemUIOverlay/**'
+      - 'motionsense/**'
+      - 'overlay-oslo/**'
+      - 'device-common.mk'
+      - '.github/workflows/oslo-systemui-overlay.yml'
+  pull_request:
+    branches: [features-experimental]
+    paths:
+      - 'rro_overlays/OsloSystemUIOverlay/**'
+      - 'motionsense/**'
+      - 'overlay-oslo/**'
+      - 'device-common.mk'
+      - '.github/workflows/oslo-systemui-overlay.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/checkout@v5
+        with:
+          repository: its-hecker/infinity_cnb_proprietary_vendor_google_coral
+          ref: features-experimental
+          path: vendor-reference
+          sparse-checkout: tools
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Prepare Android resource tools
+        run: |
+          set -euo pipefail
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-35' 'build-tools;35.0.0'
+      - name: Compile, link and verify the overlay
+        run: |
+          set -euo pipefail
+          mkdir -p work
+          AAPT2="$ANDROID_HOME/build-tools/35.0.0/aapt2"
+          "$AAPT2" compile --dir rro_overlays/OsloSystemUIOverlay/res -o work/oslo-res.zip
+          "$AAPT2" link --manifest rro_overlays/OsloSystemUIOverlay/AndroidManifest.xml \
+            -I "$ANDROID_HOME/platforms/android-35/android.jar" \
+            --min-sdk-version 29 --target-sdk-version 35 \
+            -o work/GoogleOsloSystemUIOverlay.apk work/oslo-res.zip
+          python3 motionsense/tests/check_oslo_overlay.py work/GoogleOsloSystemUIOverlay.apk \
+            --reader vendor-reference/tools/apk_resource_reader.py

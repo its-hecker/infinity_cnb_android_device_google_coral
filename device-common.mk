@@ -363,7 +363,8 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/developer_gsi_keys.mk)
 # Custom Sidekick wallpapers are removed from features-experimental.
 # Google's original live wallpapers are provided by the vendor PixelLiveWallpaper APK.
 PRODUCT_PACKAGES += \
-    GoogleParts
+    GoogleParts \
+    GoogleOsloSystemUIOverlay
 
 # Permissions
 PRODUCT_COPY_FILES += \

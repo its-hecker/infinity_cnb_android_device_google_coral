@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <!-- Keep Infinity's existing privileged plugins because resource arrays
+         replace each other. Explicit Oslo components are accepted on user
+         builds by both the component gate and the package class-loader gate.
+         This is a separate signed system_ext APK, independent of the generated
+         product/vendor overlay paths that SystemUI cannot open on the device. -->
+    <string-array name="config_pluginAllowlist" translatable="false">
+        <item>com.android.systemui</item>
+        <item>com.android.systemui.plugin.globalactions.wallet</item>
+        <item>org.lineageos.settings.device</item>
+        <item>com.android.systemui.clocks</item>
+        <item>com.android.systemui.clocks.debug</item>
+        <item>com.android.systemui.clocks.bignum</item>
+        <item>com.android.systemui.clocks.calligraphy</item>
+        <item>com.android.systemui.clocks.flex</item>
+        <item>com.android.systemui.clocks.growth</item>
+        <item>com.android.systemui.clocks.handwritten</item>
+        <item>com.android.systemui.clocks.inflate</item>
+        <item>com.android.systemui.clocks.metro</item>
+        <item>com.android.systemui.clocks.numoverlap</item>
+        <item>com.android.systemui.clocks.weather</item>
+        <item>com.google.oslo/com.google.oslo.OsloOverlay</item>
+        <item>com.google.oslo/com.google.oslo.OsloSensorManager</item>
+    </string-array>
+</resources>
