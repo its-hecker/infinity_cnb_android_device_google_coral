@@ -1,24 +1,25 @@
 # Project Infinity X — Unified Pokémon + Sidekick Live Wallpaper
 
-_Last updated: October 8, 2026_
+_Last updated: October 12, 2026_
 
-This document describes the live-wallpaper work on the **`faceid` branch** for Project Infinity X / Pixel 4 series.
+This document describes the live-wallpaper work on the **`features-experimental` branch** for Project Infinity X / Pixel 4 series.
 
-> **Branch safety:** the stable `lineage-24.0` Motion Sense branches are not modified by this work. The unified wallpaper integration lives on `faceid`.
+> **Branch safety:** the stable `lineage-24.0` Motion Sense branches are not modified by this work. The unified wallpaper integration lives on `features-experimental`.
 
 ## Current status
 
-The unified wallpaper code and build pipeline are implemented on `faceid`.
+The unified wallpaper code and build pipeline are implemented on `features-experimental`.
 
 - Google Pokémon and Infinity Sidekick now ship inside **one `PixelLiveWallpaper.apk`**.
 - Sidekick is **not** installed as a second wallpaper application.
-- Google's original Pokémon character/model artwork is left untouched.
+- The wallpaper packaging workflow preserves the existing Pokémon code and assets byte for byte.
 - Infinity Sidekicks use the same unified Motion Sense-aware interaction engine.
 - Eight original Sidekicks are enhanced instead of being replaced.
 - Eight extra packs are generated and included.
-- Pokémon environment/effect textures can be enhanced without selecting Pokémon character textures.
-- The Unity split-asset rewrite now preserves the original split boundaries, reloads the complete decoded APK tree, decodes every modified texture, and rolls back automatically if validation fails.
-- The GitHub Actions unification workflow currently completes successfully and writes the generated unified APK back to the vendor `faceid` branch.
+- Sidekick is registered in the existing **Come Alive** catalog with a thumbnail and preview metadata.
+- The workflow updates picker metadata by default and preserves all existing DEX, animation and native-library bytes.
+- A manual `rebuild_payload: true` run rebuilds Sidekick code and animations when those sources change.
+- The GitHub Actions workflow validates the compiled APK before writing it back to the selected vendor branch.
 
 CI success proves the package can be rebuilt, signed for validation, inspected, and repacked. **Final behavior still needs real-device testing in a ROM build on Pixel 4 / Pixel 4 XL**, especially Motion Sense delivery, launcher/wallpaper-picker behavior, touch hitboxes and long-running animation stability.
 
@@ -32,7 +33,7 @@ Google PixelLiveWallpaper.apk
 ├── Google's original Pokémon renderer
 │   └── original Pokémon character/model assets
 │
-├── enhanced Pokémon environment/effect textures
+├── existing Pokémon environment/effect textures (preserved)
 │
 └── Infinity Unified Sidekick
     ├── UnifiedSidekickWallpaper
@@ -44,7 +45,7 @@ Google PixelLiveWallpaper.apk
         └── original premium packs
 ```
 
-The vendor workflow builds the Sidekick payload separately, injects its DEX and assets into the decoded Google package, adds the wallpaper service to the existing manifest, rebuilds the APK, validates it, and stores the result back at:
+The vendor workflow registers the existing Sidekick payload in Pixel's Come Alive service catalog, places `live_categories` metadata on the application and adds preview resources. It rebuilds and validates the APK, then stores it back at:
 
 ```text
 proprietary/product/priv-app/PixelLiveWallpaper/PixelLiveWallpaper.apk
@@ -150,45 +151,15 @@ This marker contract is the integration point for future animation makers or new
 
 ## Google Pokémon policy
 
-Google's Pokémon characters are deliberately treated differently from Infinity Sidekicks.
+The packaging workflow does not modify Pokémon backgrounds, environment textures, character models or renderer code. It compares the rebuilt APK against the checked-in baseline and requires every existing Google asset, native library and retained DEX file to have identical bytes.
 
-### What we do not change
+The old background enhancement tool is no longer called by the workflow. This picker repair preserves the assets already present in the checked-in package.
 
-The Pokémon character/model artwork is not selected by the enhancement tool and is not redrawn by the Sidekick generator.
+## Picker discovery
 
-### What we can enhance
+Pixel's picker groups services from `com.google.pixel.livewallpaper` into built-in categories. Once that package belongs to a category, an unlisted service can be excluded from the generic live-wallpaper list.
 
-The current allowlist targets environment/effect textures such as:
-
-```text
-cloudc2
-cloudc_light
-sun pokemon
-stars_twinkly
-rainstar
-waterdropparticle
-watermistparticle
-```
-
-The pass uses small brightness, contrast, color and bloom adjustments to make the environment feel richer while leaving the Pokémon subjects alone.
-
-## Unity split-asset repacking
-
-PixelLiveWallpaper stores part of the Pokémon Unity data in Android split asset files. A normal single-file Unity rewrite is unsafe because related SerializedFiles and resource streams may be distributed across multiple files.
-
-`tools/enhance_pokemon_backgrounds.py` therefore:
-
-1. Loads the **complete decoded APK tree** with UnityPy.
-2. Selects only exact allowlisted environment/effect Texture2D names.
-3. Preserves the texture format and mip count.
-4. Saves the owning Unity top-level stream.
-5. Re-splits the rebuilt stream using the original Android split boundaries.
-6. Reassembles the written split parts and verifies that they match the rebuilt stream.
-7. Reloads the **entire decoded tree**.
-8. Forces every modified texture to decode again and checks its dimensions.
-9. Restores the original bytes automatically if any write or validation step fails.
-
-This is the safeguard that allows enhanced Pokémon backgrounds to survive into the generated `PixelLiveWallpaper.apk` instead of being lost or corrupting the Unity asset set.
+The unified service must therefore appear exactly once in `come_alive_service_names`. Its Android wallpaper XML also supplies a thumbnail, description and author. After installing a ROM with the repaired package, look for **Wallpaper & style → Come Alive → Sidekick • Motion Sense**. One entry provides all 16 characters; double-tap the character to cycle.
 
 ## Build pipeline
 
@@ -197,7 +168,8 @@ The vendor repository contains:
 ```text
 .github/workflows/unify-wallpapers.yml
 tools/unify_pixel_live_wallpaper.py
-tools/enhance_pokemon_backgrounds.py
+tools/check_sidekick_picker.py
+tools/apk_resource_reader.py
 ```
 
 The device repository contains:
@@ -212,22 +184,16 @@ MotionSenseWallpapers/
 
 The workflow performs these stages:
 
-1. Checkout vendor `faceid`.
-2. Checkout device `faceid`.
-3. Build the extended Sidekick asset set.
-4. Validate generated JSON packs.
-5. Build the resource-independent Sidekick payload with Lottie.
-6. Decode Google's `PixelLiveWallpaper.apk`.
-7. Enhance allowlisted Pokémon environment textures.
-8. Inject the Sidekick wallpaper service and assets.
-9. Rebuild the Google APK.
-10. Remove any previously injected Sidekick DEX to prevent duplicate classes.
-11. Inject the freshly built Sidekick DEX.
-12. Zipalign and sign a validation copy.
-13. Verify the manifest, Sidekick assets and DEX package.
-14. Store the generated unified APK and reports back on the vendor `faceid` branch.
-
-The generated package is therefore reproducible from the source-side payload and tooling rather than being a manually edited APK.
+1. Check out the vendor branch selected by the event and the matching device branch.
+2. Run picker registration and DEX replacement regression checks.
+3. For a manual `rebuild_payload: true` run, generate the 16 Sidekick packs, build the separate payload and isolate its AndroidX dependencies.
+4. Decode the checked-in PixelLiveWallpaper APK without disassembling its DEX.
+5. Register Sidekick in the Come Alive catalog and add application-level category metadata and preview resources.
+6. Rebuild the APK; replace Sidekick assets and DEX only when explicitly requested.
+7. Zipalign and sign a validation copy. The ROM build signs the imported system APK with its platform certificate.
+8. Verify the compiled catalog, service, thumbnail, preview text and unique payload classes.
+9. Compare existing Google service declarations, category entries, DEX, native libraries and assets with the baseline.
+10. Store the verified APK, validation report and source/hash build stamp on the same vendor branch.
 
 ## What happens when Google/ROM updates PixelLiveWallpaper?
 
@@ -249,14 +215,13 @@ However, a new Google APK can still require review if it changes any of the foll
 - Android signing/privileged-permission requirements
 - wallpaper service behavior
 - DEX/class-loading assumptions
-- Unity serialization/version/layout
-- names of the allowlisted environment textures
+- category resource names and picker metadata
 - Android framework behavior used by the injected wallpaper service
 - Motion Sense/Oslo interfaces used by the bridge/client
 
 Whenever the base Google APK is updated, rerun the unification workflow and require all validation stages to pass before using it in a ROM build.
 
-The Pokémon background enhancer is intentionally fail-safe: if a future Unity layout cannot be safely rewritten and reloaded, it restores the original Unity bytes instead of committing a broken enhancement.
+If the expected Come Alive catalog is missing, the registration script stops. The workflow does not publish an APK unless compiled-resource and byte-preservation checks pass.
 
 ## Motion Sense
 
@@ -279,7 +244,7 @@ Google's own Pokémon renderer remains proprietary. The Infinity integration doe
 After a ROM build, verify on-device:
 
 - [ ] Only one Pixel live-wallpaper package is installed for Pokémon + Sidekick.
-- [ ] The Sidekick wallpaper appears in the wallpaper picker.
+- [ ] Sidekick • Motion Sense appears inside Come Alive with a preview thumbnail.
 - [ ] All generated Sidekick characters load.
 - [ ] Double tap cycles through every Sidekick and wraps back to the first.
 - [ ] The selected Sidekick survives wallpaper recreation/reboot.
@@ -288,7 +253,6 @@ After a ROM build, verify on-device:
 - [ ] Reach triggers pet/nod.
 - [ ] Flick triggers the correct left/right reaction.
 - [ ] Google's Pokémon characters still render exactly as before.
-- [ ] Enhanced Pokémon environment textures are visible where the allowlisted assets are used.
 - [ ] No Unity asset errors appear in logcat.
 - [ ] No duplicate Sidekick DEX/classes exist in the APK.
 - [ ] Long-running wallpaper use does not leak/crash after screen-off/on cycles.
@@ -309,7 +273,7 @@ For a new Sidekick pack:
 2. Include `idle` and as many semantic markers as possible.
 3. Keep interaction names compatible with the marker contract above.
 4. Add the pack to the generated asset set.
-5. Re-run the unified wallpaper workflow.
+5. Re-run the unified wallpaper workflow with `rebuild_payload: true`.
 6. Test touch, Motion Sense and character cycling on-device.
 
 No new Motion Sense service should be required for each character.
@@ -318,11 +282,11 @@ No new Motion Sense service should be required for each character.
 
 Device tree:
 
-https://github.com/its-hecker/infinity_cnb_android_device_google_coral/tree/faceid/MotionSenseWallpapers
+https://github.com/its-hecker/infinity_cnb_android_device_google_coral/tree/features-experimental/MotionSenseWallpapers
 
 Vendor tree:
 
-https://github.com/its-hecker/infinity_cnb_proprietary_vendor_google_coral/tree/faceid
+https://github.com/its-hecker/infinity_cnb_proprietary_vendor_google_coral/tree/features-experimental
 
 Motion Sense / Oslo port:
 
