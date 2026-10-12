@@ -18,7 +18,7 @@ final class PokemonWallpaperEnabler {
     private static final String TAG = "GoogleParts";
     private static final String PACKAGE = "com.google.pixel.livewallpaper";
     private static final String SERVICE = PACKAGE + ".pokemon.wallpapers.PokemonWallpaper";
-    private static final String MIGRATED = "google_pokemon_bundled_v1";
+    private static final String MIGRATED = "google_pokemon_bundled_v2";
 
     static void migrate(Context context) {
         SharedPreferences preferences = context.getSharedPreferences(
@@ -35,7 +35,11 @@ final class PokemonWallpaperEnabler {
             if ((info.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0
                     || !"android.permission.BIND_WALLPAPER".equals(info.permission)
                     || info.metaData == null
-                    || info.metaData.containsKey("com.google.pixel.livewallpaper.module")
+                    || !"pokemon".equals(info.metaData.getString(
+                            "com.google.pixel.livewallpaper.module"))
+                    || info.applicationInfo.metaData == null
+                    || !hasPokemonModule(info.applicationInfo.metaData.getString(
+                            "com.android.dynamic.apk.fused.modules"))
                     || info.metaData.containsKey("action_delete_live_wallpaper")) {
                 return;
             }
@@ -55,6 +59,17 @@ final class PokemonWallpaperEnabler {
         } catch (SecurityException | IllegalArgumentException e) {
             Log.w(TAG, "Could not restore bundled Google Pokemon wallpaper", e);
         }
+    }
+
+    private static boolean hasPokemonModule(String fusedModules) {
+        if (fusedModules != null) {
+            for (String module : fusedModules.split(",")) {
+                if ("pokemon".equals(module)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private PokemonWallpaperEnabler() {}
