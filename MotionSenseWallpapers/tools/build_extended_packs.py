@@ -21,6 +21,11 @@ from pathlib import Path
 
 W, H, FPS, END = 432, 936, 60, 870
 
+# Bodymovin blend modes: 0 = normal, 1 = multiply, 2 = screen.
+# Multiply's Porter-Duff alpha behavior can erase the scene outside each light's
+# offscreen bounds. Screen keeps the existing scene and adds the intended light.
+SCREEN = 2
+
 CORE = [
     "hecker", "mochi", "biscuit", "whisk_crumb",
     "pip", "drift", "orbit", "aurora",
@@ -283,7 +288,7 @@ def add_depth_lighting(doc, key):
             ellipse("halo", 216, 535, 330, 420, color, 5),
             ellipse("top haze", 216, 205, 520, 250, "#ffffff", 3),
         ],
-        opacity=100, blend=1,
+        opacity=100, blend=SCREEN,
     ))
 
     if key in PORTRAIT_LIGHTS:
@@ -293,13 +298,13 @@ def add_depth_lighting(doc, key):
             "sidekick-soft-key-light", max_ind + 3,
             [ellipse("key light", x - w * .18, y - h * .20,
                      w * .62, h * .62, "#ffffff", 7)],
-            opacity=100, blend=1,
+            opacity=100, blend=SCREEN,
         ))
         layers.append(shape_layer(
             "sidekick-rim-light", max_ind + 4,
             [ellipse("rim light", x + w * .28, y - h * .05,
                      w * .30, h * .76, color, 7)],
-            opacity=100, blend=1,
+            opacity=100, blend=SCREEN,
         ))
 
     # Sparse atmosphere. It is intentionally subtle so it does not look like a
@@ -310,7 +315,7 @@ def add_depth_lighting(doc, key):
         y = 120 + ((i * 137) % 650)
         motes.append(ellipse("mote%d" % i, x, y, 3 + i % 3, 3 + i % 3,
                              color, 10 + (i % 2) * 4))
-    layers.append(shape_layer("sidekick-atmosphere", max_ind + 5, motes, blend=1))
+    layers.append(shape_layer("sidekick-atmosphere", max_ind + 5, motes, blend=SCREEN))
 
     # Insert at the front so lighting is visible, but keep original artwork unchanged.
     doc["layers"] = layers + doc.get("layers", [])
@@ -332,7 +337,7 @@ def common_scene(bg, accent):
     layers.append(shape_layer("ambient glow", 89, [
         ellipse("glow", 110, 230, 420, 420, accent, 13),
         ellipse("glow2", 350, 650, 500, 500, accent, 8),
-    ], blend=1))
+    ], blend=SCREEN))
     # Floor and distant lights.
     layers.append(shape_layer("depth", 88, [
         ellipse("floor shadow", 216, 825, 340, 66, "#000000", 32),
@@ -346,7 +351,7 @@ def common_scene(bg, accent):
     layers.append(shape_layer("cinematic haze", 87, [
         ellipse("upper haze", 216, 160, 590, 300, "#ffffff", 3),
         ellipse("accent haze", 216, 590, 460, 520, accent, 4),
-    ], blend=1))
+    ], blend=SCREEN))
     return layers
 
 
@@ -367,7 +372,7 @@ def compose(name, bg, accent, scene_shapes, character_shapes, arm_shapes=None):
         layers.append(arm)
     layers.append(shape_layer("foreground light", 5, [
         ellipse("rim bloom", 300, 420, 210, 420, accent, 6),
-    ], blend=1))
+    ], blend=SCREEN))
     return {
         "v": "5.12.2", "fr": FPS, "ip": 0, "op": END,
         "w": W, "h": H, "nm": name, "ddd": 0,

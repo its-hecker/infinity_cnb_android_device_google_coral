@@ -99,7 +99,6 @@ public class SidekickRenderTest {
                         }
                         bitmap.recycle();
                     }
-                    renderer.clear();
                 }
             }
         } finally {

@@ -530,14 +530,12 @@ public class UnifiedSidekickWallpaper extends WallpaperService {
         @Override
         public void onSurfaceDestroyed(SurfaceHolder holder) {
             stop();
-            renderer.clear();
             super.onSurfaceDestroyed(holder);
         }
 
         @Override
         public void onDestroy() {
             stop();
-            renderer.clear();
             if (oslo != null) {
                 oslo.destroy();
                 oslo = null;

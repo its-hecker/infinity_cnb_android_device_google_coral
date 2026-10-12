@@ -18,7 +18,7 @@ The unified wallpaper code and build pipeline are implemented on `features-exper
 - Eight extra packs are generated and included.
 - All 16 Sidekicks have individual **Come Alive** picker tiles, names and thumbnails.
 - The original collection component remains valid for wallpapers already applied before this update.
-- Sidekick vectors are rasterized into a reusable bitmap before posting to the wallpaper surface.
+- Lighting uses screen blending instead of multiply; native frame tests catch blank or horizontally collapsed artwork.
 - Source pushes to the vendor workflow rebuild and validate the Sidekick payload.
 - A manual metadata-only run preserves the existing payload; `rebuild_payload: true` rebuilds it.
 - Native Android bitmap tests render idle, wave and sleep frames across densities and preview sizes before packaging.
@@ -164,7 +164,7 @@ Pixel's picker groups services from `com.google.pixel.livewallpaper` into built-
 
 All 16 named Sidekick components appear exactly once in `come_alive_service_names`. Their wallpaper XML supplies distinct rendered thumbnails, descriptions and author metadata. Look under **Wallpaper & style → Come Alive** for Hecker, Mochi, Biscuit, Whisk & Crumb, Pip, Drift, Orbit, Aurora, Doraemon, Ben 10, Batman, Tom & Jerry, Nova, Kumo, Ember and Byte. The original collection component stays declared for already-applied wallpapers but has no duplicate catalog tile.
 
-Pixel 4 XL testing on 12 October 2026 confirmed that Come Alive became visible, but the original direct hardware-canvas renderer showed thin vertical lines instead of the character. This update uses a reusable bitmap for the vector render and then posts that bitmap to the surface. It also fixes the eight generated packs' layer order: Lottie lists foreground first, so the opaque background must come last. Frame tests are useful evidence for geometry and artwork; the updated surface rendering still needs confirmation on the phone.
+Pixel 4 XL testing on 12 October 2026 confirmed that Come Alive became visible, but the character appeared as thin vertical lines. Native Android bitmap tests reproduced the same failure, with Hecker visible in only five pixel columns. The added lighting layers used Bodymovin blend mode 1 (multiply), which Lottie maps to alpha-modulating compositing; this erased the scene outside the intersection of the light bounds. The fix uses blend mode 2 (screen) and keeps the original vector canvas draw path. It also fixes the eight generated packs' layer order: Lottie lists foreground first, so the opaque background must come last. Native frame tests verify the rendered pictures across markers, densities and preview sizes. Surface rendering and Motion Sense behavior with this updated APK still need confirmation on the phone.
 
 ## Build pipeline
 
