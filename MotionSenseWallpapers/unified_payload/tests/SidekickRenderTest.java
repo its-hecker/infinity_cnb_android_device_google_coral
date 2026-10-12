@@ -74,7 +74,17 @@ public class SidekickRenderTest {
                             drawable.setFrame(frame);
                             renderer.draw(canvas, drawable, size[0], size[1], 1.04f,
                                     frame == 360 ? 1.025f : 1f, frame == 360 ? 2f : 0f, 0f, 0f);
-                            String metrics = verifyPicture(bitmap, spec[0], frame);
+                            String metrics;
+                            try {
+                                metrics = verifyPicture(bitmap, spec[0], frame);
+                            } catch (AssertionError failure) {
+                                save(bitmap, new File(output, "failed_" + spec[0] + ".png"));
+                                String diagnostic = describeParsed(composition);
+                                Files.write(new File(output, "parsed-animation.txt").toPath(),
+                                            diagnostic.getBytes(StandardCharsets.UTF_8));
+                                System.out.println(diagnostic);
+                                throw failure;
+                            }
                             report.append(String.format(Locale.ROOT, "%s frame=%d density=%.1f size=%dx%d %s\n",
                                     spec[0], frame, density, size[0], size[1], metrics));
                             frames++;
@@ -98,6 +108,50 @@ public class SidekickRenderTest {
         report.append("Rendered frames: ").append(frames).append("\nNative Android bitmap graphics: PASS\n");
         Files.write(new File(output, "render-validation.txt").toPath(),
                     report.toString().getBytes(StandardCharsets.UTF_8));
+    }
+
+    private static String describeParsed(LottieComposition composition) throws Exception {
+        StringBuilder out = new StringBuilder("Bounds: " + composition.getBounds() + "\n");
+        for (Object layer : composition.getLayers()) {
+            java.lang.reflect.Field name = layer.getClass().getDeclaredField("layerName");
+            name.setAccessible(true);
+            out.append("LAYER ").append(name.get(layer)).append("\n");
+            java.lang.reflect.Field transform = layer.getClass().getDeclaredField("transform");
+            transform.setAccessible(true);
+            describeModel(transform.get(layer), out, "");
+            java.lang.reflect.Field shapes = layer.getClass().getDeclaredField("shapes");
+            shapes.setAccessible(true);
+            for (Object shape : (java.util.List<?>) shapes.get(layer)) describeModel(shape, out, "  ");
+        }
+        return out.toString();
+    }
+
+    private static void describeModel(Object model, StringBuilder out, String indent) throws Exception {
+        out.append(indent).append(model.getClass().getSimpleName()).append(" ");
+        if (model instanceof com.airbnb.lottie.model.animatable.AnimatableTransform) {
+            com.airbnb.lottie.model.animatable.AnimatableTransform transform =
+                    (com.airbnb.lottie.model.animatable.AnimatableTransform) model;
+            float[] matrix = new float[9];
+            transform.createAnimation().getMatrix().getValues(matrix);
+            out.append(java.util.Arrays.toString(matrix));
+        }
+        for (String method : new String[] {"getName", "getSize", "getPosition", "getScale", "getSkew", "getSkewAngle"}) {
+            try {
+                Object value = model.getClass().getMethod(method).invoke(model);
+                if (value != null) {
+                    try {
+                        Object animation = value.getClass().getMethod("createAnimation").invoke(value);
+                        value = animation.getClass().getMethod("getValue").invoke(animation);
+                    } catch (NoSuchMethodException ignored) {}
+                    out.append(" ").append(method).append("=").append(value);
+                }
+            } catch (NoSuchMethodException ignored) {}
+        }
+        out.append("\n");
+        if (model instanceof com.airbnb.lottie.model.content.ShapeGroup) {
+            for (Object item : ((com.airbnb.lottie.model.content.ShapeGroup) model).getItems())
+                describeModel(item, out, indent + "  ");
+        }
     }
 
     private static String verifyPicture(Bitmap bitmap, String key, int frame) {
