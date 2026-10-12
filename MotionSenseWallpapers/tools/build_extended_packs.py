@@ -373,6 +373,12 @@ def compose(name, bg, accent, scene_shapes, character_shapes, arm_shapes=None):
     layers.append(shape_layer("foreground light", 5, [
         ellipse("rim bloom", 300, 420, 210, 420, accent, 6),
     ], blend=SCREEN))
+    # These packs are authored in painter's order: background/body first,
+    # features last. Lottie also draws the outer shape-group list back to front.
+    # Reverse groups, while keeping paths/fills/transforms inside each group intact.
+    for layer in layers:
+        if layer["ty"] == 4:
+            layer["shapes"] = list(reversed(layer["shapes"]))
     return {
         "v": "5.12.2", "fr": FPS, "ip": 0, "op": END,
         "w": W, "h": H, "nm": name, "ddd": 0,

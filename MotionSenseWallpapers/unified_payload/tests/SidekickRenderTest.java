@@ -77,6 +77,7 @@ public class SidekickRenderTest {
                             String metrics;
                             try {
                                 metrics = verifyPicture(bitmap, spec[0], frame);
+                                if ("byte".equals(spec[0]) && frame == 60) verifyByteEyes(bitmap);
                             } catch (AssertionError failure) {
                                 save(bitmap, new File(output, "failed_" + spec[0] + ".png"));
                                 String diagnostic = describeParsed(composition);
@@ -151,6 +152,22 @@ public class SidekickRenderTest {
             for (Object item : ((com.airbnb.lottie.model.content.ShapeGroup) model).getItems())
                 describeModel(item, out, indent + "  ");
         }
+    }
+
+    private static void verifyByteEyes(Bitmap bitmap) {
+        int width = bitmap.getWidth(), height = bitmap.getHeight();
+        int[] counts = new int[2];
+        for (int y = Math.round(height * .41f); y < Math.round(height * .51f); y++) {
+            for (int x = Math.round(width * .35f); x < Math.round(width * .65f); x++) {
+                int color = bitmap.getPixel(x, y);
+                if (Color.green(color) >= 220 && Color.blue(color) >= 190 && Color.red(color) < 160) {
+                    if (x < width * .485f) counts[0]++;
+                    else if (x > width * .515f) counts[1]++;
+                }
+            }
+        }
+        assertTrue("Byte's left eye was painted over", counts[0] > width * .22f);
+        assertTrue("Byte's right eye was painted over", counts[1] > width * .22f);
     }
 
     private static String verifyPicture(Bitmap bitmap, String key, int frame) {

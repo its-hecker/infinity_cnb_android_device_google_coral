@@ -113,6 +113,8 @@ The renderer also adds subtle parallax overscan, spring/tilt response and a vign
 
 Each individual picker component always starts its named character. Double-tapping an individual character triggers a special reaction. The compatible original collection component retains double-tap cycling and its saved selection.
 
+The eight generated packs use Lottie's foreground-first layer and shape-group order. Facial details, clothing panels and hands therefore remain above their body shapes. Native pixel checks also require Byte's two turquoise eyes to stay visible.
+
 ## Animation marker contract
 
 Every Sidekick pack must provide an `idle` marker.
