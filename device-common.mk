@@ -360,8 +360,8 @@ PRODUCT_USE_DYNAMIC_PARTITIONS := true
 $(call inherit-product, $(SRC_TARGET_DIR)/product/developer_gsi_keys.mk)
 
 # Parts
-# Sidekick is injected into Google's PixelLiveWallpaper on the faceid branch, so
-# do not ship the standalone MotionSenseWallpapers APK as a second wallpaper app.
+# Custom Sidekick wallpapers are removed from features-experimental.
+# Google's original live wallpapers are provided by the vendor PixelLiveWallpaper APK.
 PRODUCT_PACKAGES += \
     GoogleParts
 

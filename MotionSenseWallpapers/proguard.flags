@@ -1,6 +1,0 @@
--keep class com.hecker.motionsense.wallpapers.** {
-  *;
-}
--keep class com.airbnb.lottie.** {
-  *;
-}
