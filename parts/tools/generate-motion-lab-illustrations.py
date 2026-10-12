@@ -82,16 +82,6 @@ def main():
     write("motion_lab_air_dj",scene)
 
     scene=phone()
-    for x in [210,240,270]:
-        scene.append(layer("lane",x,178,[rect(".illoBg2",21,142,[.2,.25,.34,1],6)]))
-    scene.append(layer("obstacle",240,120,[rect(".arcadeHazard",16,22,RED,4)],
-                       p=animated([(0,[240,112,0]),(70,[240,244,0]),(85,[240,244,0]),(120,[240,112,0])]),
-                       o=animated([(0,100),(70,100),(80,0),(119,0),(120,100)])))
-    scene.append(layer("player",240,230,[circle(".illoCoreSecondary1",18,GREEN),circle(".motionGlow",28,BLUE,2)],
-                       p=animated([(0,[240,230,0]),(25,[210,230,0]),(65,[210,230,0]),(90,[270,230,0]),(120,[240,230,0])])))
-    write("motion_lab_arcade",scene)
-
-    scene=phone()
     for i in range(4):
         scene.append(layer("lesson-"+str(i),195+30*i,235,[circle(".illoCoreSecondary1",10,GREEN)],
                            o=animated([(0,30),(15+20*i,100),(35+20*i,30),(120,30)])))
@@ -100,19 +90,6 @@ def main():
     scene.append(layer("success",240,190,[path(".illoCoreSecondary1",[[-14,0],[-4,10],[17,-12]],GREEN,6)],
                        o=animated([(0,0),(60,0),(75,100),(105,100),(120,0)])))
     write("motion_lab_training",scene)
-
-    scene=phone()
-    for i,(x,y) in enumerate([(213,136),(267,136),(213,188),(267,188),(213,240),(267,240)]):
-        scene.append(layer("control-"+str(i),x,y,[rect(".illoCoreTheme3",40,40,[.24,.36,.54,1],10)]))
-        points=[[-7,-9],[-7,9],[9,0]] if i==0 else [[-8,0],[8,0]]
-        shapes=[path(".illoFixedWhite",points,WHITE,3,closed=i==0)]
-        if i in [1,5]: shapes.append(path(".illoFixedWhite",[[0,-8],[0,8]],WHITE,3))
-        if i==2: shapes=[path(".illoFixedWhite",[[5,-8],[-5,0],[5,8]],WHITE,3)]
-        if i==3: shapes=[path(".illoFixedWhite",[[-5,-8],[5,0],[-5,8]],WHITE,3)]
-        scene.append(layer("symbol-"+str(i),x,y,shapes))
-    scene.append(layer("selected-control",213,136,[rect(".motionGlow",47,47,BLUE,12)],
-                       p=animated([(0,[213,136,0]),(30,[267,136,0]),(60,[267,188,0]),(90,[213,188,0]),(120,[213,136,0])]),o=prop(30)))
-    write("motion_lab_panel",scene)
 
     scene=phone()
     for i,(x,y,c) in enumerate([(126,138,BLUE),(354,138,PINK),(116,203,GREEN),(364,203,[.65,.4,1,1])]):
@@ -142,25 +119,12 @@ def main():
     write("motion_lab_preview",scene,240)
 
     scene=phone()
-    colors=animated([(0,RED),(45,RED),(60,BLUE),(105,BLUE),(120,RED)])
-    # Example album colors deliberately do not use .motionGlow, which follows the saved tint.
-    scene[-1]["shapes"][0]["nm"]=".albumGlow"
-    scene[-1]["shapes"][0]["it"][1]["c"]=colors
-    cover=rect(".albumCover",86,86,RED,12);cover["it"][1]["c"]=colors
-    scene += [layer("album-cover",240,158,[cover]),
-              layer("album-moon",260,138,[circle(".illoFixedWhite",18,WHITE)]),
-              layer("album-landscape",240,174,[path(".albumLandscape",[[-39,25],[-11,-18],[7,7],[18,-8],[39,25]], [.12,.18,.3,1],0,True)]),
-              layer("track-name",232,222,[rect(".illoCoreTheme2",70,5,BLUE,3)]),
-              layer("artist",224,238,[rect(".illoCoreSecondary1",54,4,GREEN,2)]),
-              layer("play",278,231,[path(".illoCoreTheme2",[[-4,-7],[-4,7],[7,0]],BLUE,0,True)])]
-    write("motion_lab_album",scene)
-
-    scene=phone()
     for i,(x,y,c) in enumerate([(215,139,BLUE),(265,139,GREEN),(215,213,PINK),(265,213,[.65,.4,1,1])]):
-        scene.append(layer("lab-feature-"+str(i),x,y,[rect(".illoCoreSecondary1" if i%2 else ".illoCoreTertiary1",34,40,c,9)],
+        scene.append(layer("lab-step-"+str(i),x,y,[rect(".illoCoreSecondary1" if i%2 else ".illoCoreTertiary1",34,40,c,9)],
                            s=animated([(0,[90,90,100]),(15+i*20,[115,115,100]),(35+i*20,[90,90,100]),(120,[90,90,100])])))
     scene.append(layer("lab-swipe",240,178,[path(".motionGlow",[[-37,0],[37,0],[27,-9]],BLUE,4)]))
     write("motion_lab_overview",scene)
 
 if __name__ == "__main__":
     main()
+

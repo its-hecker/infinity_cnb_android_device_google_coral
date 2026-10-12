@@ -65,11 +65,8 @@ abstract class LabActivity extends Activity {
     void title(int resource, int description) {
         TextView heading = text(getString(resource), 28); heading.setTypeface(null,Typeface.BOLD);
         content.addView(heading);
-        int animation = resource == R.string.motion_lab_arcade ? R.raw.motion_lab_arcade
-                : resource == R.string.motion_lab_training ? R.raw.motion_lab_training
-                : resource == R.string.motion_lab_panel ? R.raw.motion_lab_panel
-                : resource == R.string.motion_lab_studio ? R.raw.motion_lab_studio
-                : resource == R.string.motion_lab_album ? R.raw.motion_lab_album : 0;
+        int animation = resource == R.string.motion_lab_training ? R.raw.motion_lab_training
+                : resource == R.string.motion_lab_studio ? R.raw.motion_lab_studio : 0;
         if (animation != 0) illustration(animation, description, 180);
         content.addView(text(getString(description),15));
     }
@@ -158,3 +155,4 @@ abstract class LabActivity extends Activity {
         illustrations.clear(); super.onDestroy();
     }
 }
+

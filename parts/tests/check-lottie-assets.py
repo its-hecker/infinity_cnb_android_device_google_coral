@@ -6,7 +6,9 @@ from pathlib import Path
 
 root=Path(__file__).resolve().parents[1]
 files=sorted((root/'res/raw').glob('motion_lab_*.json'))
-assert len(files)==9, 'All feature illustrations must be present'
+assert {p.stem for p in files} == {'motion_lab_air_dj', 'motion_lab_training',
+        'motion_lab_studio', 'motion_lab_trails', 'motion_lab_preview',
+        'motion_lab_overview'}, 'Only the retained illustrations must be present'
 before={p:p.read_bytes() for p in files}
 subprocess.run(['python3',str(root/'tools/generate-motion-lab-illustrations.py')],check=True)
 assert all(p.read_bytes()==value for p,value in before.items()), 'Generated assets are out of date'
@@ -26,6 +28,5 @@ for p in files:
         elif isinstance(value,list):
             for v in value: visit(v)
     visit(d)
-    if p.stem=='motion_lab_album':
-        assert '.albumGlow' in p.read_text() and '.motionGlow' not in p.read_text()
-print('Lottie: nine deterministic vector illustrations; no external images, fonts or expressions')
+print('Lottie: six deterministic vector illustrations; no external images, fonts or expressions')
+

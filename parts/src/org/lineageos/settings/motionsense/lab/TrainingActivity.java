@@ -11,7 +11,7 @@ import org.lineageos.settings.R;
 
 /** Guided reach, left, right and air-tap practice with real detector feedback. */
 public final class TrainingActivity extends GestureLabActivity {
-    private final LabEngine engine = new LabEngine(0);
+    private final LabEngine engine = new LabEngine();
     private TextView instruction;
     private PracticeView practice;
     private long feedbackAt;
@@ -21,9 +21,9 @@ public final class TrainingActivity extends GestureLabActivity {
         title(R.string.motion_lab_training,R.string.motion_lab_training_intro);
         content.addView(status); instruction=text("",21); content.addView(instruction);
         practice=new PracticeView(); content.addView(practice,new LinearLayout.LayoutParams(-1,dp(260)));
-        addButton(R.string.motion_lab_practice_again,() -> { engine.start(LabEngine.TRAINING); updateInstruction(); practice.invalidate(); });
+        addButton(R.string.motion_lab_practice_again,() -> { engine.start(); updateInstruction(); practice.invalidate(); });
         content.addView(text(getString(R.string.motion_lab_training_help),14));
-        engine.start(LabEngine.TRAINING); updateInstruction();
+        engine.start(); updateInstruction();
     }
     private void updateInstruction() {
         int[] prompts={R.string.motion_lab_lesson_reach,R.string.motion_lab_lesson_left,
@@ -62,3 +62,4 @@ public final class TrainingActivity extends GestureLabActivity {
         }
     }
 }
+

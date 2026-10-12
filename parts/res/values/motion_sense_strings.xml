@@ -62,7 +62,7 @@
     <string name="motion_sense_media_apps_search">Search apps</string>
     <string name="motion_sense_media_apps_reset">Reset to Google\'s list</string>
     <string name="motion_sense_glow_page_title">Glow light</string>
-    <string name="motion_sense_glow_page_summary">Brightness, size and color of the light at the top of the screen</string>
+    <string name="motion_sense_glow_page_summary">Brightness, size, color modes and Glow Theme Studio</string>
     <string name="motion_sense_glow_show_title">Show glow light</string>
     <string name="motion_sense_glow_brightness_title">Brightness</string>
     <string name="motion_sense_glow_size_title">Size</string>
@@ -70,24 +70,8 @@
     <string name="motion_sense_glow_rainbow_summary">Use a different color each time the light appears</string>
     <string name="motion_sense_glow_accent_title">Match system accent</string>
     <string name="motion_sense_glow_accent_summary">Use your Material You wallpaper color for the glow</string>
-    <string name="motion_sense_glow_night_title">Dim at night</string>
-    <string name="motion_sense_glow_night_summary">Soften the glow during night hours</string>
-    <string name="motion_sense_glow_night_start_title">Night starts at</string>
     <string name="motion_sense_glow_footer">The glow is the light that sweeps across the top of the screen when Motion Sense sees a gesture. A new look shows the next time it appears.</string>
     <string name="motion_sense_tile_label">Motion Sense</string>
-    <string name="motion_sense_glow_custom_title">Custom glow color</string>
-    <string name="motion_sense_glow_custom_summary">Change the color of the light at the top of the screen. A new color shows the next time the light appears</string>
-    <string name="motion_sense_glow_color_title">Glow color</string>
-    <string name="motion_sense_glow_color_custom">Custom (<xliff:g id="hue" example="200">%1$d</xliff:g>°)</string>
-    <string name="motion_sense_glow_red">Red</string>
-    <string name="motion_sense_glow_orange">Orange</string>
-    <string name="motion_sense_glow_gold">Gold</string>
-    <string name="motion_sense_glow_green">Green</string>
-    <string name="motion_sense_glow_teal">Teal</string>
-    <string name="motion_sense_glow_cyan">Cyan</string>
-    <string name="motion_sense_glow_violet">Violet</string>
-    <string name="motion_sense_glow_purple">Purple</string>
-    <string name="motion_sense_glow_pink">Pink</string>
 
     <string name="motion_sense_air_dj_title">Air DJ</string>
     <string name="motion_sense_air_dj_summary">Air tap cycles Track → Volume → Seek while music plays. Swipes skip tracks, change volume or seek 10 seconds, following your skip direction. Blue, green and orange glow show the mode. Enables Skip songs and Pause music; air tap switches modes instead of pausing.</string>
@@ -114,3 +98,4 @@
     <string name="motion_sense_turn_on_first">To use this, turn on Motion Sense</string>
     <string name="motion_sense_not_allowed">Motion Sense is not supported in this country</string>
 </resources>
+

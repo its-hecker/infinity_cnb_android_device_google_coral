@@ -19,11 +19,8 @@ cat > "$LAB_WORK/AndroidManifest.xml" <<'XML'
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.lineageos.settings">
     <uses-sdk android:minSdkVersion="30" android:targetSdkVersion="35" />
     <application android:theme="@android:style/Theme.DeviceDefault.DayNight">
-        <activity android:name=".motionsense.lab.ArcadeActivity" android:exported="false" android:label="@string/motion_lab_arcade" />
         <activity android:name=".motionsense.lab.TrainingActivity" android:exported="false" android:label="@string/motion_lab_training" />
-        <activity android:name=".motionsense.lab.ControlPanelActivity" android:exported="false" android:label="@string/motion_lab_panel" />
         <activity android:name=".motionsense.lab.GlowStudioActivity" android:exported="false" android:label="@string/motion_lab_studio" />
-        <activity android:name=".motionsense.lab.AlbumArtGlowActivity" android:exported="false" android:label="@string/motion_lab_album" />
     </application>
 </manifest>
 XML
@@ -37,3 +34,4 @@ java -cp "$R8_JAR" com.android.tools.r8.D8 --min-api 30 --lib "$ANDROID_JAR" --l
     --output "$LAB_WORK/dex" "$LAB_WORK"/classes/org/lineageos/settings/motionsense/lab/*.class
 test -s "$LAB_WORK/dex/classes.dex"
 echo 'Motion Lab pages: Lottie assets, resources, real Android/Lottie API compilation and DEX generation passed'
+

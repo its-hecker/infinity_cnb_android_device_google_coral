@@ -24,43 +24,7 @@
         <item>off</item>
     </string-array>
 
-    <string-array name="motion_sense_glow_entries">
-        <item>@string/motion_sense_glow_red</item>
-        <item>@string/motion_sense_glow_orange</item>
-        <item>@string/motion_sense_glow_gold</item>
-        <item>@string/motion_sense_glow_green</item>
-        <item>@string/motion_sense_glow_teal</item>
-        <item>@string/motion_sense_glow_cyan</item>
-        <item>@string/motion_sense_glow_violet</item>
-        <item>@string/motion_sense_glow_purple</item>
-        <item>@string/motion_sense_glow_pink</item>
-    </string-array>
-    <string-array name="motion_sense_glow_values" translatable="false">
-        <item>0</item>
-        <item>30</item>
-        <item>48</item>
-        <item>140</item>
-        <item>175</item>
-        <item>190</item>
-        <item>270</item>
-        <item>290</item>
-        <item>320</item>
-    </string-array>
 
-    <string-array name="motion_sense_glow_night_entries" translatable="false">
-        <item>8:00 PM</item>
-        <item>9:00 PM</item>
-        <item>10:00 PM</item>
-        <item>11:00 PM</item>
-        <item>Midnight</item>
-    </string-array>
-    <string-array name="motion_sense_glow_night_values" translatable="false">
-        <item>20</item>
-        <item>21</item>
-        <item>22</item>
-        <item>23</item>
-        <item>0</item>
-    </string-array>
     <string-array name="motion_sense_air_dj_modes">
         <item>Track (blue)</item>
         <item>Volume (green)</item>
@@ -72,3 +36,4 @@
         <item>2</item>
     </string-array>
 </resources>
+

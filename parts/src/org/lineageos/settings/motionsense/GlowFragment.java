@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 
-import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SeekBarPreference;
@@ -30,7 +29,7 @@ import static org.lineageos.settings.motionsense.MotionSense.*;
 
 /**
  * The Glow light page: a master switch, brightness and size sliders, and the
- * color controls. Every value is a Settings.Secure key that OsloFeedback reads;
+ * color modes and Glow Theme Studio. Every value is a Settings.Secure key that OsloFeedback reads;
  * the glow redraws live (ContentObserver in OsloTweaks), no reboot.
  */
 public class GlowFragment extends SettingsBasePreferenceFragment {
@@ -39,13 +38,8 @@ public class GlowFragment extends SettingsBasePreferenceFragment {
     private MainSwitchPreference mShow;
     private SeekBarPreference mBrightness;
     private SeekBarPreference mSize;
-    private SwitchPreferenceCompat mCustom;
-    private ListPreference mColor;
     private SwitchPreferenceCompat mRainbow;
     private SwitchPreferenceCompat mAccent;
-    private SwitchPreferenceCompat mAlbum;
-    private SwitchPreferenceCompat mNight;
-    private ListPreference mNightStart;
     private FooterPreference mFooter;
 
     private final ContentObserver mObserver = new ContentObserver(
@@ -86,31 +80,6 @@ public class GlowFragment extends SettingsBasePreferenceFragment {
                 R.string.motion_sense_glow_size_title, 50, 150);
         screen.addPreference(mSize);
 
-        mCustom = new SwitchPreferenceCompat(context);
-        mCustom.setKey(KEY_GLOW_CUSTOM);
-        mCustom.setTitle(R.string.motion_sense_glow_custom_title);
-        mCustom.setSummary(R.string.motion_sense_glow_custom_summary);
-        mCustom.setPersistent(false);
-        mCustom.setOnPreferenceChangeListener((p, v) -> {
-            put(context, KEY_GLOW_CUSTOM, (Boolean) v ? 1 : 0);
-            updateState();
-            return true;
-        });
-        screen.addPreference(mCustom);
-
-        mColor = new ListPreference(context);
-        mColor.setKey(KEY_GLOW_HUE);
-        mColor.setTitle(R.string.motion_sense_glow_color_title);
-        mColor.setDialogTitle(R.string.motion_sense_glow_color_title);
-        mColor.setEntries(R.array.motion_sense_glow_entries);
-        mColor.setEntryValues(R.array.motion_sense_glow_values);
-        mColor.setPersistent(false);
-        mColor.setOnPreferenceChangeListener((p, v) -> {
-            put(context, KEY_GLOW_HUE, Integer.parseInt((String) v));
-            return true;
-        });
-        screen.addPreference(mColor);
-
         mRainbow = new SwitchPreferenceCompat(context);
         mRainbow.setKey(KEY_GLOW_RAINBOW);
         mRainbow.setTitle(R.string.motion_sense_glow_rainbow_title);
@@ -118,6 +87,7 @@ public class GlowFragment extends SettingsBasePreferenceFragment {
         mRainbow.setPersistent(false);
         mRainbow.setOnPreferenceChangeListener((p, v) -> {
             put(context, KEY_GLOW_RAINBOW, (Boolean) v ? 1 : 0);
+            if ((Boolean) v) put(context, KEY_GLOW_CUSTOM, 1);
             updateState();
             return true;
         });
@@ -130,55 +100,11 @@ public class GlowFragment extends SettingsBasePreferenceFragment {
         mAccent.setPersistent(false);
         mAccent.setOnPreferenceChangeListener((p, v) -> {
             put(context, KEY_GLOW_ACCENT, (Boolean) v ? 1 : 0);
+            if ((Boolean) v) put(context, KEY_GLOW_CUSTOM, 1);
             updateState();
             return true;
         });
         screen.addPreference(mAccent);
-
-        mNight = new SwitchPreferenceCompat(context);
-        mNight.setKey(KEY_GLOW_NIGHT);
-        mNight.setTitle(R.string.motion_sense_glow_night_title);
-        mNight.setSummary(R.string.motion_sense_glow_night_summary);
-        mNight.setPersistent(false);
-        mNight.setOnPreferenceChangeListener((p, v) -> {
-            put(context, KEY_GLOW_NIGHT, (Boolean) v ? 1 : 0);
-            updateState();
-            return true;
-        });
-        screen.addPreference(mNight);
-
-        mNightStart = new ListPreference(context);
-        mNightStart.setKey(KEY_GLOW_NIGHT_START);
-        mNightStart.setTitle(R.string.motion_sense_glow_night_start_title);
-        mNightStart.setDialogTitle(R.string.motion_sense_glow_night_start_title);
-        mNightStart.setEntries(R.array.motion_sense_glow_night_entries);
-        mNightStart.setEntryValues(R.array.motion_sense_glow_night_values);
-        mNightStart.setPersistent(false);
-        mNightStart.setOnPreferenceChangeListener((p, v) -> {
-            put(context, KEY_GLOW_NIGHT_START, Integer.parseInt((String) v));
-            updateState();
-            return true;
-        });
-        screen.addPreference(mNightStart);
-
-        mAlbum = new SwitchPreferenceCompat(context);
-        mAlbum.setKey(KEY_ALBUM_ART_GLOW);
-        mAlbum.setTitle(R.string.motion_lab_album);
-        mAlbum.setSummary(R.string.motion_lab_album_summary);
-        mAlbum.setPersistent(false);
-        mAlbum.setOnPreferenceChangeListener((p,v) -> {
-            put(context,KEY_ALBUM_ART_GLOW,(Boolean)v ? 1 : 0);
-            return true;
-        });
-        screen.addPreference(mAlbum);
-
-        Preference albumPage = new Preference(context);
-        albumPage.setKey("motion_lab_album");
-        albumPage.setTitle(R.string.motion_lab_album_details);
-        albumPage.setSummary(R.string.motion_lab_album_intro);
-        albumPage.setIntent(new Intent(context,
-                org.lineageos.settings.motionsense.lab.AlbumArtGlowActivity.class));
-        screen.addPreference(albumPage);
 
         Preference studio = new Preference(context);
         studio.setKey("motion_lab_studio");
@@ -232,7 +158,6 @@ public class GlowFragment extends SettingsBasePreferenceFragment {
         boolean configurable = MotionSense.isConfigurable(context);
         boolean show = isOn(context, KEY_GLOW_SHOW);
         boolean glowOn = configurable && show;
-        boolean custom = isOn(context, KEY_GLOW_CUSTOM);
         boolean rainbow = isOn(context, KEY_GLOW_RAINBOW);
 
         mShow.setChecked(show);
@@ -242,33 +167,13 @@ public class GlowFragment extends SettingsBasePreferenceFragment {
         mBrightness.setEnabled(glowOn);
         mSize.setValue(get(context, KEY_GLOW_SIZE));
         mSize.setEnabled(glowOn);
-        mAlbum.setChecked(isOn(context,KEY_ALBUM_ART_GLOW));
-        mAlbum.setEnabled(glowOn);
 
         boolean accent = isOn(context, KEY_GLOW_ACCENT);
-        boolean night = isOn(context, KEY_GLOW_NIGHT);
 
-        mCustom.setChecked(custom);
-        mCustom.setEnabled(glowOn);
         mAccent.setChecked(accent);
-        mAccent.setEnabled(glowOn && custom);
+        mAccent.setEnabled(glowOn);
         mRainbow.setChecked(rainbow);
-        mRainbow.setEnabled(glowOn && custom && !accent);
-
-        mColor.setValue(String.valueOf(get(context, KEY_GLOW_HUE)));
-        CharSequence entry = mColor.getEntry();
-        mColor.setSummary(entry != null ? entry
-                : getString(R.string.motion_sense_glow_color_custom, get(context, KEY_GLOW_HUE)));
-        mColor.setEnabled(glowOn && custom && !rainbow && !accent);
-
-        mNight.setChecked(night);
-        mNight.setEnabled(glowOn);
-        mNightStart.setValue(String.valueOf(get(context, KEY_GLOW_NIGHT_START)));
-        CharSequence nightEntry = mNightStart.getEntry();
-        if (nightEntry != null) {
-            mNightStart.setSummary(nightEntry);
-        }
-        mNightStart.setEnabled(glowOn && night);
+        mRainbow.setEnabled(glowOn && !accent);
 
         int reason = MotionSense.getUnavailableReason(context);
         if (reason != 0) {
@@ -281,3 +186,4 @@ public class GlowFragment extends SettingsBasePreferenceFragment {
         mIllustration.updateGlow();
     }
 }
+

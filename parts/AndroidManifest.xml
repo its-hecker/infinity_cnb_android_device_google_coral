@@ -32,9 +32,6 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.STATUS_BAR_SERVICE" />
     <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
-    <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-feature android:name="android.hardware.camera" android:required="false" />
 
     <uses-sdk
         android:minSdkVersion="30"
@@ -94,11 +91,6 @@
             android:label="@string/motion_sense_media_apps_title"
             android:theme="@style/Theme.SubSettingsBase" />
 
-        <activity
-            android:name=".motionsense.lab.ArcadeActivity"
-            android:exported="false"
-            android:label="@string/motion_lab_arcade"
-            android:theme="@android:style/Theme.DeviceDefault.DayNight" />
 
         <activity
             android:name=".motionsense.lab.TrainingActivity"
@@ -106,11 +98,6 @@
             android:label="@string/motion_lab_training"
             android:theme="@android:style/Theme.DeviceDefault.DayNight" />
 
-        <activity
-            android:name=".motionsense.lab.ControlPanelActivity"
-            android:exported="false"
-            android:label="@string/motion_lab_panel"
-            android:theme="@android:style/Theme.DeviceDefault.DayNight" />
 
         <activity
             android:name=".motionsense.lab.GlowStudioActivity"
@@ -118,11 +105,6 @@
             android:label="@string/motion_lab_studio"
             android:theme="@android:style/Theme.DeviceDefault.DayNight" />
 
-        <activity
-            android:name=".motionsense.lab.AlbumArtGlowActivity"
-            android:exported="false"
-            android:label="@string/motion_lab_album"
-            android:theme="@android:style/Theme.DeviceDefault.DayNight" />
 
         <service
             android:name=".motionsense.MotionSenseTileService"
@@ -137,3 +119,4 @@
 
     </application>
 </manifest>
+
