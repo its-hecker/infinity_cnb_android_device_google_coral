@@ -29,29 +29,3 @@ Check the build outputs before flashing:
 Both should name libcamera2ndk_face.so. The HAL must not need
 libcamera2ndk_vendor.so. If enrollment still fails, collect logcat from all
 buffers and the crash buffer immediately after the attempt.
-
-## Android 13 callback ABI
-
-Android 17's AHandler adds a mutex and delivery-tracking fields after the
-Android 13 object layout. The stock Face HAL's CameraHelper::CallbackHandler
-is built with the smaller Android 13 base, so the modern deliverMessage can
-access its derived fields as a mutex before delivering image callbacks. A
-capture session can open successfully, then fill its image buffers and fail
-with Camera3-OutputStream dequeue timeout (-110).
-
-The Face HAL and its camera compatibility library both link directly to
-libstagefright_foundation-v33.so from hardware/lineage/compat. The camera
-compatibility library uses the Apache-2.0 Android 13 AHandler definition in
-compat/AHandler.h; the ALooper and AMessage object layouts used by this
-library remain compatible with v33. Current framework and system media
-libraries continue using their normal foundation library.
-
-The extractor applies the foundation dependency replacement alongside the
-camera dependency replacement. Check the built Face HAL and
-libcamera2ndk_face.so with readelf -d: both must need
-libstagefright_foundation-v33.so. After boot, inspect the Face HAL process
-maps to confirm the versioned vendor library is loaded.
-
-This addresses the callback ABI mismatch; complete enrollment still needs
-validation on the phone. The separate Citadel Keymaster exportKey crash is
-not changed by this fix.

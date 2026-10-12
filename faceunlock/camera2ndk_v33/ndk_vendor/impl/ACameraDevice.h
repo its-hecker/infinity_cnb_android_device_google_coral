@@ -31,7 +31,7 @@
 #include <android/frameworks/cameraservice/device/2.0/types.h>
 #include <fmq/MessageQueue.h>
 #include <media/stagefright/foundation/ALooper.h>
-#include "compat/AHandler.h"
+#include <media/stagefright/foundation/AHandler.h>
 #include <media/stagefright/foundation/AMessage.h>
 
 #include <camera/NdkCameraManager.h>

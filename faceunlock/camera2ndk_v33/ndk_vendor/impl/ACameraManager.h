@@ -30,7 +30,7 @@
 #include <utils/Mutex.h>
 
 #include <media/stagefright/foundation/ALooper.h>
-#include "compat/AHandler.h"
+#include <media/stagefright/foundation/AHandler.h>
 #include <media/stagefright/foundation/AMessage.h>
 
 #include <set>

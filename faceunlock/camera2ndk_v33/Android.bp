@@ -50,7 +50,7 @@ cc_library_shared {
         "libnativewindow",
         "liblog",
         "libutils",
-        "libstagefright_foundation-v33",
+        "libstagefright_foundation",
         "libcutils",
         "libcamera_metadata",
         "libmediandk",
@@ -61,10 +61,6 @@ cc_library_shared {
         "android.frameworks.cameraservice.service@2.1",
         "android.frameworks.cameraservice.service@2.2",
     ],
-
-    // Keep current AMessage/ALooper declarations; their object layouts match v33.
-    // AHandler is pinned to its v33 definition in compat/AHandler.h.
-    header_libs: ["libstagefright_foundation_headers"],
 
     static_libs: [
         "android.hardware.camera.common@1.0-helper",
