@@ -6,9 +6,8 @@ allow hardware_info_app sysfs_display:file r_file_perms;
 allow hardware_info_app sysfs_soc:dir search;
 allow hardware_info_app sysfs_soc:file r_file_perms;
 
-# Battery info
-allow hardware_info_app sysfs_batteryinfo:dir search;
-allow hardware_info_app sysfs_batteryinfo:file r_file_perms;
+# Battery history and storage
+# Core domains must use the health HAL instead of reading battery sysfs nodes.
 allow hardware_info_app maxfg_device:chr_file r_file_perms;
 allow hardware_info_app sysfs_scsi_devices_0000:dir search;
 allow hardware_info_app sysfs_scsi_devices_0000:file r_file_perms;
