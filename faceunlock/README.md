@@ -38,14 +38,25 @@ call in AutoCalibrationInvocation::Run. Face HAL then restarts and crashes
 in setActiveUser, leaving challenge generation queued and the enrollment
 consent button disabled.
 
-## Remaining validation
+## Runtime status and challenge queue fix
 
-Rebuild both features-experimental trees and test enrollment on the phone.
-Source, ELF and header checks do not establish runtime enrollment success.
-The same logs also contain a separate Citadel Keymaster abort in
-export_key_der. The process maps show the intended legacy crypto preload
-was absent. keymaster/README.md documents its direct dependency repair
-and remaining runtime checks.
+Enrollment and Face Unlock now work on the phone after the camera, calibration
+and Keymaster compatibility repairs. The new October 12 process map includes
+libcrypto-v33.so, and faceid-fixed-logcat.txt contains no native crash markers.
+The earlier Citadel export_key_der abort had a separate direct dependency repair;
+keymaster/README.md describes it.
+
+Opening Face Unlock settings can still stall authentication and model removal.
+The new log shows FaceRevokeChallengeClient stuck after an ignored error from
+the HIDL adapter's shared-challenge path. The watchdog later clears its queue.
+patches/README.md documents the targeted completion fix and regression checks.
+Apply it from the ROM root before building:
+
+    python3 device/google/coral/faceunlock/tools/apply_framework_fixes.py --apply
+
+This guarded framework patch must be applied separately from syncing the device
+and vendor trees. Its source and regression validation do not establish phone
+runtime success; repeat the Settings, unlock and model removal flow after flashing.
 
 The earlier logcat/dmesg files capture the booted fallback image, not the
 failed boot itself. They do not establish why the first flash failed to

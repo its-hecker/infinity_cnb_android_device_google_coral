@@ -1,0 +1,39 @@
+name: Check Face challenge completion
+on:
+  push:
+    branches: [features-experimental]
+    paths:
+      - 'faceunlock/tools/**'
+      - 'faceunlock/patches/**'
+      - 'faceunlock/tests/**'
+      - '.github/workflows/face-framework.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    if: github.ref == 'refs/heads/features-experimental'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Fetch pinned framework references
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/face-reference"
+          base='https://raw.githubusercontent.com/LineageOS/android_frameworks_base/6cdc375a23b72398dbe0358832c9305d31b802aa/services/core/java/com/android/server/biometrics/sensors/face'
+          curl --fail --location --retry 3 "$base/hidl/HidlToAidlSessionAdapter.java" -o "$RUNNER_TEMP/face-reference/HidlToAidlSessionAdapter.java"
+          curl --fail --location --retry 3 "$base/aidl/FaceRevokeChallengeClient.java" -o "$RUNNER_TEMP/face-reference/FaceRevokeChallengeClient.java"
+      - name: Test guarded application and real Java challenge methods
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 faceunlock/tests/check_framework_fixes.py --reference-dir "$RUNNER_TEMP/face-reference" 2>&1 | tee "$RUNNER_TEMP/face-challenge-validation.txt"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: face-challenge-validation
+          path: ${{ runner.temp }}/face-challenge-validation.txt

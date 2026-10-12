@@ -1,0 +1,14 @@
+--- a/services/core/java/com/android/server/biometrics/sensors/face/hidl/HidlToAidlSessionAdapter.java
++++ b/services/core/java/com/android/server/biometrics/sensors/face/hidl/HidlToAidlSessionAdapter.java
+@@ -110,8 +110,9 @@
+         if (!shouldRevoke) {
+             Slog.w(TAG, "scheduleRevokeChallenge skipped - challenge still in use: "
+                     + mGeneratedChallengeCount);
+-            mHidlToAidlCallbackConverter.onError(0 /* deviceId */, mUserId,
+-                    BiometricFaceConstants.FACE_ERROR_UNABLE_TO_PROCESS, 0 /* vendorCode */);
++            // Release this client's reference without invalidating another client's challenge.
++            // FaceRevokeChallengeClient needs its completion callback to advance the queue.
++            mHidlToAidlCallbackConverter.onChallengeRevoked(challenge);
+             return;
+         }
+         mGenerateChallengeCreatedAt = INVALID_VALUE;

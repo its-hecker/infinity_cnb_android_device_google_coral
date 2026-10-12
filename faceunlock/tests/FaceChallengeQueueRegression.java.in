@@ -1,0 +1,167 @@
+/*
+ * Copyright (C) 2023 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
+
+// The runner inserts the real reference/patched adapter methods and real client callback.
+// Only Android/HIDL transport and scheduler delivery are replaced with small test doubles.
+public class FaceChallengeQueueRegression {
+    static final long NOW = 1_000_000L;
+    static final long NONCE = 424242L;
+    static final long TTL = 600_000L;
+    static int assertions;
+
+    static class RemoteException extends Exception {}
+    static class Slog { static void w(String tag, String text) {} }
+    static class BiometricFaceConstants { static final int FACE_ERROR_UNABLE_TO_PROCESS = 2; }
+    interface ErrorConsumer { void onError(int error, int vendorCode); }
+
+    static class Completion {
+        int finishes;
+        boolean success;
+        int queuedOperations;
+        void onClientFinished(FaceRevokeChallengeClient client, boolean value) {
+            finishes++;
+            success = value;
+            queuedOperations += 2; // The queued authentication/removal can now advance.
+        }
+    }
+
+    // Like the actual framework client, this type does not implement ErrorConsumer.
+    static class FaceRevokeChallengeClient {
+        final long mChallenge;
+        final Completion mCallback = new Completion();
+        FaceRevokeChallengeClient(long challenge) { mChallenge = challenge; }
+@@CLIENT_CALLBACK@@
+    }
+
+    static class CallbackConverter {
+        final FaceRevokeChallengeClient client;
+        int errors;
+        int revokes;
+        long returnedNonce;
+        CallbackConverter(FaceRevokeChallengeClient value) { client = value; }
+        void onError(long deviceId, int userId, int error, int vendorCode) {
+            errors++;
+            Object current = client;
+            // AidlResponseHandler dispatches errors only to ErrorConsumer instances.
+            if (current instanceof ErrorConsumer) {
+                ((ErrorConsumer) current).onError(error, vendorCode);
+            }
+        }
+        void onChallengeRevoked(long challenge) {
+            revokes++;
+            returnedNonce = challenge;
+            client.onChallengeRevoked(1, 0, challenge);
+        }
+    }
+
+    static class FakeHal {
+        int revokes;
+        int revokeChallenge() { revokes++; return 0; }
+    }
+
+    abstract static class Adapter {
+        static final String TAG = "test";
+        static final int INVALID_VALUE = -1;
+        static final int GENERATE_CHALLENGE_COUNTER_TTL_MILLIS = (int) TTL;
+        final Clock mClock = Clock.fixed(Instant.ofEpochMilli(NOW), ZoneOffset.UTC);
+        final List<Long> mGeneratedChallengeCount = new ArrayList<>();
+        final int mUserId = 0;
+        long mGenerateChallengeCreatedAt = NOW - 2000;
+        long mGenerateChallengeResult = NONCE;
+        final FakeHal hal = new FakeHal();
+        final Supplier<FakeHal> mSession = () -> hal;
+        final FaceRevokeChallengeClient client = new FaceRevokeChallengeClient(NONCE);
+        final CallbackConverter mHidlToAidlCallbackConverter = new CallbackConverter(client);
+        abstract void revokeChallenge(long challenge) throws RemoteException;
+    }
+
+    static class Before extends Adapter {
+@@ORIGINAL_REVOKE@@
+@@DECREMENT_METHOD@@
+    }
+
+    static class After extends Adapter {
+@@FIXED_REVOKE@@
+@@DECREMENT_METHOD@@
+    }
+
+    static void require(boolean value, String reason) {
+        assertions++;
+        if (!value) throw new AssertionError(reason);
+    }
+
+    static void sharedChallenge() throws Exception {
+        Before before = new Before();
+        before.mGeneratedChallengeCount.addAll(List.of(NOW, NOW - 1000));
+        before.revokeChallenge(NONCE);
+        require(before.client.mCallback.finishes == 0, "negative control must reproduce stuck client");
+        require(before.mHidlToAidlCallbackConverter.errors == 1, "original error is ignored by client");
+        require(before.client.mCallback.queuedOperations == 0, "original queue cannot advance");
+
+        After after = new After();
+        after.mGeneratedChallengeCount.addAll(List.of(NOW, NOW - 1000));
+        after.revokeChallenge(NONCE);
+        require(after.client.mCallback.finishes == 1 && after.client.mCallback.success,
+                "shared revoke must complete the requesting client successfully");
+        require(after.client.mCallback.queuedOperations == 2, "completion releases queued operations");
+        require(after.mHidlToAidlCallbackConverter.errors == 0, "no ignored error event");
+        require(after.mHidlToAidlCallbackConverter.returnedNonce == NONCE, "return requested nonce");
+        require(after.hal.revokes == 0, "another client's HAL challenge must remain valid");
+        require(after.mGenerateChallengeResult == NONCE
+                && after.mGenerateChallengeCreatedAt == NOW - 2000, "cached challenge preserved");
+        require(after.mGeneratedChallengeCount.equals(List.of(NOW - 1000)), "one reference released");
+        System.out.println("PASS: original shared revoke stalls; patched revoke completes and preserves nonce");
+    }
+
+    static void expiryAndFinalRevoke() throws Exception {
+        for (List<Long> refs : List.of(List.<Long>of(), List.of(NOW), List.of(NOW - TTL - 1))) {
+            for (Adapter adapter : List.of(new Before(), new After())) {
+                adapter.mGeneratedChallengeCount.addAll(refs);
+                adapter.revokeChallenge(NONCE);
+                require(adapter.hal.revokes == 1, "final/expired reference still revokes HAL once");
+                require(adapter.mGeneratedChallengeCount.isEmpty(), "final ref count empty");
+                require(adapter.mGenerateChallengeResult == -1
+                        && adapter.mGenerateChallengeCreatedAt == -1, "final cache invalidated");
+                require(adapter.client.mCallback.finishes == 1, "original final callback still completes");
+                // Keep the separate original 0L callback behavior unchanged in this targeted fix.
+                require(!adapter.client.mCallback.success
+                        && adapter.mHidlToAidlCallbackConverter.returnedNonce == 0L,
+                        "last-reference callback behavior unchanged");
+            }
+        }
+        After after = new After();
+        after.mGeneratedChallengeCount.addAll(List.of(NOW, NOW - TTL, NOW - TTL - 1));
+        after.revokeChallenge(NONCE);
+        require(after.mGeneratedChallengeCount.equals(List.of(NOW - TTL)),
+                "expire only refs older than TTL; boundary reference remains");
+        require(after.hal.revokes == 0 && after.client.mCallback.success,
+                "mixed stale/live refs complete without revoking another live reference");
+        System.out.println("PASS: final revoke, empty refs and TTL boundary retain existing behavior");
+    }
+
+    public static void main(String[] args) throws Exception {
+        sharedChallenge();
+        expiryAndFinalRevoke();
+        System.out.println("PASS: " + assertions + " Java assertions using extracted framework methods");
+    }
+}
