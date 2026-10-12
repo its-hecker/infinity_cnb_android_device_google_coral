@@ -27,11 +27,13 @@
         <package android:name="com.google.euiccpixel" />
         <package android:name="com.google.android.ims" />
         <package android:name="com.google.oslo" />
+        <package android:name="com.google.pixel.livewallpaper" />
     </queries>
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.STATUS_BAR_SERVICE" />
     <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+    <uses-permission android:name="android.permission.CHANGE_COMPONENT_ENABLED_STATE" />
 
     <uses-sdk
         android:minSdkVersion="30"

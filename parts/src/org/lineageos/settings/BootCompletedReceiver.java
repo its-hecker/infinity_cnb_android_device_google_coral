@@ -27,6 +27,7 @@ public class BootCompletedReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, Intent intent) {
         Log.d(TAG, "Received boot completed intent");
+        PokemonWallpaperEnabler.migrate(context);
         EuiccDisabler.enableOrDisableEuicc(context);
     }
 }
