@@ -42,7 +42,8 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     android.hardware.thermal@2.0.vendor:64 \
     android.hardware.biometrics.face@1.0.vendor:64 \
-    libcamera2ndk_v33_face
+    libcamera2ndk_v33_face \
+    libstagefright_foundation-v33
 
 # Android 13 BoringSSL ABI required by the Citadel Keymaster used by Face Unlock.
 PRODUCT_PACKAGES += \

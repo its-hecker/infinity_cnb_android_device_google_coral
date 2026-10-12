@@ -72,7 +72,8 @@ blob_fixups: blob_fixups_user_type = {
     # Bind the stock native_handle_t camera ABI to its private source-built library.
     'vendor/bin/hw/android.hardware.biometrics.face@1.0-service.google': blob_fixup()
         .replace_needed('libbase.so', 'libbase-v33.so')
-        .replace_needed('libcamera2ndk_vendor.so', 'libcamera2ndk_face.so'),
+        .replace_needed('libcamera2ndk_vendor.so', 'libcamera2ndk_face.so')
+        .replace_needed('libstagefright_foundation.so', 'libstagefright_foundation-v33.so'),
     (
          'vendor/bin/hw/vendor.google.airbrush@1.0-service',
          'vendor/bin/hw/android.hardware.neuralnetworks@1.2-service-noronha',
