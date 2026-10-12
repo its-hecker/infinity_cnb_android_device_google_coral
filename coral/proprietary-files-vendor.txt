@@ -1169,6 +1169,8 @@ vendor/lib64/libdysco_camx_wrapper.so
 vendor/lib64/libdysco_core.so
 vendor/lib64/libelmyra-protos.so
 vendor/lib64/libexthwplugin.so
+# Loaded with dlopen by Face HAL; preserve the stock nonstandard SONAME.
+vendor/lib64/libautocalsolvers.so;DISABLE_CHECKELF
 vendor/lib64/libface-calibration-proto.so
 vendor/lib64/libface-enroll-proto.so
 vendor/lib64/libfaceauth-util.so
