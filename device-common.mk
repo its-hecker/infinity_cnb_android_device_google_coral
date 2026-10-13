@@ -360,8 +360,8 @@ PRODUCT_USE_DYNAMIC_PARTITIONS := true
 $(call inherit-product, $(SRC_TARGET_DIR)/product/developer_gsi_keys.mk)
 
 # Parts
-# Custom Sidekick wallpapers are removed from features-experimental.
-# Google's original live wallpapers are provided by the vendor PixelLiveWallpaper APK.
+# Custom Sidekick and Google's Pokemon Sidekick wallpapers are removed.
+# Remaining Google live wallpapers are provided by the vendor PixelLiveWallpaper APK.
 PRODUCT_PACKAGES += \
     GoogleParts \
     GoogleOsloSystemUIOverlay

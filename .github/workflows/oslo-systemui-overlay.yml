@@ -2,7 +2,7 @@ name: Check Oslo production SystemUI overlay
 
 on:
   push:
-    branches: [features-experimental]
+    branches: [cnb-Latest-stable, features-experimental]
     paths:
       - 'rro_overlays/OsloSystemUIOverlay/**'
       - 'motionsense/**'
@@ -10,7 +10,7 @@ on:
       - 'device-common.mk'
       - '.github/workflows/oslo-systemui-overlay.yml'
   pull_request:
-    branches: [features-experimental]
+    branches: [cnb-Latest-stable, features-experimental]
     paths:
       - 'rro_overlays/OsloSystemUIOverlay/**'
       - 'motionsense/**'
@@ -30,7 +30,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           repository: its-hecker/infinity_cnb_proprietary_vendor_google_coral
-          ref: features-experimental
+          ref: ${{ github.base_ref || github.ref_name }}
           path: vendor-reference
           sparse-checkout: tools
       - uses: actions/setup-java@v5

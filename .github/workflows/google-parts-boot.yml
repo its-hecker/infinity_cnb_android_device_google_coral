@@ -1,24 +1,22 @@
-name: Check Google Pokemon wallpaper migration
+name: Check GoogleParts boot integration
 
 on:
   workflow_dispatch:
   push:
-    branches: [features-experimental]
+    branches: [cnb-Latest-stable, features-experimental]
     paths:
-      - '.github/workflows/google-pokemon.yml'
+      - '.github/workflows/google-parts-boot.yml'
       - 'parts/AndroidManifest.xml'
       - 'parts/Android.bp'
       - 'parts/src/org/lineageos/settings/BootCompletedReceiver.java'
-      - 'parts/src/org/lineageos/settings/PokemonWallpaperEnabler.java'
       - 'parts/src/org/lineageos/settings/EuiccDisabler.java'
   pull_request:
-    branches: [features-experimental]
+    branches: [cnb-Latest-stable, features-experimental]
     paths:
-      - '.github/workflows/google-pokemon.yml'
+      - '.github/workflows/google-parts-boot.yml'
       - 'parts/AndroidManifest.xml'
       - 'parts/Android.bp'
       - 'parts/src/org/lineageos/settings/BootCompletedReceiver.java'
-      - 'parts/src/org/lineageos/settings/PokemonWallpaperEnabler.java'
       - 'parts/src/org/lineageos/settings/EuiccDisabler.java'
 
 permissions:
@@ -38,11 +36,10 @@ jobs:
           set -euo pipefail
           yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-35'
-      - name: Compile migration and boot integration against Android APIs
+      - name: Compile boot integration against Android APIs
         run: |
           javac --release 11 \
             -classpath "$ANDROID_HOME/platforms/android-35/android.jar" \
-            -d "$RUNNER_TEMP/google-pokemon-classes" \
-            parts/src/org/lineageos/settings/PokemonWallpaperEnabler.java \
+            -d "$RUNNER_TEMP/google-parts-boot-classes" \
             parts/src/org/lineageos/settings/BootCompletedReceiver.java \
             parts/src/org/lineageos/settings/EuiccDisabler.java
