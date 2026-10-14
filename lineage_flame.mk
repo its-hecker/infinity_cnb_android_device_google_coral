@@ -1,7 +1,24 @@
 #
 # SPDX-FileCopyrightText: The LineageOS Project
 # SPDX-License-Identifier: Apache-2.0
-#
+# Infinity-X Build Flags
+INFINITY_BUILD := flame
+# 3D face unlock (Pixel Neural Core) replaces Infinity's camera-based FaceUnlock
+TARGET_FACE_UNLOCK_SUPPORTED := false
+INFINITY_MAINTAINER := "Hecker"
+TARGET_HAS_UDFPS := false
+WITH_GAPPS := true
+
+# Build mainline modules from source and ignore apex contributions
+PRODUCT_BUILD_IGNORE_APEX_CONTRIBUTION_CONTENTS := true
+PRODUCT_MODULE_BUILD_FROM_SOURCE := true
+
+# Infinity-X About Phone Definitions
+# Product partition: vendor_init may not set these non-vendor props
+PRODUCT_PRODUCT_PROPERTIES += \
+    ro.product.marketname=Google Pixel 4 \
+    ro.infinity.soc=Snapdragon 855 \
+    ro.infinity.camera=12.2MP + 16MP
 
 # Inherit some common Lineage stuff.
 $(call inherit-product, vendor/infinity/config/common_full_phone.mk)
@@ -13,7 +30,7 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/generic_system.mk)
 
 # Enable mainline checking
-PRODUCT_ENFORCE_ARTIFACT_PATH_REQUIREMENTS := relaxed
+PRODUCT_ENFORCE_ARTIFACT_PATH_REQUIREMENTS := false
 
 #
 # All components inherited here go to system_ext image

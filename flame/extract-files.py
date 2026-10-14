@@ -59,15 +59,28 @@ blob_fixups: blob_fixups_user_type = {
         .apktool_patch('patches/HbmSVManager.patch'),
     'vendor/bin/color_init': blob_fixup()
         .add_needed('libbase_shim.so'),
+    'vendor/etc/init/android.hardware.biometrics.face@1.0-service.google.rc': blob_fixup()
+        .regex_replace(
+            r'(service vendor\.face-hal-1-0 /vendor/bin/hw/android\.hardware\.biometrics\.face@1\.0-service\.google\n)',
+            r'\1    interface android.hardware.biometrics.face@1.0::IBiometricsFace default\n',
+        ),
+    # Direct linking survives service environment sanitization.
+    'vendor/bin/hw/android.hardware.keymaster@4.1-service.citadel': blob_fixup()
+        .add_needed('libcrypto-v33.so'),
+    # Bind the stock native_handle_t camera ABI to its private source-built library.
+    'vendor/bin/hw/android.hardware.biometrics.face@1.0-service.google': blob_fixup()
+        .replace_needed('libbase.so', 'libbase-v33.so')
+        .replace_needed('libcamera2ndk_vendor.so', 'libcamera2ndk_face.so')
+        .replace_needed('libstagefright_foundation.so', 'libstagefright_foundation-v33.so'),
     (
          'vendor/bin/hw/vendor.google.airbrush@1.0-service',
          'vendor/bin/hw/android.hardware.neuralnetworks@1.2-service-noronha',
     ): blob_fixup()
         .replace_needed('libbase.so', 'libbase-v33.so'),
-    (
-        'vendor/bin/hw/android.hardware.rebootescrow-service.citadel',
-        'vendor/lib64/android.hardware.keymaster@4.1-impl.nos.so',
-    ): blob_fixup()
+    'vendor/lib64/android.hardware.keymaster@4.1-impl.nos.so': blob_fixup()
+        .replace_needed('libcrypto.so', 'libcrypto-v33.so')
+        .remove_needed('libcrypto_shim.so'),
+    'vendor/bin/hw/android.hardware.rebootescrow-service.citadel': blob_fixup()
         .add_needed('libcrypto_shim.so'),
     'vendor/lib64/libgooglecamerahal.so': blob_fixup()
         .add_needed('libmeminfo_shim.so'),
