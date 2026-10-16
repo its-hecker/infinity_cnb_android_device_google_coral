@@ -2,7 +2,7 @@ name: Check Oslo production SystemUI overlay
 
 on:
   push:
-    branches: [cnb-Latest-stable, features-experimental, infinity-4.1-flame]
+    branches: [cnb-Latest-stable, features-experimental, infinity-4.1-flame, gcam-experimental-flame]
     paths:
       - 'rro_overlays/OsloSystemUIOverlay/**'
       - 'motionsense/**'
@@ -10,7 +10,7 @@ on:
       - 'device-common.mk'
       - '.github/workflows/oslo-systemui-overlay.yml'
   pull_request:
-    branches: [cnb-Latest-stable, features-experimental, infinity-4.1-flame]
+    branches: [cnb-Latest-stable, features-experimental, infinity-4.1-flame, gcam-experimental-flame]
     paths:
       - 'rro_overlays/OsloSystemUIOverlay/**'
       - 'motionsense/**'
@@ -30,7 +30,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           repository: its-hecker/infinity_cnb_proprietary_vendor_google_coral
-          ref: ${{ (github.base_ref || github.ref_name) == 'infinity-4.1-flame' && '638ae3b4eb952af6cfba522adb3ffe0910d9db35' || (github.base_ref || github.ref_name) }}
+          ref: ${{ ((github.base_ref || github.ref_name) == 'infinity-4.1-flame' || (github.base_ref || github.ref_name) == 'gcam-experimental-flame') && '638ae3b4eb952af6cfba522adb3ffe0910d9db35' || (github.base_ref || github.ref_name) }}
           path: vendor-reference
           sparse-checkout: tools
       - uses: actions/setup-java@v5

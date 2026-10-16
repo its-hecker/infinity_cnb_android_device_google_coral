@@ -66,3 +66,6 @@ PRODUCT_BUILD_PROP_OVERRIDES += \
     DeviceProduct=flame
 
 $(call inherit-product, vendor/google/flame/flame-vendor.mk)
+
+# Stock Google Camera, isolated to the experimental Flame product.
+$(call inherit-product, device/google/coral/camera/camera.mk)

@@ -3,7 +3,7 @@ name: Check GoogleParts boot integration
 on:
   workflow_dispatch:
   push:
-    branches: [cnb-Latest-stable, features-experimental, infinity-4.1-flame]
+    branches: [cnb-Latest-stable, features-experimental, infinity-4.1-flame, gcam-experimental-flame]
     paths:
       - '.github/workflows/google-parts-boot.yml'
       - 'parts/AndroidManifest.xml'
@@ -11,7 +11,7 @@ on:
       - 'parts/src/org/lineageos/settings/BootCompletedReceiver.java'
       - 'parts/src/org/lineageos/settings/EuiccDisabler.java'
   pull_request:
-    branches: [cnb-Latest-stable, features-experimental, infinity-4.1-flame]
+    branches: [cnb-Latest-stable, features-experimental, infinity-4.1-flame, gcam-experimental-flame]
     paths:
       - '.github/workflows/google-parts-boot.yml'
       - 'parts/AndroidManifest.xml'

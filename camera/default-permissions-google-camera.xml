@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<exceptions>
+    <exception package="com.google.android.GoogleCamera">
+        <permission name="android.permission.CAMERA" fixed="false" />
+        <permission name="android.permission.RECORD_AUDIO" fixed="false" />
+        <permission name="android.permission.READ_MEDIA_IMAGES" fixed="false" />
+        <permission name="android.permission.READ_MEDIA_VIDEO" fixed="false" />
+    </exception>
+</exceptions>

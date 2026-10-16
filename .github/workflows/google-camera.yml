@@ -1,0 +1,49 @@
+name: Check Flame Google Camera integration
+
+on:
+  push:
+    branches: [gcam-experimental-flame]
+    paths:
+      - 'camera/**'
+      - 'sepolicy/private/mac_permissions.xml'
+      - 'lineage_coral.mk'
+      - 'lineage_flame.mk'
+      - '.github/workflows/google-camera.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  camera:
+    if: github.ref == 'refs/heads/gcam-experimental-flame'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: |
+            camera
+            sepolicy/private
+      - name: Validate camera permission XML and signed package policy
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          policy = ET.parse('sepolicy/private/mac_permissions.xml').getroot()
+          matches = [s for s in policy.findall('signer')
+                     if s.find("package[@name='com.google.android.GoogleCamera']") is not None]
+          assert len(matches) == 1, 'Camera must have exactly one certificate-scoped policy'
+          signer = matches[0]
+          assert hashlib.sha256(bytes.fromhex(signer.attrib['signature'])).hexdigest() == \
+              'f0fd6c5b410f25cb25c3b53346c8972fae30f8ee7411df910480ad6b2d60db83'
+          assert signer.find('seinfo') is None, 'Do not grant a domain to every app with this signer'
+          assert signer.find('package/seinfo').attrib['value'] == 'google'
+          for path in Path('camera').glob('*.xml'):
+              ET.parse(path)
+          assert 'camera/camera.mk' in Path('lineage_flame.mk').read_text()
+          assert 'camera/camera.mk' not in Path('lineage_coral.mk').read_text()
+          assert 'camera/camera.mk' not in Path('device-common.mk').read_text()
+          print('PASS: original Google signer, Camera-only domain, valid XML, Flame-only package selection')
+          PY

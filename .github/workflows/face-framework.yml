@@ -1,7 +1,7 @@
 name: Check Face framework compatibility
 on:
   push:
-    branches: [cnb-Latest-stable, features-experimental, infinity-4.1-flame]
+    branches: [cnb-Latest-stable, features-experimental, infinity-4.1-flame, gcam-experimental-flame]
     paths:
       - 'faceunlock/tools/**'
       - 'faceunlock/patches/**'
@@ -12,7 +12,7 @@ permissions:
   contents: read
 jobs:
   check:
-    if: (github.ref == 'refs/heads/cnb-Latest-stable' || github.ref == 'refs/heads/features-experimental' || github.ref == 'refs/heads/infinity-4.1-flame')
+    if: (github.ref == 'refs/heads/cnb-Latest-stable' || github.ref == 'refs/heads/features-experimental' || github.ref == 'refs/heads/infinity-4.1-flame' || github.ref == 'refs/heads/gcam-experimental-flame')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
