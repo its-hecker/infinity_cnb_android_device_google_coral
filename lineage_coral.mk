@@ -66,3 +66,6 @@ PRODUCT_BUILD_PROP_OVERRIDES += \
     DeviceProduct=coral
 
 $(call inherit-product, vendor/google/coral/coral-vendor.mk)
+
+# Stock coral Google Camera, isolated to the experimental coral product.
+$(call inherit-product, device/google/coral/camera/camera.mk)
