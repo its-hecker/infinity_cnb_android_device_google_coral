@@ -66,3 +66,6 @@ PRODUCT_BUILD_PROP_OVERRIDES += \
     DeviceProduct=coral
 
 $(call inherit-product, vendor/google/coral/coral-vendor.mk)
+
+# Stock Google Camera 8.7 for coral, tested and promoted to stable.
+$(call inherit-product, device/google/coral/camera/camera.mk)
