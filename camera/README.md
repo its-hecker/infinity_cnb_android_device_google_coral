@@ -1,28 +1,30 @@
-# Experimental stock Google Camera for Flame
+# Stock Google Camera for Flame
 
-This branch preinstalls Google Camera **8.7.250.494820638.44** (`65822832`),
-package `com.google.android.GoogleCamera`, with Google's original signing
-certificate (`f0fd6c5b410f25cb25c3b53346c8972fae30f8ee7411df910480ad6b2d60db83`).
-It reuses the exact signed base and nine common feature APKs from the Coral
-`gcam-experimental` payload. Tensor-specific modules are excluded.
+Flame stable (`infinity-4.1-flame`) preinstalls Google Camera
+**8.7.250.494820638.44** (`65822832`), package
+`com.google.android.GoogleCamera`, with Google's original signing certificate
+(`f0fd6c5b410f25cb25c3b53346c8972fae30f8ee7411df910480ad6b2d60db83`).
 
-Only `lineage_flame.mk` inherits `camera.mk`. The vendor module is
-`GoogleCameraFlame`, installed under `/product/app/GoogleCameraFlame/`.
-The shared device checkout stays at **device/google/coral**; the matching vendor
-checkout is **vendor/google/flame**. Use `gcam-experimental-flame` in both
-repositories and in `its-hecker/infinity_cnb_flame_local_mainfest`.
+The maintainer confirmed GCam works on Flame on **2026-10-17** and approved
+promotion from `gcam-experimental-flame`. The original signed base and nine
+common feature APKs are retained unchanged; Tensor-specific modules are excluded.
 
-The tested Flame Face ID and Motion Sense implementation is inherited from
-`infinity-4.1-flame`. No camera HAL, firmware, kernel, Face ID or Motion Sense
-runtime code is changed. PixelCameraServicesFlame remains available.
+Only `lineage_flame.mk` inherits `camera.mk`. `GoogleCameraFlame` is installed
+under `/product/app/GoogleCameraFlame/`. The shared device checkout remains at
+**device/google/coral**, with the matching vendor checkout at **vendor/google/flame**.
+Use `infinity-4.1-flame` in both repositories and `main` in
+`its-hecker/infinity_cnb_flame_local_mainfest`.
+
 `PRODUCT_NO_CAMERA := true` is set before Infinity's common product is inherited,
-so Aperture is omitted while `GoogleCameraFlame` remains the bundled camera. Camera, microphone and photo/video grants are revocable;
-location remains a user choice. The original Google certificate is scoped only
-to this package for the existing `google_camera_app` SELinux domain.
+so Aperture is omitted while `GoogleCameraFlame` remains the bundled camera.
+PixelCameraServicesFlame and the tested Face ID/Motion Sense implementation are
+retained. Camera, microphone and photo/video grants are revocable; location is a
+user choice. The original Google certificate is scoped only to this package for
+the existing `google_camera_app` SELinux domain.
 
-## Build and phone checks
+## Build and regression checks
 
-Follow `docs/GCAM_EXPERIMENTAL.md` in the Flame local-manifest repository.
+Follow `docs/GOOGLE_CAMERA.md` in the Flame local-manifest repository.
 Before building:
 
 ```bash
@@ -35,18 +37,17 @@ After flashing:
 adb shell dumpsys package com.google.android.GoogleCamera
 adb shell am start -n com.google.android.GoogleCamera/com.android.camera.CameraLauncher
 adb shell ps -AZ | grep com.google.android.GoogleCamera
+adb shell pm path org.lineageos.aperture
 ```
 
-Expect version 8.7.250.494820638.44, the base plus nine feature splits, and the
-`google_camera_app` process domain. A newer installed Camera update in /data
-can override this version; uninstall that app's updates in Settings before
-testing the bundled payload.
+Expect Camera 8.7.250.494820638.44, the base plus nine feature splits, and the
+`google_camera_app` process domain. Aperture should have no package path on a
+clean installation. A newer Camera update in /data can override the bundled
+version; uninstall that app's updates in Settings when testing this payload.
 
-Test rear 1x/2x and front photos, HDR+, Portrait, Night Sight, video with audio,
-slow motion, panorama/Photo Sphere, preview and lock-screen launch. Check Face ID
-before and after Camera, including model removal and re-enrollment, and check
-Motion Sense/glow/Air DJ. A full Flame ROM build and physical GCam testing are
-still required; signature and packaging CI do not establish runtime success.
+For future changes, test rear 1x/2x and front photos, HDR+, Portrait, Night Sight,
+video/audio, slow motion, panorama/Photo Sphere, preview and lock-screen launch.
+Recheck Face ID removal, re-enrollment and unlock, plus Motion Sense/glow/Air DJ.
 
 ```bash
 adb logcat -c
