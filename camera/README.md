@@ -17,8 +17,9 @@ together in `/product/app/GoogleCameraCoral/`. The six Tensor-specific `p21`,
 and other common modules are included. APKs are neither merged nor re-signed.
 
 Only `lineage_coral.mk` inherits `camera.mk`; Flame's product does not select
-this package. The existing camera app remains available. The Camera promotion
-does not modify the camera HAL, kernel, Face ID or Motion Sense implementation.
+this package. Coral sets `PRODUCT_NO_CAMERA := true` before inheriting the common
+Infinity-X configuration, so Aperture is excluded from its builds. The Camera
+promotion does not modify the camera HAL, kernel, Face ID or Motion Sense implementation.
 Pixel Camera Services and the experimental2019 library already come from the
 vendor tree.
 
@@ -49,11 +50,13 @@ After boot, verify the selected app and SELinux domain:
 adb shell dumpsys package com.google.android.GoogleCamera
 adb shell am start -n com.google.android.GoogleCamera/com.android.camera.CameraLauncher
 adb shell ps -AZ | grep com.google.android.GoogleCamera
+adb shell pm list packages org.lineageos.aperture
 ```
 
 Expect version `8.7.250.494820638.44`, the base plus nine split names, and the
-`google_camera_app` process domain. An existing newer Camera update in `/data`
-can override the preinstalled version; uninstall that app's updates in Settings
+`google_camera_app` process domain. The Aperture package query should return no
+output. An existing newer Camera update in `/data` can override the preinstalled
+version; uninstall that app's updates in Settings
 before evaluating this payload.
 
 When checking individual modes, test rear 1x/2x and front photos, HDR+, Portrait,
