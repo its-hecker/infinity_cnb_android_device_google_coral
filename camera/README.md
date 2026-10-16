@@ -14,8 +14,9 @@ repositories and in `its-hecker/infinity_cnb_flame_local_mainfest`.
 
 The tested Flame Face ID and Motion Sense implementation is inherited from
 `infinity-4.1-flame`. No camera HAL, firmware, kernel, Face ID or Motion Sense
-runtime code is changed. PixelCameraServicesFlame and the existing camera app
-remain available. Camera, microphone and photo/video grants are revocable;
+runtime code is changed. PixelCameraServicesFlame remains available.
+`PRODUCT_NO_CAMERA := true` is set before Infinity's common product is inherited,
+so Aperture is omitted while `GoogleCameraFlame` remains the bundled camera. Camera, microphone and photo/video grants are revocable;
 location remains a user choice. The original Google certificate is scoped only
 to this package for the existing `google_camera_app` SELinux domain.
 

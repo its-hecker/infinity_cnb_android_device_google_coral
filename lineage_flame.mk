@@ -8,6 +8,8 @@ TARGET_FACE_UNLOCK_SUPPORTED := false
 INFINITY_MAINTAINER := "Hecker"
 TARGET_HAS_UDFPS := false
 WITH_GAPPS := true
+# GoogleCameraFlame replaces Infinity-X's default Aperture app.
+PRODUCT_NO_CAMERA := true
 
 # Build mainline modules from source and ignore apex contributions
 PRODUCT_BUILD_IGNORE_APEX_CONTRIBUTION_CONTENTS := true
